@@ -1,0 +1,495 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@source "../../../packages/shared/src";
+
+/* Shared side-panel layout (packages/shared AppShell) — one panel layout,
+   width and collapse behaviour across every frontend. */
+@import '../../../packages/shared/src/styles/side-panel.css';
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/*
+ * KEYMASTR — the Prodesk password vault.
+ *
+ * Design thesis: THE SECRET STAYS DARK. THE ACCESS IS GLASS.
+ *
+ * This is Logo Studio's kit, worn deliberately — same three faces, same Bone
+ * paper stage, same Graphite ink rail, same hairlines and specimen frames — so
+ * the two apps read as siblings from one house. What differs is the DOCTRINE
+ * for the pigment:
+ *
+ *   Logo Studio    pigment = COMMITMENT (a colourway chosen, a concept selected)
+ *   KEYMASTR       pigment = EXPOSURE   (something is open RIGHT NOW)
+ *
+ * At rest the app is achromatic ink-on-paper. Colour appears only while a secret
+ * is revealed, a share is live, a TOTP is running, a grant is ticking — and it
+ * DRAINS AWAY as that exposure closes. One rule, learned in three seconds.
+ *
+ * There is exactly one other colour, --alarm, rationed harder still: irreversible
+ * or compromised. Revocation, breach, break-glass. Nothing else.
+ *
+ * We do NOT touch --color-accent / --accent-h/s/l (runtime white-labelling owns
+ * them). Everything bespoke is scoped under `.km-ui` so the shared auth /
+ * onboarding / profile pages keep the stock theme untouched.
+ */
+@theme {
+  /* no global token overrides — surfaces & accent stay shared/runtime-driven */
+}
+
+/* ----------------------------------------------------------------------------
+ * Scoped palette + surfaces (inherited verbatim from Logo Studio)
+ * ------------------------------------------------------------------------- */
+.km-ui {
+  --rail: #0e0e0c; /* the dark frame */
+  --rail-line: rgba(255, 255, 255, 0.08);
+  --rail-ink: #f4f1ea; /* off-white on rail */
+  --rail-ink-2: #b6b4ab;
+  --rail-ink-3: #7c7a72;
+
+  --stage: #f3f1ea; /* warm paper stage */
+  --stage-2: #eceadf;
+  --card: #fbfaf6;
+  --ink: var(--color-ink-100); /* #0e0e0c */
+  --ink-2: var(--color-ink-60);
+  --ink-3: var(--color-ink-40);
+  --ink-4: var(--color-ink-20);
+
+  --hair: rgba(14, 14, 12, 0.08);
+  --hair-2: rgba(14, 14, 12, 0.14);
+
+  --pigment: var(--color-accent); /* Forest — exposure, and only exposure */
+  --pigment-soft: color-mix(in srgb, var(--color-accent) 12%, transparent);
+
+  /* KEYMASTR's one addition to the palette. Irreversible / compromised ONLY. */
+  --alarm: #a6402f;
+  --alarm-soft: color-mix(in srgb, #a6402f 10%, transparent);
+
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* ===== Shared side panel — KEYMASTR palette ==========================
+   Layout/width/collapse live in packages/shared/src/styles/side-panel.css; this
+   block only re-points the --psp-* colour contract at the ink rail. Paired with
+   `psp-ink` (see PasswordsApp), the shared dark-rail contract — which derives
+   the dropdown surface from --psp-bg so every black panel elevates its menus
+   identically. */
+.psp-theme-keymastr {
+  --psp-bg: var(--rail, #0e0e0c);
+  --psp-fg: var(--rail-ink, #f4f1ea);
+  --psp-fg-2: var(--rail-ink-2, #b6b4ab);
+  --psp-fg-3: var(--rail-ink-3, #7c7a72);
+  --psp-line: var(--rail-line, rgba(255, 255, 255, 0.08));
+  --psp-hover: rgba(255, 255, 255, 0.07);
+  --psp-hover-fg: var(--rail-ink, #f4f1ea);
+  --psp-active: rgba(255, 255, 255, 0.11);
+  --psp-active-fg: var(--rail-ink, #f4f1ea);
+  --psp-slot-bg: rgba(255, 255, 255, 0.04);
+  --psp-radius: var(--radius-md, 10px);
+}
+
+/*
+ * The shared `.text-display` token is a FIXED 7.5rem (120px) — right for a
+ * desktop hero, but it swallows a phone viewport whole. Scope a fluid ramp to
+ * this app rather than touching the shared token (same fix Logo Studio makes).
+ */
+.km-ui .text-display {
+  font-size: clamp(2.5rem, 9vw, 6rem);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+}
+
+/* Mono spec labels — the "designer numbers" motif, here carrying counts,
+   timestamps, fingerprints and TOTP digits. */
+.km-ui .spec {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Editorial serif accent (Instrument Serif italic) — one human line per screen */
+.km-ui .quill {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ----------------------------------------------------------------------------
+ * The stage: the same quiet blueprint grid
+ * ------------------------------------------------------------------------- */
+.km-ui .stage-grid {
+  background-color: var(--stage);
+  background-image: radial-gradient(var(--hair) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+}
+
+/* Specimen frame — thin ruled window with corner ticks. In Logo Studio this
+   frames a MARK; here it frames a RECORD (a ledger, a certificate, an access
+   statement), because the artefact of value in this product is the record. */
+.km-ui .specimen {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--hair-2);
+}
+.km-ui .specimen::before,
+.km-ui .specimen::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  opacity: 0.45;
+}
+.km-ui .specimen::before {
+  top: 8px;
+  left: 8px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.km-ui .specimen::after {
+  bottom: 8px;
+  right: 8px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* ----------------------------------------------------------------------------
+ * THE MASK
+ *
+ * The single most-missed craft detail in this category: the masked value and the
+ * revealed value must occupy the SAME WIDTH, so unmasking causes zero layout
+ * shift. Both states are set in the mono face at the same size and tracking; the
+ * mask is a run of bullets sized to the real value's length.
+ * ------------------------------------------------------------------------- */
+.km-ui .masked,
+.km-ui .revealed {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+.km-ui .masked {
+  color: var(--ink-3);
+  user-select: none;
+}
+.km-ui .revealed {
+  color: var(--ink);
+}
+/* Character resolve — 180ms, left to right. Makes revealing feel physical. */
+.km-ui .revealed[data-unmask] {
+  animation: km-unmask 180ms steps(12, end) both;
+}
+@keyframes km-unmask {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * THE APERTURE — the reveal control, and the app's whole motif.
+ *
+ * Press and hold (350ms): the ring fills with pigment clockwise. On completion
+ * the secret unmasks and the ring immediately DRAINS counterclockwise over its
+ * lifetime, then re-masks. Release early and it snaps back to dark — nothing is
+ * revealed and nothing is logged.
+ *
+ * The same ring is the entire vocabulary of time-boxed exposure: a revealed
+ * field (20s), a TOTP window (30s), a clipboard self-clear (45s), a Send link
+ * (hours), a temporary grant (days), a break-glass session (minutes). Six
+ * mechanisms, one shape — learn the ring, learn the security model.
+ *
+ * Driven by --km-fill (0→1) set inline by the component; CSS owns only the look.
+ * ------------------------------------------------------------------------- */
+.km-ui .aperture {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  flex: none;
+  cursor: pointer;
+  background: conic-gradient(
+    var(--km-ring, var(--pigment)) calc(var(--km-fill, 0) * 360deg),
+    var(--hair-2) 0
+  );
+  transition: background var(--duration-quick) linear;
+}
+/* The hole. Sits above the conic ring and carries the glyph. */
+.km-ui .aperture::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 999px;
+  background: var(--card);
+}
+.km-ui .aperture > * {
+  position: relative;
+  z-index: 1;
+  color: var(--ink-3);
+  transition: color var(--duration-quick) var(--ease-click);
+}
+.km-ui .aperture[data-open='true'] > * {
+  color: var(--pigment);
+}
+.km-ui .aperture:hover > * {
+  color: var(--ink);
+}
+.km-ui .aperture:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+/* On an ink ground (the recipient page, break-glass) the hole matches the rail. */
+.km-ui .aperture[data-ground='ink']::after {
+  background: var(--rail);
+}
+/* Alarm variant — break-glass. */
+.km-ui .aperture[data-tone='alarm'] {
+  --km-ring: var(--alarm);
+}
+.km-ui .aperture[data-tone='alarm'][data-open='true'] > * {
+  color: var(--alarm);
+}
+
+/* A bare drain ring with no control — used inline beside live shares, grants and
+   clipboard toasts to show remaining life at a glance. */
+.km-ui .drain {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  flex: none;
+  background: conic-gradient(
+    var(--km-ring, var(--pigment)) calc(var(--km-fill, 0) * 360deg),
+    var(--hair-2) 0
+  );
+  position: relative;
+}
+.km-ui .drain::after {
+  content: '';
+  position: absolute;
+  inset: 2.5px;
+  border-radius: 999px;
+  background: var(--card);
+}
+.km-ui .drain[data-tone='alarm'] {
+  --km-ring: var(--alarm);
+}
+
+/* ----------------------------------------------------------------------------
+ * THE LEDGER — dense, tabular, hairline-ruled. The Vault and the Register are
+ * unapologetically tables; this screen type is about volume.
+ * ------------------------------------------------------------------------- */
+.km-ui .ledger-row {
+  border-bottom: 1px solid var(--hair);
+  transition:
+    background var(--duration-quick) var(--ease-click),
+    box-shadow var(--duration-quick) var(--ease-click);
+}
+.km-ui .ledger-row:hover {
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+}
+.km-ui .ledger-row[data-selected='true'] {
+  background: var(--pigment-soft);
+}
+.km-ui .num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* Health pips — four segments: strong / weak / stale / breached. A clean key is
+   a single unbroken hairline, so health reads as TEXTURE, not a grade. */
+.km-ui .pips {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+.km-ui .pip {
+  width: 14px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--hair-2);
+}
+.km-ui .pip[data-on='true'] {
+  background: var(--ink-2);
+}
+.km-ui .pip[data-tone='alarm'][data-on='true'] {
+  background: var(--alarm);
+}
+
+/* ----------------------------------------------------------------------------
+ * THE ACCESS MAP — people ↔ keys. Tie weight IS the message: solid ink = used in
+ * the last 90 days, dashed ink-20 = granted but never opened. A wall of dashed
+ * lines reads as over-provisioning before you read a single label.
+ * ------------------------------------------------------------------------- */
+.km-ui .tie {
+  stroke: var(--ink-4);
+  stroke-width: 1;
+  fill: none;
+  transition:
+    stroke var(--duration-quick) var(--ease-click),
+    opacity var(--duration-quick) var(--ease-click);
+}
+.km-ui .tie[data-used='false'] {
+  stroke-dasharray: 3 4;
+}
+.km-ui .tie[data-lit='true'] {
+  stroke: var(--pigment);
+  stroke-width: 1.5;
+}
+.km-ui .tie[data-dim='true'] {
+  opacity: 0.18;
+}
+
+/* Card that lifts — brand board tiles, finding rows, concept-style tiles. */
+.km-ui .lift {
+  transition:
+    transform var(--duration-standard) var(--ease-click),
+    box-shadow var(--duration-standard) var(--ease-click),
+    border-color var(--duration-standard) var(--ease-click);
+}
+.km-ui .lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-3);
+}
+
+/* The dated seal on certificates and access statements. */
+.km-ui .stamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pigment);
+  border: 1px solid var(--pigment);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  display: inline-block;
+}
+.km-ui .stamp[data-tone='alarm'] {
+  color: var(--alarm);
+  border-color: var(--alarm);
+}
+
+/* Chips */
+.km-ui .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--hair-2);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.km-ui .chip[data-on='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--stage);
+}
+.km-ui .chip[data-tone='pigment'] {
+  border-color: var(--pigment);
+  color: var(--pigment);
+  background: var(--pigment-soft);
+}
+.km-ui .chip[data-tone='alarm'] {
+  border-color: var(--alarm);
+  color: var(--alarm);
+  background: var(--alarm-soft);
+}
+
+/* Press feedback, shared with Logo Studio. */
+.km-ui .press {
+  transition: transform var(--duration-quick) var(--ease-click);
+}
+.km-ui .press:active {
+  transform: scale(0.97);
+}
+
+/* ----------------------------------------------------------------------------
+ * Motion
+ * ------------------------------------------------------------------------- */
+.km-ui [data-draw] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: km-draw 1.15s var(--ease-click) forwards;
+}
+@keyframes km-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.km-ui .rise {
+  animation: km-rise var(--duration-statement) var(--ease-click) both;
+}
+@keyframes km-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.km-ui .pop {
+  animation: km-pop var(--duration-standard) var(--ease-click) both;
+}
+@keyframes km-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Reduced motion drops the ANIMATION but never the TIMER: a revealed secret
+ * still re-masks itself on schedule, it just doesn't animate getting there.
+ * Security behaviour is not a motion preference.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .km-ui *,
+  .km-ui *::before,
+  .km-ui *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .km-ui [data-draw] {
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* Thin custom scrollbars, as in Logo Studio */
+.km-ui *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.km-ui *::-webkit-scrollbar-thumb {
+  background: var(--hair-2);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+.km-ui *::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-3);
+  background-clip: content-box;
+}

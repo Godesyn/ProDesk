@@ -1,0 +1,107 @@
+/* Adeyy marketing site — shared chrome (topbar, footer, sections).
+   Page-specific styles live in each page. */
+
+body.mkt {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/* ---------- Topbar ---------- */
+.mtop {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: none;
+  border-bottom: 1px solid var(--border-1);
+}
+.mtop-in {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.mtop .brand { display: flex; align-items: baseline; gap: 12px; text-decoration: none; color: var(--ink); }
+.mtop .brand img { height: 44px; display: block; }
+.mtop .brand .by { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-40); white-space: nowrap; }
+.mtop nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.mtop nav a.navlink {
+  font-size: 14px;
+  font-weight: var(--w-medium);
+  color: var(--ink-80);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: var(--ar);
+  white-space: nowrap;
+}
+.mtop nav a.navlink:hover { background: var(--bg-inset); color: var(--ink); }
+.mtop nav .gap { width: 10px; }
+
+/* ---------- Sections ---------- */
+.msec { max-width: 1280px; margin: 0 auto; padding: 96px 32px; }
+.msec.tight { padding-top: 64px; padding-bottom: 64px; }
+.msec-head { max-width: 720px; margin-bottom: 48px; }
+.msec-head h2 {
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  font-weight: var(--w-heavy);
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.msec-head h2 em { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+.msec-head p { font-size: 18px; color: var(--ink-60); margin: 0; max-width: 56ch; }
+.msec .aeyebrow { display: block; margin-bottom: 18px; }
+
+/* Ink band */
+.band-ink { background: var(--ink); color: var(--paper); }
+.band-ink .msec-head h2 { color: var(--paper); }
+.band-ink .msec-head p { color: rgba(244,241,232,.65); }
+.band-ink .aeyebrow { color: rgba(244,241,232,.5); }
+
+/* ---------- Footer ---------- */
+.mfoot { background: var(--ink); color: var(--paper); }
+.mfoot-in {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 72px 32px 40px;
+}
+.mfoot .cols {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(244,241,232,.14);
+}
+.mfoot .wm img { height: 26px; display: block; }
+.mfoot .wm .tag { font-family: var(--font-serif); font-style: italic; font-size: 19px; color: var(--adeyy); margin-top: 14px; }
+.mfoot h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(244,241,232,.45); margin: 0 0 14px; font-weight: var(--w-medium); }
+.mfoot ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.mfoot a { color: rgba(244,241,232,.78); text-decoration: none; font-size: 14px; }
+.mfoot a:hover { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--adeyy); }
+.mfoot .legal {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-top: 28px;
+  font-size: 13px;
+  color: rgba(244,241,232,.45);
+}
+.mfoot .legal .spacer { flex: 1; }
+.mfoot .legal .byline { display: flex; align-items: center; gap: 8px; }
+.mfoot .legal .byline img { height: 13px; opacity: .7; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .mtop-in { padding: 0 20px; }
+  .mtop nav a.navlink { display: none; }
+  .msec { padding: 64px 20px; }
+  .mfoot .cols { grid-template-columns: 1fr 1fr; }
+}

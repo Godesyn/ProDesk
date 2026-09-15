@@ -1,0 +1,409 @@
+/* Prodesk Foundations — table / drawer / reference styles for the source apps
+   (People, Team, Account). Ported from foundations.css; uses the aliased tokens. */
+
+/* ===== Tables ===== */
+.pd-fnd-table {
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3);
+  overflow: hidden;
+}
+.pd-fnd-head,
+.pd-fnd-row {
+  display: grid;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 18px;
+  text-align: left;
+}
+.pd-fnd-head {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--rule-2);
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.pd-fnd-row {
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+  font-family: var(--font);
+  color: var(--ink);
+  transition: background var(--dur) var(--ease);
+}
+.pd-fnd-row:first-of-type {
+  border-top: none;
+}
+.pd-fnd-row:hover {
+  background: var(--paper-2);
+}
+
+/* column templates */
+.pd-ppl-row {
+  grid-template-columns: 30px minmax(0, 1.7fr) minmax(0, 1fr) minmax(
+      0,
+      1.2fr
+    ) minmax(0, 0.9fr) minmax(0, 1fr);
+}
+.pd-team-row {
+  grid-template-columns: 36px minmax(0, 1.8fr) minmax(0, 1fr) minmax(
+      0,
+      1fr
+    ) minmax(0, 0.8fr);
+}
+.pd-prd-row {
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1.4fr);
+}
+
+@media (max-width: 720px) {
+  .pd-ppl-row {
+    grid-template-columns: 30px minmax(0, 1.7fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  .pd-team-row {
+    grid-template-columns: 36px minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+  .pd-prd-row {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+/* ===== Tool page header (FndHeader) =====
+   Desktop keeps the title on one line; mobile lets it wrap, scales the type
+   down, shrinks the icon and drops the action buttons onto their own full-width
+   row so the heading is never clipped on a phone. */
+.pd-toolhead-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  min-width: 0;
+}
+.pd-toolhead-sub {
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .pd-toolhead-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .pd-toolhead-title {
+    font-size: clamp(19px, 5.5vw, 24px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  /* let the brand · tag line breathe onto two lines instead of hard-truncating */
+  .pd-toolhead-sub {
+    white-space: normal;
+  }
+  .pd-toolhead-actions {
+    width: 100%;
+  }
+}
+
+/* ===== Reference rows (Used in) ===== */
+.pd-fnd-ref {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  padding: 9px 2px;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--ink-2);
+  text-align: left;
+  transition: background var(--dur) var(--ease);
+}
+.pd-fnd-ref:last-of-type {
+  border-bottom: none;
+}
+.pd-fnd-ref:hover {
+  background: var(--paper-2);
+}
+
+/* ===== Company (info-hub) ===== */
+.pd-cmp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 880px) {
+  /* minmax(0, 1fr) — NOT plain 1fr — so an unbreakable merge token or a long
+     URL inside a card can't force the column wider than the viewport. */
+  .pd-cmp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.pd-cmp-facts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* A merge-token row: token + live value. The token can't shrink, so on a phone
+   it would squeeze the value to nothing — stack them, and let the long mono
+   token wrap instead of pushing the card off-screen. */
+@media (max-width: 720px) {
+  .pd-cmp-fact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .pd-cmp-fact > span:first-child {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .pd-cmp-fact > span:last-child {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* Two-up field pair inside editor modals; collapses to one column on the
+   narrowest screens so inputs never become too cramped to use. */
+.pd-form-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 520px) {
+  .pd-form-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Account settings ===== */
+.pd-set-grid {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .pd-set-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+.pd-set-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: 88px;
+}
+@media (max-width: 860px) {
+  .pd-set-rail {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+.pd-set-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-2);
+  padding: 9px 12px;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+@media (max-width: 860px) {
+  .pd-set-tab {
+    width: auto;
+  }
+}
+.pd-set-tab:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.pd-set-tab[data-on='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.pd-set-tab[data-on='true'] .pd-set-tab-ic {
+  color: var(--volt);
+}
+.pd-set-card {
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3);
+  padding: 22px 24px;
+  margin-bottom: 14px;
+}
+.pd-set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.pd-set-row:last-child {
+  border-bottom: none;
+}
+.pd-set-row:first-child {
+  padding-top: 0;
+}
+
+/* ===== Brand Kit (brand-hub) — deck edition (ported from foundations/brand.jsx) ===== */
+.pd-bk-cover {
+  border: 1px solid var(--rule-2);
+  border-radius: 28px;
+  padding: 26px 30px;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+.pd-bk-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+.pd-bk-logo-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 128px;
+  border: 1px solid var(--rule-2);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+  font-family: var(--font);
+}
+.pd-bk-logo-empty {
+  background: transparent;
+  border-style: dashed;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.pd-bk-logo-empty:hover {
+  background: var(--paper-2);
+}
+.pd-bk-swatch-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pd-bk-swatch {
+  flex: 1 1 120px;
+  min-width: 116px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font);
+  color: var(--ink);
+}
+.pd-bk-swatch-chip {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 92px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+.pd-bk-type-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 12px;
+}
+@media (max-width: 760px) {
+  .pd-bk-type-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.pd-bk-type-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 224px;
+  border-radius: 14px;
+  border: 1px solid var(--rule-2);
+  padding: 20px;
+}
+.pd-bk-voice-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+@media (max-width: 760px) {
+  .pd-bk-voice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.pd-bk-voice-quote {
+  display: flex;
+  flex-direction: column;
+  min-height: 230px;
+  border-radius: 14px;
+  padding: 22px;
+}
+.pd-bk-word {
+  font-size: 12px;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border: 1px solid var(--rule-2);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.pd-bk-use-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.pd-bk-use-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pd-bk-use-card > div:first-child {
+  flex: 1;
+}
+.pd-bk-use-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-top: 1px solid var(--rule);
+  padding: 8px 14px;
+  background: var(--white);
+}

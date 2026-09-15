@@ -1,0 +1,1008 @@
+/* ============================================================================
+   Prodesk Suite — design-system bridge.
+
+   The "Prodesk Master App" design (claude.ai/design) is authored against its own
+   token names: --ink / --paper / --white / --volt / --rule / --r-2 …  This file
+   ALIASES those names onto the SHARED Prodesk theme tokens defined in
+   packages/shared/src/styles/theme.css, so every ported component renders in the
+   shared palette without rewriting its styles.
+
+   Deliberate substitution: the design's "Volt" spark (#D9F542 electric lime) maps
+   to the shared brand --color-accent (Forest green). Volt is never used as the
+   brand accent here — the shared accent is, per the codebase brand book.
+
+   The ink scale lines up 1:1 already (ink-60 #5A5A52, ink-40 #8E8E84), so text
+   tone, radii and shadows are faithful to the original.
+   ============================================================================ */
+
+:root {
+  /* ---- Core surfaces & ink (→ shared tokens) ---- */
+  --ink: var(--color-ink-100);
+  --ink-2: var(--color-ink-60);
+  --ink-3: var(--color-ink-40);
+  --paper: var(--color-paper);
+  --paper-2: var(--color-inset);
+  --white: var(--color-card);
+
+  /* ---- The spark → shared Forest accent ---- */
+  --volt: var(--color-accent);
+  --volt-hover: var(--color-accent-hover);
+  /* faint accent halo behind status pips (was rgba(217,245,66,…)) */
+  --volt-glow: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.28);
+
+  /* ---- Borders ---- */
+  --rule: var(--color-border-hairline);
+  --rule-2: var(--color-border-default);
+
+  /* ---- Type ----
+   * The design authored its body token as `--font`; alias it to the shared sans.
+   * `--font-serif`/`--font-mono` share the shared token names verbatim, so they
+   * are NOT redeclared here — a `--font-mono: var(--font-mono)` self-reference
+   * forms a custom-property cycle that computes to the guaranteed-invalid value,
+   * which silently drops `.eyebrow`/`.serif`/`.mono` back to the inherited sans.
+   * The shared `theme.css` tokens already sit on :root and resolve directly. */
+  --font: var(--font-sans);
+  --t-12: 12px;
+  --t-14: 14px;
+  --t-16: 16px;
+  --t-20: 20px;
+  --t-28: 28px;
+  --t-40: 40px;
+  --t-64: 64px;
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+  --w-heavy: 800;
+
+  /* ---- Spacing (8-pt) ---- */
+  --s-1: 8px;
+  --s-2: 16px;
+  --s-3: 24px;
+  --s-4: 32px;
+  --s-5: 48px;
+  --s-6: 64px;
+  --s-7: 96px;
+
+  /* ---- Radii (→ shared) ---- */
+  --r-2: var(--radius-sm);
+  --r-3: var(--radius-md);
+  --r-pill: var(--radius-pill);
+
+  /* ---- Elevation (→ shared) ---- */
+  --shadow-row: var(--shadow-1);
+  --shadow-drawer: var(--shadow-3);
+  --ring-volt: var(--shadow-focus);
+
+  --topbar-h: 64px;
+
+  /* ---- Motion (→ shared brand click curve) ---- */
+  --ease: var(--ease-click);
+  --dur: 160ms;
+}
+
+/* ---- Suite root: base typography for everything ported ---- */
+.pd-suite {
+  font-family: var(--font);
+  font-size: var(--t-14);
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--paper);
+}
+.pd-suite *,
+.pd-suite *::before,
+.pd-suite *::after {
+  box-sizing: border-box;
+}
+.pd-suite button {
+  font-family: inherit;
+}
+
+/* Metadata numerals — tabular for clean alignment */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* Uppercase eyebrow / metadata */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--t-12);
+  font-weight: var(--w-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* one-word italic emphasis */
+.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.pd-suite ::selection {
+  background: var(--volt);
+  color: var(--ink);
+}
+
+/* ============================================================================
+   Master-app component styles (ported verbatim from Prodesk Master App.html)
+   ============================================================================ */
+
+.pd-page {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  /* top gap so the app heading clears the shell top bar ("All apps") */
+  padding: 20px 28px 64px;
+  flex: 1;
+}
+@media (max-width: 720px) {
+  .pd-page {
+    padding: 16px 16px 80px;
+  }
+}
+
+.pd-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+@media (max-width: 720px) {
+  .pd-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+.pd-row {
+  transition: background var(--dur) var(--ease);
+}
+.pd-row:hover {
+  background: var(--paper-2) !important;
+}
+
+.pd-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-2);
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.pd-icon-btn:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+.pd-crumb:hover {
+  color: var(--ink) !important;
+}
+
+/* ===== Skeleton shimmer ===== */
+.pd-skel {
+  background: linear-gradient(
+    90deg,
+    var(--color-ink-10) 25%,
+    var(--color-inset) 37%,
+    var(--color-ink-10) 63%
+  );
+  background-size: 400% 100%;
+  animation: pd-shimmer 1.4s ease infinite;
+}
+@keyframes pd-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* ===== Motion ===== */
+@keyframes pd-fade {
+  from {
+    opacity: 0.001;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pd-rise {
+  from {
+    transform: translateY(8px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes pd-slide-right {
+  from {
+    transform: translateX(24px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes pd-slide-left {
+  from {
+    transform: translateX(-24px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.pd-tile-in {
+  animation: pd-rise-soft 420ms var(--ease) both;
+}
+@keyframes pd-rise-soft {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ===== Launcher command centre ===== */
+.pd-launch-head {
+  margin-bottom: 20px;
+}
+.pd-greet {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+.pd-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+/* ===== Tabs ===== */
+.pd-tabs {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  padding: 3px;
+  flex-shrink: 0;
+}
+.pd-tab {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  border-radius: 4px;
+  padding: 6px 14px;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.pd-tab:hover {
+  color: var(--ink);
+}
+.pd-tab[data-on='true'] {
+  background: var(--white);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: var(--shadow-row);
+}
+
+/* ===== Strategist chat rail ===== */
+.pd-chat-rail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100vh;
+  z-index: 40;
+  background: var(--white);
+  border-left: 1px solid var(--rule-2);
+}
+.pd-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--white);
+}
+.pd-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+.pd-chat-spark {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--volt);
+}
+.pd-chat-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.pd-chat-sub {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pd-chat-feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pd-msg-ai {
+  align-self: flex-start;
+  max-width: 90%;
+  background: var(--paper-2);
+  border-radius: 14px 14px 14px 4px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.pd-msg-me {
+  align-self: flex-end;
+  max-width: 85%;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 14px 14px 4px 14px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.pd-msg-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+  background: var(--white);
+  border: 1px solid var(--ink);
+  border-radius: var(--r-2);
+  padding: 7px 12px;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pd-msg-cta:hover {
+  background: var(--volt);
+}
+.pd-chat-offer {
+  align-self: stretch;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 14px;
+  padding: 18px;
+}
+.pd-chat-offer-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+.pd-chat-offer-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-top: 10px;
+}
+.pd-chat-offer-body {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--paper);
+  opacity: 0.8;
+}
+.pd-chat-offer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  background: var(--volt);
+  color: var(--ink);
+  border: none;
+  border-radius: var(--r-2);
+  padding: 11px 16px;
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background var(--dur) var(--ease);
+}
+.pd-chat-offer-btn:hover {
+  background: var(--volt-hover);
+}
+.pd-chat-foot {
+  flex-shrink: 0;
+  border-top: 1px solid var(--rule);
+  padding: 12px;
+}
+.pd-chat-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.pd-chat-chip {
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  padding: 8px 11px;
+  font-family: var(--font);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  transition:
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+.pd-chat-chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--paper-2);
+}
+.pd-chat-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  padding: 4px 4px 4px 12px;
+}
+.pd-chat-input:focus-within {
+  border-color: var(--ink);
+}
+.pd-chat-input input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13.5px;
+  color: var(--ink);
+  padding: 8px 0;
+}
+.pd-chat-send {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-2);
+  border: none;
+  cursor: pointer;
+  background: var(--volt);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--dur) var(--ease);
+}
+.pd-chat-send:hover {
+  background: var(--volt-hover);
+}
+.pd-chat-reopen {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  cursor: pointer;
+  width: 40px;
+  height: 56px;
+  border-radius: 10px 0 0 10px;
+  border: 1px solid var(--rule-2);
+  border-right: none;
+  background: var(--ink);
+  color: var(--volt);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-drawer);
+}
+.pd-chat-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 40;
+  cursor: pointer;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: var(--volt);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-drawer);
+}
+
+/* KPI strip */
+.pd-metric-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.pd-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3);
+  padding: 18px;
+  cursor: pointer;
+  min-height: 118px;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+@media (max-width: 900px) {
+  .pd-metric-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 460px) {
+  .pd-metric-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* recent row */
+.pd-recent-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pd-recent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-pill, 999px);
+  padding: 7px 16px 7px 8px;
+  cursor: pointer;
+  color: var(--ink);
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+.pd-recent-chip:hover {
+  border-color: var(--ink);
+  background: var(--paper-2);
+}
+.pd-recent-ic {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* app directory rows */
+.pd-dir-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 760px) {
+  .pd-dir-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* wordmark app grid (Power Tools springboard) */
+.pd-app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 10px 14px;
+}
+@media (max-width: 520px) {
+  .pd-app-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.pd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: var(--r-3);
+  padding: 14px 8px 16px;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease);
+}
+.pd-card:hover {
+  transform: translateY(-3px);
+}
+.pd-card:hover .pd-card-name {
+  color: var(--ink);
+}
+.pd-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+/* specialist logo cards */
+.pd-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 860px) {
+  .pd-logo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .pd-logo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.pd-logo-card {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3);
+  overflow: hidden;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.pd-logo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2, 0 8px 22px -12px rgba(14, 14, 12, 0.2));
+}
+.pd-logo-img {
+  width: 100%;
+  height: 78px;
+  object-fit: cover;
+  display: block;
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--rule);
+}
+.pd-logo-body {
+  padding: 12px 14px 14px;
+}
+.pd-logo-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.pd-logo-stage {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.pd-logo-desc {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.pd-row-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3);
+  padding: 14px 16px;
+  min-height: 74px;
+  cursor: pointer;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.pd-row-chip {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+/* sub-brand pill */
+.pd-bychip {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent-ink, var(--ink-2));
+  background: var(--accent-tint, var(--paper-2));
+  border: 1px solid var(--accent-tint-bd, var(--rule-2));
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* ===== Ecosystem (in-app) ===== */
+.pd-kind-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-pill, 999px);
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.pd-eco-card {
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3);
+  padding: 16px 18px;
+}
+.pd-eco-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.pd-share-list {
+  display: flex;
+  flex-direction: column;
+}
+.pd-share-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.pd-share-row:last-child {
+  border-bottom: none;
+}
+.pd-share-row:first-child {
+  padding-top: 0;
+}
+.pd-share-ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+}
+.pd-chip-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.pd-prov-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-pill, 999px);
+  padding: 6px 12px 6px 6px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+.pd-prov-chip:hover {
+  border-color: var(--ink);
+  background: var(--paper-2);
+}
+.pd-prov-ic {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+}
+.pd-partner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 760px) {
+  .pd-partner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.pd-partner-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  padding: 14px 16px;
+}
+
+/* filter bar */
+.pd-filterbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 0 0 22px;
+  padding-top: 16px;
+}
+.pd-find {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  padding: 8px 12px;
+  width: 220px;
+  transition: border-color var(--dur) var(--ease);
+}
+.pd-find:focus-within {
+  border-color: var(--ink);
+}
+.pd-tagrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.pd-tagrow::-webkit-scrollbar {
+  display: none;
+}
+.pd-tag {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--rule-2);
+  background: var(--white);
+  color: var(--ink-2);
+  border-radius: var(--r-pill, 999px);
+  padding: 6px 14px;
+  white-space: nowrap;
+  transition: border-color var(--dur) var(--ease);
+}
+@media (max-width: 760px) {
+  .pd-find {
+    width: 100%;
+  }
+  .pd-tagrow {
+    width: 100%;
+    padding-bottom: 4px;
+  }
+}
+
+/* ===== Sidebar ===== */
+.pd-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-right: 1px solid var(--rule);
+  overflow: visible;
+}
+.pd-sb-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 8px;
+}
+
+.pd-textlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0;
+}
+.pd-textlink:hover {
+  gap: 9px;
+}

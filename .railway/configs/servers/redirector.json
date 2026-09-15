@@ -1,0 +1,22 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "bun run --filter redirector build",
+    "watchPatterns": [
+      "servers/redirector/**",
+      "packages/server-shared/**",
+      "packages/shared/public/**",
+      "package.json",
+      "bun.lock"
+    ]
+  },
+  "deploy": {
+    "startCommand": "bun run --filter redirector start",
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 60,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "region": "asia-southeast1-eqsg3"
+  }
+}

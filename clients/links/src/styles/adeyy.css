@@ -1,0 +1,1593 @@
+/* Adeyy app chrome — ported from the Manus export's three stylesheets
+ * (colors_and_type.css → adeyy.css → adeyy-app.css), merged and made
+ * self-contained. Variables live on :root (harmless globally); aggressive
+ * element resets and the app shell are scoped under `.adeyy-app` so the shared
+ * auth screens are untouched. Monochrome, 4px radius, teal accent for
+ * wayfinding only (Prodesk "links" tool hue). */
+
+:root {
+  /* ---- Core palette ---- */
+  --ink: #0e0e0c;
+  --paper: #f4f1e8;
+  --card: #fbfaf4;
+
+  --ink-100: #0e0e0c;
+  --ink-80: #2c2c28;
+  --ink-60: #5a5a52;
+  --ink-40: #8e8e84;
+  --ink-20: #c9c7bd;
+  --ink-10: #e4e2d8;
+
+  --bg-inset: #efebdf;
+
+  --border-1: rgba(14, 14, 12, 0.08);
+  --border-2: rgba(14, 14, 12, 0.16);
+
+  --danger: #d24a2a;
+
+  /* ---- Type ---- */
+  --font-sans:
+    'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --w-light: 300;
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+  --w-heavy: 800;
+
+  /* ---- Elevation / motion ---- */
+  --shadow-1: 0 1px 0 rgba(14, 14, 12, 0.06), 0 1px 2px rgba(14, 14, 12, 0.04);
+  --shadow-3:
+    0 1px 0 rgba(14, 14, 12, 0.06), 0 24px 48px -16px rgba(14, 14, 12, 0.22);
+  --ease-click: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-quick: 120ms;
+  --dur-standard: 240ms;
+
+  /* ---- Adeyy accent (Links stop on the Prodesk wheel, teal) ---- */
+  --adeyy: #04d5b0;
+  --adeyy-ink: #007d66;
+  --adeyy-hover: #08c09e;
+  --adeyy-tint: #cffcee;
+  --adeyy-tint-bd: #aeeeda;
+
+  /* ---- Adeyy radius scale — square like a QR module ---- */
+  --ar: 4px;
+  --ar-lg: 8px;
+  --app-fs: 14px;
+}
+
+/* App base — scoped so the shared auth screens keep their own typography. */
+.adeyy-app {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--app-fs);
+  line-height: 1.5;
+}
+.adeyy-app * {
+  box-sizing: border-box;
+}
+.adeyy-app h1,
+.adeyy-app h2,
+.adeyy-app h3 {
+  margin: 0;
+}
+
+/* ---------- Buttons ---------- */
+.adeyy-app .abtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: var(--w-semibold);
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: var(--ar);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--dur-quick) var(--ease-click),
+    transform var(--dur-quick) var(--ease-click),
+    filter var(--dur-quick) var(--ease-click);
+}
+.adeyy-app .abtn:active {
+  transform: scale(0.985);
+}
+.adeyy-app .abtn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.adeyy-app .abtn-primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+.adeyy-app .abtn-primary:hover {
+  background: var(--ink-80);
+}
+.adeyy-app .abtn-accent {
+  background: var(--adeyy-ink);
+  color: #fff;
+}
+.adeyy-app .abtn-accent:hover {
+  filter: brightness(1.12);
+}
+.adeyy-app .abtn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--border-2);
+}
+.adeyy-app .abtn-ghost:hover {
+  background: var(--bg-inset);
+}
+.adeyy-app .abtn-quiet {
+  background: transparent;
+  color: var(--ink-60);
+}
+.adeyy-app .abtn-quiet:hover {
+  background: var(--bg-inset);
+  color: var(--ink);
+}
+.adeyy-app .abtn[disabled],
+.adeyy-app .abtn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.adeyy-app .abtn-lg {
+  padding: 14px 22px;
+  font-size: 15px;
+}
+.adeyy-app .abtn-sm {
+  padding: 6px 11px;
+  font-size: 13px;
+}
+
+/* ---------- Inputs ---------- */
+.adeyy-app .afield {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.adeyy-app .afield label {
+  font-size: 13px;
+  font-weight: var(--w-semibold);
+  color: var(--ink-80);
+}
+.adeyy-app .afield .hint {
+  font-size: 12px;
+  color: var(--ink-60);
+  font-weight: var(--w-regular);
+}
+.adeyy-app .ainput {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--ar);
+  padding: 10px 12px;
+  width: 100%;
+  outline: none;
+  transition:
+    border-color var(--dur-quick) var(--ease-click),
+    box-shadow var(--dur-quick) var(--ease-click);
+}
+.adeyy-app .ainput::placeholder {
+  color: var(--ink-40);
+}
+.adeyy-app .ainput:focus {
+  border-color: var(--ink);
+  box-shadow: none;
+}
+.adeyy-app .ainput.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.adeyy-app .ainput.err {
+  border-color: var(--danger);
+}
+
+/* ---------- Slug / short link ---------- */
+.adeyy-app .slug {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  letter-spacing: 0;
+}
+
+/* ---------- Status (monochrome, no coloured badges) ---------- */
+.adeyy-app .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: var(--w-semibold);
+  padding: 4px 10px;
+  border-radius: var(--ar);
+  white-space: nowrap;
+}
+.adeyy-app .status .sdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.adeyy-app .status.on {
+  background: var(--ink);
+  color: var(--paper);
+}
+.adeyy-app .status.on .sdot {
+  background: var(--adeyy);
+}
+.adeyy-app .status.off {
+  border: 1px solid var(--border-2);
+  color: var(--ink-60);
+}
+.adeyy-app .status.off .sdot {
+  background: transparent;
+  border: 1.5px solid var(--ink-40);
+}
+.adeyy-app .status.off.urgent {
+  border-color: #fca5a5;
+  color: #dc2626;
+  background: rgba(254, 242, 242, 0.8);
+}
+.adeyy-app .status.off.urgent .sdot {
+  border-color: #dc2626;
+  background: #dc2626;
+}
+
+/* ---------- Toggle switch ---------- */
+.adeyy-app .atoggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 22px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-inset);
+  position: relative;
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+  transition:
+    background var(--dur-standard) var(--ease-click),
+    border-color var(--dur-standard) var(--ease-click);
+}
+.adeyy-app .atoggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  transition: transform var(--dur-standard) var(--ease-click);
+}
+.adeyy-app .atoggle.on {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.adeyy-app .atoggle.on::after {
+  transform: translateX(18px);
+  border-color: var(--ink);
+}
+.adeyy-app .atoggle[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Chips ---------- */
+.adeyy-app .achip {
+  font-size: 13px;
+  font-weight: var(--w-medium);
+  padding: 6px 12px;
+  border-radius: var(--ar);
+  border: 1px solid var(--border-2);
+  background: var(--card);
+  color: var(--ink-80);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.adeyy-app .achip:hover {
+  background: var(--bg-inset);
+}
+.adeyy-app .achip.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  font-weight: var(--w-semibold);
+}
+
+/* ---------- Cards / eyebrow ---------- */
+.adeyy-app .apanel {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-1);
+}
+.adeyy-app .aeyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--w-medium);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+
+/* ---------- Toast ---------- */
+.atoast-wrap {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 300;
+  pointer-events: none;
+}
+.atoast {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: var(--w-medium);
+  padding: 11px 16px;
+  border-radius: var(--ar);
+  box-shadow: var(--shadow-3);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  animation: atoast-in var(--dur-standard) var(--ease-click);
+}
+.atoast .tdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--adeyy);
+  flex: none;
+}
+@keyframes atoast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Modal ---------- */
+.amodal-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(244, 241, 232, 0.7);
+  display: grid;
+  place-items: center;
+  z-index: 200;
+  padding: 24px;
+}
+.amodal {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-3);
+  width: 100%;
+  max-width: 440px;
+  /* Cap to the viewport (scrim has 24px padding) and scroll when content — e.g.
+     a tall Stripe card form — exceeds it, instead of overflowing off-screen. */
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 24px;
+  font-family: var(--font-sans);
+}
+.amodal h3 {
+  font-size: 18px;
+  font-weight: var(--w-bold);
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+.amodal p {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+/* ---------- Skeleton ---------- */
+.adeyy-app .skel {
+  background: var(--bg-inset);
+  border-radius: var(--ar);
+  position: relative;
+  overflow: hidden;
+}
+.adeyy-app .skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(251, 250, 244, 0.7),
+    transparent
+  );
+  animation: skel-sweep 1.2s infinite;
+}
+@keyframes skel-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------- Empty state ---------- */
+.adeyy-app .aempty {
+  text-align: center;
+  padding: 64px 24px;
+}
+.adeyy-app .aempty .serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 26px;
+  color: var(--ink);
+}
+.adeyy-app .aempty p {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin: 10px 0 20px;
+}
+
+/* ---------- Focus ---------- */
+.adeyy-app :focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--adeyy-tint-bd),
+    0 0 0 1.5px var(--adeyy-ink);
+  border-radius: var(--ar);
+}
+
+/* ============================================================
+   App shell (adeyy-app.css)
+   ============================================================ */
+/* DEAD as of the shared side panel: the old sidebar rules below (appshell, aside,
+   aside-brand-row, aside-scrim, menu-btn, mobile-header, navitem, grp, foot,
+   switcher, brandmenu, suite-tile, suite-out and their @media rules) are no longer
+   rendered — LinksApp uses @shared AppShell (psp- classes), themed by
+   .psp-theme-adeyy at the end of this file. Kept for one release in case a page is
+   found still leaning on one; safe to delete after that. .amain IS still used (it's
+   passed as AppShell's mainClassName). */
+.appshell {
+  display: grid;
+  grid-template-columns: 224px 1fr;
+  min-height: 100vh;
+}
+.mobile-header {
+  display: none;
+}
+.aside-brand-row {
+  display: contents;
+}
+.aside-brand-row .mobile-close {
+  display: none;
+}
+.menu-btn {
+  background: none;
+  border: 0;
+  padding: 6px;
+  margin: -6px;
+  cursor: pointer;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+}
+.aside-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 14, 12, 0.4);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+}
+
+/* ---------- Sidebar ---------- */
+.aside {
+  background: var(--card);
+  border-right: 1px solid var(--border-1);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.aside .brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 10px 18px;
+  text-decoration: none;
+}
+.aside .brand .word {
+  font-size: 19px;
+  font-weight: var(--w-heavy);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.aside .brand .by {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  white-space: nowrap;
+}
+.navitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--ar);
+  color: var(--ink-80);
+  font-weight: var(--w-medium);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+.navitem svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.navitem:hover {
+  background: var(--bg-inset);
+}
+.navitem.active {
+  background: var(--adeyy-tint);
+  color: var(--adeyy-ink);
+  font-weight: var(--w-semibold);
+}
+.aside .grp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  padding: 18px 10px 6px;
+}
+.aside .foot {
+  margin-top: auto;
+  padding: 14px 10px 0;
+  border-top: 1px solid var(--border-1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.aside .foot .vendor {
+  font-size: 12.5px;
+  font-weight: var(--w-semibold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.aside .foot .avatar,
+.brandmenu .avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 10px;
+  flex: none;
+  overflow: hidden;
+}
+.aside .foot .avatar img,
+.brandmenu .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.aside .foot .by2 {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+.aside .foot button.link {
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.aside .foot button.link:hover {
+  color: var(--ink);
+}
+/* Exit row — "Prodesk Suite" back-link beside Sign out. Chromed (border +
+   arrow) so it stands apart from the nav items above: it leaves the app. */
+.aside .foot .suite-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.suite-tile {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--ink-10);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.14s,
+    border-color 0.14s;
+}
+.suite-tile:hover {
+  background: var(--paper);
+  border-color: var(--ink-40);
+}
+.suite-tile .suite-arrow {
+  margin-left: auto;
+  display: inline-flex;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+.suite-out {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-40);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.suite-out:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* ---------- Brand switcher ---------- */
+.switcher-wrap {
+  position: relative;
+}
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  margin: -6px -8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease-click);
+}
+.switcher:hover,
+.switcher.open {
+  background: var(--bg-inset);
+  border-color: var(--border-1);
+}
+.switcher:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.switcher-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.switcher svg {
+  flex: none;
+  color: var(--ink-40);
+}
+.switcher-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.brandmenu {
+  position: absolute;
+  z-index: 50;
+  bottom: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+.brandmenu-head {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  padding: 10px 12px 6px;
+}
+.brandmenu-list {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.brandmenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink-80);
+  text-align: left;
+  cursor: pointer;
+}
+.brandmenu-item:hover {
+  background: var(--bg-inset);
+}
+.brandmenu-item.active {
+  background: var(--adeyy-tint);
+  color: var(--ink);
+  font-weight: var(--w-semibold);
+}
+.brandmenu-item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.brandmenu-item svg {
+  flex: none;
+  color: var(--adeyy-ink);
+}
+
+/* ---------- Main ---------- */
+.amain {
+  padding: 0 32px 80px;
+  min-width: 0;
+}
+.apage-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 0 18px;
+  border-bottom: 1px solid var(--border-1);
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.apage-head h1 {
+  font-size: 24px;
+  font-weight: var(--w-heavy);
+  letter-spacing: -0.02em;
+  margin: 0;
+  white-space: nowrap;
+}
+.apage-head .meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-60);
+  white-space: nowrap;
+}
+.apage-head .meta b {
+  color: var(--ink);
+  font-weight: var(--w-bold);
+}
+.apage-head .spacer {
+  flex: 1;
+}
+.apage-head .mutetext {
+  white-space: nowrap;
+}
+
+.backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-60);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.backlink:hover {
+  color: var(--ink);
+}
+.backlink svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Filter bar ---------- */
+.filterbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filterbar .search {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 360px;
+}
+.filterbar .search svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  stroke: var(--ink-40);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.filterbar .search input {
+  padding-left: 32px;
+}
+
+/* ---------- Table ---------- */
+.atable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.atable th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+  font-weight: var(--w-medium);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-2);
+  white-space: nowrap;
+}
+.atable td {
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--border-1);
+  vertical-align: middle;
+}
+.atable tbody tr {
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease-click);
+}
+.atable tbody tr:hover {
+  background: var(--bg-inset);
+}
+.atable .tslug {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: var(--w-bold);
+  white-space: nowrap;
+}
+/* Base: a destination URL anywhere outside a table (cards, preview panels).
+ * Wraps rather than truncates — off a row, the point is to READ the URL — but it
+ * must wrap, since an unbreakable URL otherwise overflows its container. */
+.tdest {
+  color: var(--ink-60);
+  overflow-wrap: anywhere;
+}
+/* In a row it stays on one line and ellipsises, so rows keep a uniform height. */
+.atable .tdest {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atable .tnum {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-align: right;
+}
+.atable .tdate {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-60);
+  white-space: nowrap;
+}
+.atable th.r,
+.atable td.r {
+  text-align: right;
+}
+
+/* ---------- KPI row ---------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.kpis.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+.kpi {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-1);
+}
+.kpi .lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+.kpi .num {
+  font-size: 28px;
+  font-weight: var(--w-heavy);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-top: 7px;
+}
+.kpi .num .unit {
+  font-size: 14px;
+  font-weight: var(--w-semibold);
+  color: var(--ink-60);
+  margin-left: 2px;
+}
+.kpi .sub {
+  font-size: 12px;
+  color: var(--ink-60);
+  margin-top: 5px;
+}
+.kpi.accent {
+  background: var(--adeyy-tint);
+  border-color: var(--adeyy-tint-bd);
+}
+.kpi.accent .lbl,
+.kpi.accent .num {
+  color: var(--adeyy-ink);
+}
+
+/* ---------- Detail layout ---------- */
+/* The default track list is shaped for the "A → B · C" strip on a link's detail
+ * page: cell, join, cell, join, cell. The `auto` tracks are the tiny .ajoin
+ * glyphs between the cells — a strip of plain cells with no joins must use
+ * .anatomy.plain below, or half its cells land in those content-sized tracks.
+ * minmax(0, …) on every track because the cells hold raw destination URLs:
+ * a bare `1fr` floors at min-content, so one unbreakable URL widens the track
+ * and scrolls the whole page sideways. */
+.anatomy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1.2fr);
+  gap: 14px;
+  align-items: stretch;
+  margin: 2px 0 22px;
+}
+/* An evenly-spaced strip of N plain cells (no .ajoin separators). Auto columns
+ * rather than a fixed repeat() so it fits however many cells the page renders. */
+.anatomy.plain {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+.anatomy .acell {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  padding: 13px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.anatomy .acell.editable {
+  border-color: var(--adeyy-tint-bd);
+  background: var(--adeyy-tint);
+}
+.anatomy .atag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+.anatomy .atag.teal {
+  color: var(--adeyy-ink);
+}
+.anatomy .acell b {
+  font-size: 13.5px;
+  font-weight: var(--w-bold);
+  /* Destination URLs have no spaces to break at; without this they widen the
+   * track past the viewport instead of wrapping inside the cell. */
+  overflow-wrap: anywhere;
+}
+.anatomy .acell span:last-child {
+  font-size: 11.5px;
+  color: var(--ink-60);
+}
+.anatomy .ajoin {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  white-space: nowrap;
+}
+@media (max-width: 1100px) {
+  /* .anatomy.plain must be listed too — it is more specific than `.anatomy`, so
+   * it would otherwise keep its column flow and never stack on narrow screens. */
+  .anatomy,
+  .anatomy.plain {
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+  }
+  .anatomy .ajoin {
+    justify-self: start;
+  }
+}
+
+.detail-grid {
+  display: grid;
+  /* minmax(0, …), not a bare 1fr: the main column holds URLs and other
+   * unbreakable strings, whose min-content width would otherwise stretch the
+   * track and push the sidebar off-screen. */
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+.detail-grid.rev {
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+.dcard {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-1);
+}
+.dcard .dh {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 18px 12px;
+}
+/* Title and subtitle stacked instead of sharing a line — for headers whose meta
+ * text is a full sentence rather than a short stat, where the side-by-side
+ * layout squeezes both. Both children keep `white-space: nowrap` below, so the
+ * stacked variant clears it to let the sentence wrap on narrow cards. */
+.dcard .dh.stack {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.dcard .dh.stack h2,
+.dcard .dh.stack .meta {
+  white-space: normal;
+}
+.dcard .dh h2 {
+  font-size: 14px;
+  font-weight: var(--w-bold);
+  margin: 0;
+  white-space: nowrap;
+}
+.dcard .dh .meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  white-space: nowrap;
+}
+.dcard .db {
+  padding: 0 18px 16px;
+}
+
+/* history */
+.hrow {
+  display: flex;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--border-1);
+  font-size: 13px;
+  align-items: baseline;
+}
+.hrow .hwhen {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-40);
+  flex: none;
+  width: 118px;
+}
+.hrow .hwho {
+  font-weight: var(--w-semibold);
+}
+.hrow .hurls {
+  color: var(--ink-60);
+  min-width: 0;
+}
+.hrow .hurls .old {
+  text-decoration: line-through;
+  color: var(--ink-40);
+}
+.hrow .hurls .arrow {
+  font-family: var(--font-mono);
+  color: var(--adeyy-ink);
+  padding: 0 5px;
+}
+
+/* ---------- QR customise ---------- */
+.qrwrap {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.qrcontrols {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.qrcontrols .ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.qrcontrols .ctl > label {
+  font-size: 13px;
+  font-weight: var(--w-semibold);
+}
+.qrcontrols .ctl .note {
+  font-size: 11.5px;
+  color: var(--ink-60);
+}
+.swatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--ar);
+  border: 1px solid var(--border-2);
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+}
+.swatch.sel {
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px var(--ink);
+}
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--border-2);
+  border-radius: var(--ar);
+  overflow: hidden;
+  width: fit-content;
+}
+.seg button {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: var(--w-medium);
+  padding: 7px 13px;
+  border: 0;
+  background: var(--card);
+  color: var(--ink-80);
+  cursor: pointer;
+  border-right: 1px solid var(--border-1);
+}
+.seg button:last-child {
+  border-right: 0;
+}
+.seg button.sel {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: var(--w-semibold);
+}
+.qrstage {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-1);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.qrstage .preview {
+  width: min(340px, 100%);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar);
+  overflow: hidden;
+}
+.qrstage .preview svg,
+.qrstage .preview canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dlrow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ---------- Charts ---------- */
+.chartbox {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-1);
+  padding: 18px;
+}
+.chartbox .ch {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.chartbox .ch .t {
+  font-size: 13.5px;
+  font-weight: var(--w-bold);
+  white-space: nowrap;
+}
+.legend {
+  display: flex;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+.legend > span {
+  white-space: nowrap;
+}
+.legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+/* ---------- Horizontal bar rows (Top links / Countries) ----------
+   label · mini bar · click count. These were used in Analytics but never styled,
+   so the bars were invisible and the count sat unaligned. */
+.hbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px max-content;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-1);
+}
+.hbar:last-child {
+  border-bottom: 0;
+}
+.hbar .hl {
+  font-size: 13px;
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hbar.alt .hl {
+  font-weight: var(--w-medium);
+}
+.hbar .ht {
+  height: 8px;
+  background: var(--bg-inset);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hbar .ht .i {
+  display: block;
+  height: 100%;
+  min-width: 3px;
+  background: var(--adeyy);
+  border-radius: 999px;
+}
+.hbar .hv {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- Settings tabs ---------- */
+.settabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border-1);
+}
+.settabs button {
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: var(--w-medium);
+  color: var(--ink-60);
+  background: none;
+  border: 0;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.settabs button.sel {
+  color: var(--ink);
+  font-weight: var(--w-semibold);
+  border-bottom-color: var(--ink);
+}
+
+/* ---------- Misc ---------- */
+.formgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.divider {
+  border: 0;
+  border-top: 1px solid var(--border-1);
+  margin: 16px 0;
+}
+.mutetext {
+  font-size: 13px;
+  color: var(--ink-60);
+}
+.codeblock {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar);
+  padding: 12px 14px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Billing banner (cost / paywall / beta states) */
+.abanner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--ar-lg);
+  border: 1px solid var(--border-1);
+  background: var(--card);
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+.abanner.locked {
+  background: var(--adeyy-tint);
+  border-color: var(--adeyy-tint-bd);
+}
+.abanner .bt {
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+}
+.abanner .bs {
+  color: var(--ink-60);
+}
+
+@media (max-width: 1000px) {
+  .appshell {
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border-1);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .mobile-header .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .mobile-header .brand .word {
+    font-size: 19px;
+    font-weight: var(--w-heavy);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .mobile-header .brand .by {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-40);
+  }
+  .aside {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 280px;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform var(--dur-standard) var(--ease-click);
+    box-shadow: var(--shadow-3);
+    overflow-y: auto;
+  }
+  .aside.open {
+    transform: translateX(0);
+  }
+  .aside-brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .aside-brand-row .brand {
+    padding: 0;
+  }
+  .aside-brand-row .mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--ink-60);
+    padding: 6px;
+    margin: -6px;
+    border-radius: var(--ar);
+  }
+  .aside-brand-row .mobile-close:hover {
+    background: var(--bg-inset);
+    color: var(--ink);
+  }
+  .amain {
+    padding: 24px 20px 80px;
+  }
+  .apage-head {
+    padding: 0 0 18px;
+  }
+  .kpis,
+  .kpis.three {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .detail-grid,
+  .detail-grid.rev,
+  .qrwrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .amodal-scrim {
+    padding: 16px;
+  }
+  .amodal {
+    padding: 18px;
+  }
+  .kpis,
+  .kpis.three {
+    grid-template-columns: 1fr;
+  }
+  .formgrid {
+    grid-template-columns: 1fr;
+  }
+  .atable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .anatomy {
+    grid-template-columns: 1fr;
+  }
+  .anatomy .ajoin {
+    justify-self: start;
+  }
+}
+
+/* ===== Shared side panel — Adeyy palette ========================
+   Layout/width/collapse live in packages/shared/src/styles/side-panel.css; this
+   block only re-points the --psp-* colour contract at Adeyy's light card rail, so
+   the panel stays white-themed while matching every other frontend. */
+.psp-theme-adeyy {
+  --psp-bg: var(--card, #fbfaf4);
+  --psp-fg: var(--ink, #0e0e0c);
+  --psp-fg-2: var(--ink-80, #2c2c28);
+  --psp-fg-3: var(--ink-40, #8e8e84);
+  --psp-line: var(--border-1, rgba(14, 14, 12, 0.08));
+  --psp-hover: rgba(14, 14, 12, 0.05);
+  --psp-active: var(--adeyy-tint, #cffcee);
+  --psp-active-fg: var(--ink, #0e0e0c);
+  --psp-slot-bg: rgba(14, 14, 12, 0.03);
+  --psp-menu-bg: #ffffff;
+  --psp-menu-hover: rgba(14, 14, 12, 0.05);
+  --psp-radius: var(--ar, 4px);
+  --psp-by-font: var(--font-mono);
+  --psp-bar-bg: var(--card, #fbfaf4);
+}
+/* The Adeyy wordmark, as the panel's logo node. */
+.psp-theme-adeyy .psp-word {
+  font-size: 19px;
+  font-weight: var(--w-heavy, 800);
+  letter-spacing: -0.03em;
+  color: var(--ink, #0e0e0c);
+}

@@ -1,0 +1,18 @@
+-- A payout deliberately taken out of circulation. It must never dispatch, and
+-- unlike `failed` it is never revived by the weekly cron.
+--
+-- No guard changes are needed anywhere. Every dispatch selector is an allowlist
+-- (`dispatchDuePayouts` over upcoming/pending/failed, `dispatchAllPayoutsNow`
+-- and `dispatchProjectPayoutsNow` over upcoming/pending, `retryFundedWiseLeg2`
+-- over processingByWire/failed) and `dispatchPayout` itself early-returns on
+-- any status other than `pending`, so the new value is inert by construction.
+--
+-- `stopped` already existed as a DERIVED display state for breakdown-less
+-- payouts (`isStoppedPayout` in packages/shared/src/pages/earnings/payout-status.ts).
+-- This gives that vocabulary a real backing state rather than inventing a
+-- second word for the same idea.
+--
+-- NOTE: `ALTER TYPE … ADD VALUE` must commit before any SQL that *uses* the new
+-- value, so this migration only widens the type. Rows are moved by
+-- servers/backend/src/scripts/freeze-recurring-projects.ts.
+ALTER TYPE "payout_status" ADD VALUE IF NOT EXISTS 'stopped';

@@ -1,0 +1,17 @@
+{
+  "email": "admin@prodesk.com",
+  "role": "superAdmin",
+  "currentRole": "superAdmin",
+  "displayName": "Super Admin",
+  "storedDisplayName": "Super Admin",
+  "firstName": "Super",
+  "lastName": "Admin",
+  "isEmailVerified": true,
+  "permissions": [],
+  "agencyIds": [],
+  "brandIds": [],
+  "isSuperAdmin": true,
+  "uiPreferences": {},
+  "googleCalendarLinked": false,
+  "bankAccountLinked": false
+}

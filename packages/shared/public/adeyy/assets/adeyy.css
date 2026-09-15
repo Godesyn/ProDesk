@@ -1,0 +1,451 @@
+/* Adeyy — brand layer over the Prodesk design system.
+   Adeyy owns the teal stop on the Prodesk wheel (--tool-links).
+   Brand rules from the Adeyy brief, section 9:
+   chrome is monochrome, 4px radius, no coloured status badges,
+   JetBrains Mono for slugs, Instrument Serif italic for rare moments. */
+
+@import url('colors_and_type.css');
+
+:root {
+  /* Adeyy accent — defaults to the Links stop (teal, wheel 15) */
+  --adeyy: var(--tool-links);
+  --adeyy-ink: var(--tool-links-ink);
+  --adeyy-hover: var(--tool-links-hover);
+  --adeyy-tint: var(--tool-links-tint);
+  --adeyy-tint-bd: var(--tool-links-tint-bd);
+
+  /* Adeyy radius scale — square like a QR module */
+  --ar: 4px;
+  --ar-lg: 8px;
+
+  /* UI font sizing for product chrome */
+  --app-fs: 14px;
+}
+
+/* Tweakable hue: alternate teal-territory stops */
+[data-adeyy-hue='fractional'] {
+  --adeyy: var(--tool-fractional);
+  --adeyy-ink: var(--tool-fractional-ink);
+  --adeyy-hover: var(--tool-fractional-hover);
+  --adeyy-tint: var(--tool-fractional-tint);
+  --adeyy-tint-bd: var(--tool-fractional-tint-bd);
+}
+[data-adeyy-hue='people'] {
+  --adeyy: var(--tool-people);
+  --adeyy-ink: var(--tool-people-ink);
+  --adeyy-hover: var(--tool-people-hover);
+  --adeyy-tint: var(--tool-people-tint);
+  --adeyy-tint-bd: var(--tool-people-tint-bd);
+}
+[data-adeyy-hue='crm'] {
+  --adeyy: var(--tool-crm);
+  --adeyy-ink: var(--tool-crm-ink);
+  --adeyy-hover: var(--tool-crm-hover);
+  --adeyy-tint: var(--tool-crm-tint);
+  --adeyy-tint-bd: var(--tool-crm-tint-bd);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body.adeyy {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--app-fs);
+  line-height: 1.5;
+}
+
+/* ---------- Buttons ---------- */
+.abtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: var(--w-semibold);
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: var(--ar);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--dur-quick) var(--ease-click),
+    transform var(--dur-quick) var(--ease-click),
+    filter var(--dur-quick) var(--ease-click);
+}
+.abtn:active {
+  transform: scale(0.985);
+}
+.abtn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.abtn-primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+.abtn-primary:hover {
+  background: var(--ink-80);
+}
+
+.abtn-accent {
+  background: var(--adeyy-ink);
+  color: #fff;
+}
+.abtn-accent:hover {
+  filter: brightness(1.12);
+}
+
+.abtn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--border-2);
+}
+.abtn-ghost:hover {
+  background: var(--bg-inset);
+}
+
+.abtn-quiet {
+  background: transparent;
+  color: var(--ink-60);
+}
+.abtn-quiet:hover {
+  background: var(--bg-inset);
+  color: var(--ink);
+}
+
+.abtn[disabled],
+.abtn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.abtn-lg {
+  padding: 14px 22px;
+  font-size: 15px;
+}
+.abtn-sm {
+  padding: 6px 11px;
+  font-size: 13px;
+}
+
+/* ---------- Inputs ---------- */
+.afield {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.afield label {
+  font-size: 13px;
+  font-weight: var(--w-semibold);
+  color: var(--ink-80);
+}
+.afield .hint {
+  font-size: 12px;
+  color: var(--ink-60);
+  font-weight: var(--w-regular);
+}
+.ainput {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--ar);
+  padding: 10px 12px;
+  width: 100%;
+  outline: none;
+  transition:
+    border-color var(--dur-quick) var(--ease-click),
+    box-shadow var(--dur-quick) var(--ease-click);
+}
+.ainput::placeholder {
+  color: var(--ink-40);
+}
+.ainput:focus {
+  border-color: var(--ink);
+  box-shadow: none;
+}
+.ainput.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.ainput.err {
+  border-color: var(--danger);
+}
+
+/* ---------- Slug / short link ---------- */
+.slug {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  letter-spacing: 0;
+}
+
+/* ---------- Status (monochrome, per brief: no coloured badges) ---------- */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: var(--w-semibold);
+  padding: 4px 10px;
+  border-radius: var(--ar);
+  white-space: nowrap;
+}
+.status .sdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.status.on {
+  background: var(--ink);
+  color: var(--paper);
+}
+.status.on .sdot {
+  background: var(--adeyy);
+}
+.status.off {
+  border: 1px solid var(--border-2);
+  color: var(--ink-60);
+}
+.status.off .sdot {
+  background: transparent;
+  border: 1.5px solid var(--ink-40);
+}
+
+/* ---------- Toggle switch ---------- */
+.atoggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 22px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-inset);
+  position: relative;
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+  transition:
+    background var(--dur-standard) var(--ease-click),
+    border-color var(--dur-standard) var(--ease-click);
+}
+.atoggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  transition: transform var(--dur-standard) var(--ease-click);
+}
+.atoggle.on {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.atoggle.on::after {
+  transform: translateX(18px);
+  border-color: var(--ink);
+}
+.atoggle[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Chips ---------- */
+.achip {
+  font-size: 13px;
+  font-weight: var(--w-medium);
+  padding: 6px 12px;
+  border-radius: var(--ar);
+  border: 1px solid var(--border-2);
+  background: var(--card);
+  color: var(--ink-80);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.achip:hover {
+  background: var(--bg-inset);
+}
+.achip.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  font-weight: var(--w-semibold);
+}
+
+/* ---------- Cards / panels ---------- */
+.apanel {
+  background: var(--card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-1);
+}
+
+/* ---------- Eyebrow ---------- */
+.aeyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--w-medium);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+
+/* ---------- Toast ---------- */
+.atoast-wrap {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 300;
+  pointer-events: none;
+}
+.atoast {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: var(--w-medium);
+  padding: 11px 16px;
+  border-radius: var(--ar);
+  box-shadow: var(--shadow-3);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  animation: atoast-in var(--dur-standard) var(--ease-click);
+}
+.atoast .tdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--adeyy);
+  flex: none;
+}
+@keyframes atoast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Modal ---------- */
+.amodal-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(244, 241, 232, 0.7);
+  display: grid;
+  place-items: center;
+  z-index: 200;
+  padding: 24px;
+}
+.amodal {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--ar-lg);
+  box-shadow: var(--shadow-3);
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+}
+.amodal h3 {
+  font-size: 18px;
+  font-weight: var(--w-bold);
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+.amodal p {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+/* ---------- Skeleton ---------- */
+.skel {
+  background: var(--bg-inset);
+  border-radius: var(--ar);
+  position: relative;
+  overflow: hidden;
+}
+.skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(251, 250, 244, 0.7),
+    transparent
+  );
+  animation: skel-sweep 1.2s infinite;
+}
+@keyframes skel-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------- Empty state ---------- */
+.aempty {
+  text-align: center;
+  padding: 64px 24px;
+}
+.aempty .serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 26px;
+  color: var(--ink);
+}
+.aempty p {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin: 10px 0 20px;
+}
+
+/* ---------- Focus ---------- */
+.adeyy :focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--adeyy-tint-bd),
+    0 0 0 1.5px var(--adeyy-ink);
+  border-radius: var(--ar);
+}
+
+/* ---------- Scrollbars (quiet) ---------- */
+.adeyy ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.adeyy ::-webkit-scrollbar-thumb {
+  background: var(--ink-20);
+  border-radius: 10px;
+  border: 3px solid var(--paper);
+}
+.adeyy ::-webkit-scrollbar-track {
+  background: transparent;
+}

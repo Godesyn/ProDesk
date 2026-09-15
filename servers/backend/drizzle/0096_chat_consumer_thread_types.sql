@@ -1,0 +1,22 @@
+-- The consumer messenger (chat.prodesk.com) — its two thread types.
+--
+-- Every existing thread type is DERIVED from an org relationship: a brand↔agency
+-- connection, a staff grant, a contractor joining. You cannot start one. These
+-- two are the opposite — a person picks another person:
+--
+--   direct   a 1:1 between two users, found by email address
+--   group    N arbitrary users, created by one of them
+--
+-- They deliberately do NOT join any identity predicate in
+-- modules/chat/thread-types.ts. The workspace chat's visibility is
+-- `ALL_THREAD_TYPES.filter(<predicate>)`, so staying out of every predicate keeps
+-- the existing app's thread list bit-identical for free.
+--
+-- NOTE: `ALTER TYPE … ADD VALUE` must commit before any SQL that *uses* the new
+-- value. The migrator runs each file in its own transaction, so these adds live
+-- alone in 0096 and nothing here consumes the literals — the partial unique index
+-- that names 'direct' is 0098. See servers/backend/src/scripts/migrate.ts
+-- (Postgres 55P04 guidance) and 0074_logo_permission.sql.
+ALTER TYPE "thread_type" ADD VALUE IF NOT EXISTS 'direct';
+--> statement-breakpoint
+ALTER TYPE "thread_type" ADD VALUE IF NOT EXISTS 'group';

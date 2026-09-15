@@ -1,0 +1,1730 @@
+<!doctype html>
+<!--
+  Adeyy marketing page — served by TWO hosts (see packages/shared/public/README.md):
+    • the Links frontend, framed at /adeyy/Adeyy.html by @shared/pages/landing
+    • the redirector (url.adeyy.com), as the top document on `/`
+
+  `%APP_ORIGIN%` is substituted by whichever host serves the file: an empty string
+  on the Links frontend (its own routes) and the absolute Links origin on the
+  redirector, so Log in / Start free always land on the app in the SAME window.
+  Asset paths stay root-relative — both hosts serve /adeyy/assets/* themselves.
+
+  A route link needs `target="_parent"` to escape the frame; an in-page anchor
+  (#how, #features) must NOT have one, or a click navigates the parent instead of
+  scrolling the framed page.
+-->
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Adeyy. Link anywhere.</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/adeyy/assets/adeyy-color.svg"
+    />
+    <link rel="stylesheet" href="/adeyy/assets/adeyy.css" />
+    <link rel="stylesheet" href="/adeyy/assets/marketing.css" />
+    <style>
+      /* ---------- Hero ---------- */
+      .hero {
+        border-bottom: 1px solid var(--border-1);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-in {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 88px 32px 96px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 64px;
+        align-items: center;
+      }
+      .hero h1 {
+        font-size: clamp(52px, 6.6vw, 104px);
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+        font-weight: var(--w-heavy);
+        margin: 0 0 26px;
+        text-wrap: balance;
+      }
+      .hero h1 em {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 400;
+        letter-spacing: -0.015em;
+      }
+      .hero .sub {
+        font-size: 19px;
+        line-height: 1.55;
+        color: var(--ink-60);
+        max-width: 46ch;
+        margin: 0 0 32px;
+      }
+      .hero .ctas {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .hero .price-note {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        color: var(--ink-60);
+        margin-top: 18px;
+      }
+      .hero .price-note b {
+        color: var(--ink);
+        font-weight: var(--w-bold);
+      }
+
+      /* Ink hero variant (tweak) */
+      [data-hero='ink'] .hero {
+        background: var(--ink);
+        border-color: rgba(244, 241, 232, 0.12);
+      }
+      [data-hero='ink'] .hero h1 {
+        color: var(--paper);
+      }
+      [data-hero='ink'] .hero .sub {
+        color: rgba(244, 241, 232, 0.62);
+      }
+      [data-hero='ink'] .hero .price-note {
+        color: rgba(244, 241, 232, 0.5);
+      }
+      [data-hero='ink'] .hero .price-note b {
+        color: var(--adeyy);
+      }
+      [data-hero='ink'] .hero .abtn-ghost {
+        color: var(--paper);
+        border-color: rgba(244, 241, 232, 0.3);
+      }
+      [data-hero='ink'] .hero .abtn-ghost:hover {
+        background: rgba(244, 241, 232, 0.08);
+      }
+      [data-hero='ink'] .hero .abtn-primary {
+        background: var(--adeyy);
+        color: var(--ink);
+      }
+      [data-hero='ink'] .hero .abtn-primary:hover {
+        background: var(--adeyy-hover);
+      }
+
+      /* ---------- Hero motion graphic ---------- */
+      .film {
+        background: var(--card);
+        border: 1px solid var(--border-2);
+        border-radius: var(--ar-lg);
+        box-shadow: var(--shadow-2);
+        padding: 20px 24px 22px;
+        overflow: hidden;
+      }
+      .film-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .film-top .fdot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--adeyy);
+        position: relative;
+        flex: none;
+      }
+      .film-top .fstep {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-40);
+        white-space: nowrap;
+      }
+      .film-top .fsegs {
+        margin-left: auto;
+        display: flex;
+        gap: 4px;
+      }
+      .film-top .fseg {
+        width: 16px;
+        height: 3px;
+        border-radius: 3px;
+        background: var(--ink-10);
+        overflow: hidden;
+      }
+      .film-top .fseg i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--adeyy);
+      }
+      .film-top .fseg.done i {
+        width: 100%;
+        background: var(--ink-20);
+      }
+
+      .film-stage {
+        position: relative;
+        height: 384px;
+        margin-top: 20px;
+      }
+      .film-scene {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 18px;
+      }
+      .film-scene.on {
+        display: flex;
+        animation: film-rise var(--dur-statement) var(--ease-click);
+      }
+      @keyframes film-rise {
+        from {
+          transform: translateY(12px);
+        }
+        to {
+          transform: none;
+        }
+      }
+
+      .film-head {
+        font-size: clamp(22px, 2.7vw, 30px);
+        font-weight: var(--w-bold);
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        line-height: 1.08;
+      }
+
+      /* S0 — url */
+      .film-url {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        line-height: 1.55;
+        color: var(--ink-60);
+        word-break: break-all;
+      }
+      .film-url .caret {
+        display: inline-block;
+        width: 2px;
+        height: 1.05em;
+        background: var(--ink-40);
+        transform: translateY(3px);
+        margin-left: 1px;
+      }
+      .film-note {
+        font-size: 13px;
+        color: var(--ink-40);
+      }
+
+      /* S1 — short link */
+      .film-ghost {
+        font-family: var(--font-mono);
+        font-size: 13px;
+      }
+      .film-ghost s {
+        color: var(--ink-40);
+      }
+      .film-short {
+        font-family: var(--font-mono);
+        font-size: clamp(24px, 3.2vw, 34px);
+        font-weight: var(--w-bold);
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .film-short b {
+        color: var(--adeyy-ink);
+        position: relative;
+      }
+      .film-short b::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -3px;
+        height: 3px;
+        background: var(--adeyy);
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+      .film-short.draw b::after {
+        animation: film-underline var(--dur-statement) var(--ease-click) 0.15s
+          forwards;
+      }
+      @keyframes film-underline {
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      /* shared QR row */
+      .film-row {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .film-qr {
+        width: 152px;
+        height: 152px;
+        border: 1px solid var(--border-1);
+        border-radius: var(--ar);
+        overflow: hidden;
+        position: relative;
+        flex: none;
+        background: var(--card);
+      }
+      .film-qr .qrslot,
+      .film-qr .qrslot svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .film-qr.sm {
+        width: 116px;
+        height: 116px;
+      }
+      .film-qr .sweep {
+        position: absolute;
+        left: 6%;
+        right: 6%;
+        top: 0;
+        height: 2px;
+        background: var(--adeyy);
+        box-shadow: 0 0 9px 1px var(--adeyy);
+        opacity: 0;
+      }
+      .film-qr.scan .sweep {
+        animation: film-scan 1.1s var(--ease-click);
+      }
+      @keyframes film-scan {
+        0% {
+          opacity: 0;
+          transform: translateY(0);
+        }
+        12% {
+          opacity: 0.9;
+        }
+        88% {
+          opacity: 0.9;
+          transform: translateY(150px);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(150px);
+        }
+      }
+      .film-meta {
+        min-width: 0;
+      }
+      .film-meta .lbl {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-40);
+        margin-bottom: 6px;
+      }
+      .film-meta .lnk {
+        font-family: var(--font-mono);
+        font-size: 16px;
+        font-weight: var(--w-bold);
+      }
+
+      /* S3 — colours + export */
+      .film-sw {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .film-sw .sw {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--ar);
+        border: 1px solid var(--border-2);
+        transition: box-shadow var(--dur-quick) var(--ease-click);
+      }
+      .film-sw .sw.on {
+        box-shadow:
+          0 0 0 2px var(--card),
+          0 0 0 4px var(--ink);
+      }
+      .film-exports {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .film-exp {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-80);
+        border: 1px solid var(--border-2);
+        border-radius: var(--ar);
+        padding: 6px 10px;
+        background: var(--card);
+        transition:
+          background var(--dur-quick) var(--ease-click),
+          color var(--dur-quick) var(--ease-click);
+      }
+      .film-exp svg {
+        width: 13px;
+        height: 13px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .film-exp.hot {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+      }
+
+      /* S4 — destination cycle */
+      .film-dest {
+        font-size: 15px;
+        color: var(--ink-80);
+        border-left: 2px solid var(--adeyy);
+        padding: 6px 0 6px 12px;
+        border-radius: 0 var(--ar) var(--ar) 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        transition: background var(--dur-standard) var(--ease-click);
+      }
+      .film-dest.flash {
+        background: var(--adeyy-tint);
+      }
+      .film-dest .t {
+        display: inline-block;
+      }
+      .film-dest .t.enter {
+        animation: film-rise var(--dur-standard) var(--ease-click);
+      }
+      .film-lock {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 12px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-60);
+      }
+      .film-lock i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--adeyy);
+        flex: none;
+      }
+      .film-badge {
+        position: absolute;
+        inset: auto 6px 6px auto;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: var(--font-mono);
+        font-size: 8.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      .film-badge i {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--adeyy);
+      }
+
+      /* S5 — any link chips */
+      .film-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        max-width: 360px;
+      }
+      .film-chip {
+        font-size: 14px;
+        font-weight: var(--w-medium);
+        padding: 8px 13px;
+        border-radius: var(--ar);
+        border: 1px solid var(--border-2);
+        background: var(--card);
+        color: var(--ink-80);
+        white-space: nowrap;
+      }
+      .film-chip.in {
+        animation: film-pop var(--dur-standard) var(--ease-click);
+      }
+      @keyframes film-pop {
+        from {
+          transform: scale(0.86);
+        }
+        to {
+          transform: none;
+        }
+      }
+
+      /* S6 — finale */
+      .film-final {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        height: 100%;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      .film-tagline {
+        font-size: clamp(34px, 4.6vw, 52px);
+        font-weight: var(--w-heavy);
+        letter-spacing: -0.035em;
+        line-height: 1;
+      }
+      .film-tagline em {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-weight: 400;
+        color: var(--adeyy-ink);
+      }
+      .film-cta-mono {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-60);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .film-top .fdot::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          background: var(--adeyy);
+          animation: film-ping 2s var(--ease-click) infinite;
+        }
+      }
+      @keyframes film-ping {
+        0% {
+          transform: scale(1);
+          opacity: 0.55;
+        }
+        70%,
+        100% {
+          transform: scale(2.6);
+          opacity: 0;
+        }
+      }
+
+      /* ---------- How it works ---------- */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .step {
+        border-top: 2px solid var(--ink);
+        padding-top: 20px;
+      }
+      .step .n {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        color: var(--ink-40);
+      }
+      .step h3 {
+        font-size: 24px;
+        font-weight: var(--w-bold);
+        letter-spacing: -0.02em;
+        margin: 10px 0 8px;
+      }
+      .step p {
+        font-size: 15px;
+        color: var(--ink-60);
+        margin: 0;
+        line-height: 1.55;
+      }
+      .step .vis {
+        margin-top: 20px;
+        height: 120px;
+        border: 1px solid var(--border-1);
+        border-radius: var(--ar);
+        background: var(--card);
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+      .step .vis svg.deco {
+        width: 88px;
+        height: 88px;
+      }
+      .step .vis .destswap {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--ink-60);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+        padding: 0 18px;
+        width: 100%;
+      }
+      .step .vis .destswap span {
+        white-space: nowrap;
+      }
+      .step .vis .destswap .old {
+        text-decoration: line-through;
+        color: var(--ink-40);
+      }
+      .step .vis .destswap .new {
+        color: var(--ink);
+        font-weight: var(--w-bold);
+        border-left: 2px solid var(--adeyy);
+        padding-left: 8px;
+      }
+      .step .vis .printframe {
+        width: 70%;
+        border: 1px solid var(--border-2);
+        border-radius: 3px;
+        background: var(--paper);
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .step .vis .printframe .ph {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .step .vis .printframe .ph i {
+        display: block;
+        height: 5px;
+        background: var(--ink-10);
+        border-radius: 2px;
+      }
+      .step .vis .printframe .ph i:first-child {
+        width: 70%;
+        background: var(--ink-20);
+      }
+      .step .vis .printframe svg {
+        width: 44px;
+        height: 44px;
+        flex: none;
+      }
+
+      /* ---------- Print guarantee band ---------- */
+      .guarantee {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 64px;
+        align-items: center;
+      }
+      .guarantee ul {
+        list-style: none;
+        margin: 32px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .guarantee li {
+        display: flex;
+        gap: 16px;
+        padding: 18px 0;
+        border-top: 1px solid rgba(244, 241, 232, 0.14);
+        font-size: 16px;
+        color: rgba(244, 241, 232, 0.85);
+        align-items: baseline;
+      }
+      .guarantee li .k {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--adeyy);
+        flex: none;
+        width: 130px;
+      }
+      .guarantee .bigqr {
+        justify-self: center;
+        width: min(360px, 100%);
+      }
+      .guarantee .bigqr svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .guarantee .bigqr .cap {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(244, 241, 232, 0.5);
+        text-align: center;
+        margin-top: 16px;
+      }
+
+      /* ---------- Features ---------- */
+      .feats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .feat {
+        background: var(--card);
+        border: 1px solid var(--border-1);
+        border-radius: var(--ar-lg);
+        padding: 26px;
+      }
+      .feat .fmono {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--adeyy-ink);
+        margin-bottom: 14px;
+        display: block;
+      }
+      .feat h3 {
+        font-size: 19px;
+        font-weight: var(--w-bold);
+        letter-spacing: -0.015em;
+        margin: 0 0 8px;
+      }
+      .feat p {
+        font-size: 14.5px;
+        color: var(--ink-60);
+        margin: 0;
+        line-height: 1.55;
+      }
+
+      /* ---------- Analytics strip ---------- */
+      .ana {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 64px;
+        align-items: center;
+      }
+      .ana .chartcard {
+        background: var(--card);
+        border: 1px solid var(--border-1);
+        border-radius: var(--ar-lg);
+        box-shadow: var(--shadow-1);
+        padding: 24px;
+      }
+      .ana .chartcard .ch {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .ana .chartcard .ch .t {
+        font-size: 14px;
+        font-weight: var(--w-bold);
+      }
+      .ana .legend {
+        display: flex;
+        gap: 16px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-60);
+      }
+      .ana .legend i {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        margin-right: 6px;
+      }
+      .ana .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 150px;
+      }
+      .ana .bars .day {
+        flex: 1;
+        display: flex;
+        gap: 2px;
+        align-items: flex-end;
+        height: 100%;
+      }
+      .ana .bars .day i {
+        flex: 1;
+        border-radius: 2px 2px 0 0;
+        min-height: 3px;
+      }
+      .ana .bars .day .s {
+        background: var(--ink);
+      }
+      .ana .bars .day .c {
+        background: var(--adeyy);
+      }
+      .ana .axis {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--ink-40);
+        margin-top: 8px;
+        letter-spacing: 0.04em;
+      }
+
+      /* ---------- Pricing band ---------- */
+      .priceband {
+        text-align: center;
+      }
+      .priceband .big {
+        font-size: clamp(120px, 18vw, 280px);
+        font-weight: var(--w-heavy);
+        letter-spacing: -0.05em;
+        line-height: 0.9;
+        margin: 24px 0 8px;
+      }
+      .priceband .big sup {
+        font-size: 0.35em;
+        vertical-align: super;
+        font-weight: var(--w-bold);
+      }
+      .priceband .per {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-60);
+      }
+      .priceband p.fine {
+        font-size: 17px;
+        color: var(--ink-60);
+        max-width: 52ch;
+        margin: 24px auto 32px;
+      }
+      .priceband .ctas {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      @media (max-width: 900px) {
+        .hero-in {
+          grid-template-columns: 1fr;
+          padding: 56px 20px 64px;
+          gap: 40px;
+        }
+        .steps,
+        .feats {
+          grid-template-columns: 1fr;
+        }
+        .guarantee,
+        .ana {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="mkt adeyy">
+    <header class="mtop">
+      <div class="mtop-in">
+        <a class="brand" href="/" target="_parent">
+          <img src="/adeyy/assets/adeyy-ink.svg" alt="Adeyy" />
+          <span class="by">By Prodesk</span>
+        </a>
+        <nav>
+          <a class="navlink" href="#how">How it works</a>
+          <a class="navlink" href="#features">Features</a>
+          <a class="navlink" href="%APP_ORIGIN%/pricing" target="_parent"
+            >Pricing</a
+          >
+          <span class="gap"></span>
+          <a class="abtn abtn-quiet" href="%APP_ORIGIN%/login" target="_parent"
+            >Log in</a
+          >
+          <a
+            class="abtn abtn-primary"
+            href="%APP_ORIGIN%/signup"
+            target="_parent"
+            >Start free</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero" data-screen-label="W1 Marketing home — hero">
+      <div class="hero-in">
+        <div>
+          <h1 id="heroHeadline">Link <em>anywhere</em>.</h1>
+          <p class="sub" id="heroSub">
+            One short link. One QR code. Change where they point at any time,
+            even after you print.
+          </p>
+          <div class="ctas">
+            <a
+              class="abtn abtn-primary abtn-lg"
+              href="%APP_ORIGIN%/signup"
+              target="_parent"
+              >Start free</a
+            >
+            <a class="abtn abtn-ghost abtn-lg" href="#how">See how it works</a>
+          </div>
+          <div class="price-note">
+            CREATING LINKS IS FREE · <b>$1</b> PER ACTIVE CODE PER MONTH
+          </div>
+        </div>
+
+        <div
+          class="film apanel"
+          id="film"
+          data-screen-label="Hero motion graphic"
+        >
+          <div class="film-top">
+            <span class="fdot"></span>
+            <span class="fstep" id="filmStep">01 / 07</span>
+            <span class="fsegs" id="filmSegs"></span>
+          </div>
+
+          <div class="film-stage" id="filmStage">
+            <div class="film-scene" data-scene="0">
+              <div class="film-head">Add your URL</div>
+              <div class="film-url">
+                <span id="filmUrl"></span><i class="caret"></i>
+              </div>
+              <div class="film-note">
+                Any long link — a menu, a form, a booking page.
+              </div>
+            </div>
+
+            <div class="film-scene" data-scene="1">
+              <div class="film-head">Get a custom short link</div>
+              <div class="film-ghost">
+                <s>my-cafe.com.au/menus/winter-2026/specials</s>
+              </div>
+              <div class="film-short draw" id="filmShort1">
+                adeyy.com/<b>winter</b>
+              </div>
+              <div class="film-note">
+                Pick your own ending, or let us make one.
+              </div>
+            </div>
+
+            <div class="film-scene" data-scene="2">
+              <div class="film-head">And a QR code</div>
+              <div class="film-row">
+                <div class="film-qr" id="s2qr">
+                  <div class="qrslot"></div>
+                  <span class="sweep"></span>
+                </div>
+                <div class="film-meta">
+                  <div class="lbl">One link, one code</div>
+                  <div class="lnk">adeyy.com/winter</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="film-scene" data-scene="3">
+              <div class="film-head">Style it, then download</div>
+              <div class="film-row">
+                <div class="film-qr" id="s3qr"><div class="qrslot"></div></div>
+                <div class="film-meta">
+                  <div class="lbl">Your colours</div>
+                  <div class="film-sw" id="s3sw">
+                    <span class="sw" style="background: #0e0e0c"></span>
+                    <span class="sw" style="background: #007d66"></span>
+                    <span class="sw" style="background: #d9f542"></span>
+                  </div>
+                  <div class="film-exports" id="s3exports">
+                    <span class="film-exp"
+                      ><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3v12M7 10l5 5 5-5M4 21h16"></path></svg
+                      >PNG</span
+                    >
+                    <span class="film-exp">SVG</span>
+                    <span class="film-exp">PDF</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="film-scene" data-scene="4">
+              <div class="film-head">Change the link anytime</div>
+              <div class="film-row">
+                <div class="film-qr" id="s4qr">
+                  <div class="qrslot"></div>
+                  <span class="film-badge"><i></i>Same code</span>
+                </div>
+                <div class="film-meta" style="flex: 1; min-width: 0">
+                  <div class="lbl">Now points to</div>
+                  <div class="film-dest" id="filmDest">
+                    <span class="t" id="filmDestText"
+                      >my-cafe.com.au/winter-menu</span
+                    >
+                  </div>
+                  <div class="film-lock">
+                    <i></i>Same code · live on the next scan
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="film-scene" data-scene="5">
+              <div class="film-head">To any link</div>
+              <div class="film-chips" id="filmChips"></div>
+              <div class="film-note">
+                One code. Point it wherever the moment needs.
+              </div>
+            </div>
+
+            <div class="film-scene" data-scene="6">
+              <div class="film-final">
+                <div class="film-row">
+                  <div class="film-qr sm" id="s6qr">
+                    <div class="qrslot"></div>
+                    <span class="sweep"></span>
+                  </div>
+                  <div class="film-tagline">Link <em>anywhere</em>.</div>
+                </div>
+                <div class="film-cta-mono">
+                  adeyy.com/winter · scan it, it works
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="msec" id="how" data-screen-label="W1 — how it works">
+      <div class="msec-head">
+        <span class="aeyebrow">Section 01 · How it works</span>
+        <h2>How it works</h2>
+        <p>
+          Your QR code points to a short link. That link is a redirect you
+          control — so you can change where it goes without touching the printed
+          code.
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="n">01</span>
+          <h3>Create</h3>
+          <p>
+            Paste a long link. Get a short adeyy.com link and its QR code, with
+            a custom ending if you want one.
+          </p>
+          <div class="vis">
+            <div
+              class="deco-qr"
+              data-text="https://adeyy.com/ikeep"
+              style="width: 88px; height: 88px"
+            ></div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="n">02</span>
+          <h3>Print</h3>
+          <p>
+            Put it on flyers, windows, menus, vans. The ending is locked for
+            life, so the printed code never goes stale.
+          </p>
+          <div class="vis">
+            <div class="printframe">
+              <div class="ph"><i></i><i></i><i></i></div>
+              <div
+                class="deco-qr"
+                data-text="https://adeyy.com/ikeep"
+                style="width: 44px; height: 44px; flex: none"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="n">03</span>
+          <h3>Change</h3>
+          <p>
+            Point it somewhere new whenever you like. The change is live on the
+            very next scan. Nothing to reprint.
+          </p>
+          <div class="vis">
+            <div class="destswap">
+              <span class="old">my-cafe.com.au/winter-menu</span>
+              <span class="new">my-cafe.com.au/spring-menu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band-ink" data-screen-label="W1 — print guarantee">
+      <div class="msec">
+        <div class="guarantee">
+          <div>
+            <span class="aeyebrow">Section 02 · The print guarantee</span>
+            <div class="msec-head" style="margin-bottom: 0">
+              <h2>Made for things you print</h2>
+            </div>
+            <ul>
+              <li>
+                <span class="k">Locked ending</span
+                ><span
+                  >Once a link exists, its ending never changes and is never
+                  reissued to anyone else.</span
+                >
+              </li>
+              <li>
+                <span class="k">Never cached</span
+                ><span
+                  >Every scan asks our server where to go. A destination change
+                  is live within a second.</span
+                >
+              </li>
+              <li>
+                <span class="k">Never a 404</span
+                ><span
+                  >Inactive or expired codes land on a branded page that says
+                  so, not a raw error.</span
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="bigqr">
+            <div
+              class="deco-qr"
+              data-text="https://adeyy.com/forever"
+              data-fg="#04d5b0"
+              data-bg="#0E0E0C"
+              data-accent="1"
+            ></div>
+            <div class="cap">adeyy.com/forever · scan it, it works</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="msec" id="features" data-screen-label="W1 — features">
+      <div class="msec-head">
+        <span class="aeyebrow">Section 03 · Features</span>
+        <h2>Everything you need</h2>
+        <p>Everything a printed QR code needs, and nothing it doesn't.</p>
+      </div>
+      <div class="feats">
+        <div class="feat">
+          <span class="fmono">adeyy.com/your-name</span>
+          <h3>Custom endings</h3>
+          <p>
+            Pick the back-half of your link. Availability checks as you type.
+            Yours for life once created.
+          </p>
+        </div>
+        <div class="feat">
+          <span class="fmono">changed · 3:41 pm · by Mia</span>
+          <h3>Edit history</h3>
+          <p>
+            A printed code is a long-lived thing. Every destination change is
+            logged with who and when.
+          </p>
+        </div>
+        <div class="feat">
+          <span class="fmono">scans 1,204 · clicks 318</span>
+          <h3>Scans, split from clicks</h3>
+          <p>
+            See scans and direct clicks separately, by day and hour, city,
+            device and browser. Export CSV.
+          </p>
+        </div>
+        <div class="feat">
+          <span class="fmono">PNG · SVG · PDF</span>
+          <h3>Print-ready exports</h3>
+          <p>
+            PNG for screens, SVG and PDF for print. Restyle and re-export any
+            time. The code never changes.
+          </p>
+        </div>
+        <div class="feat">
+          <span class="fmono">owner · editor · viewer</span>
+          <h3>Team</h3>
+          <p>
+            Invite your team with roles. Editors change destinations, viewers
+            read the numbers.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="msec tight" data-screen-label="W1 — analytics">
+      <div class="ana">
+        <div>
+          <span class="aeyebrow">Section 04 · Analytics</span>
+          <div class="msec-head" style="margin-bottom: 0">
+            <h2>See every scan and click</h2>
+            <p>
+              We tag every scan and click at the source, so you can see which
+              sticker, flyer or post is doing the work.
+            </p>
+          </div>
+        </div>
+        <div class="chartcard">
+          <div class="ch">
+            <span class="t">Last 14 days</span>
+            <span class="legend"
+              ><span><i style="background: var(--ink)"></i>Scans</span
+              ><span><i style="background: var(--adeyy)"></i>Clicks</span></span
+            >
+          </div>
+          <div class="bars" id="anaBars"></div>
+          <div class="axis">
+            <span>26 May</span><span>1 Jun</span><span>8 Jun</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="msec priceband"
+      id="pricing"
+      data-screen-label="W1 — pricing band"
+    >
+      <span class="aeyebrow">Section 05 · Pricing</span>
+      <div class="big"><sup>$</sup>1</div>
+      <div class="per">Per active code · per month</div>
+      <p class="fine">
+        Creating links is free. You pay only for codes that are switched on.
+        Turn a code off and the billing stops, prorated to the day. Turn it back
+        on and the printed code comes back to life.
+      </p>
+      <div class="ctas">
+        <a
+          class="abtn abtn-primary abtn-lg"
+          href="%APP_ORIGIN%/signup"
+          target="_parent"
+          >Start free</a
+        >
+        <a
+          class="abtn abtn-ghost abtn-lg"
+          href="%APP_ORIGIN%/pricing"
+          target="_parent"
+          >Pricing in full</a
+        >
+      </div>
+    </section>
+
+    <footer class="mfoot">
+      <div class="mfoot-in">
+        <div class="cols">
+          <div class="wm">
+            <img src="/adeyy/assets/adeyy-paper.svg" alt="Adeyy" />
+            <div class="tag">Link anywhere.</div>
+          </div>
+          <div>
+            <h4>Product</h4>
+            <ul>
+              <li><a href="#how">How it works</a></li>
+              <li>
+                <a href="%APP_ORIGIN%/pricing" target="_parent">Pricing</a>
+              </li>
+              <li>
+                <a href="%APP_ORIGIN%/app" target="_parent">Open the app</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <ul>
+              <li>
+                <a href="%APP_ORIGIN%/signup" target="_parent">Sign up</a>
+              </li>
+              <li><a href="%APP_ORIGIN%/login" target="_parent">Log in</a></li>
+              <li>
+                <a href="%APP_ORIGIN%/fallback" target="_parent"
+                  >What scanners see when a code is off</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              <li>
+                <a
+                  href="https://www.prodesk.com/legal/terms.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Terms</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.prodesk.com/legal/privacy.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Privacy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="legal">
+          <span>© 2026 Adeyy</span>
+          <span class="spacer"></span>
+          <span class="byline"
+            >A Prodesk Power tool ·
+            <img src="/adeyy/assets/prodesk-wordmark-on-ink.svg" alt="Prodesk"
+          /></span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="atoast-wrap" id="toasts"></div>
+
+    <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
+    <script src="/adeyy/assets/qr.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        var qrStyle = { modules: 'square', eyes: 'square' };
+
+        function toast(msg) {
+          var el = document.createElement('div');
+          el.className = 'atoast';
+          el.innerHTML = '<span class="tdot"></span>' + msg;
+          document.getElementById('toasts').appendChild(el);
+          setTimeout(function () {
+            el.remove();
+          }, 2600);
+        }
+
+        /* ----- decorative QRs (all real, all scannable) ----- */
+        function renderDeco() {
+          document.querySelectorAll('.deco-qr').forEach(function (el) {
+            var fg = el.dataset.fg,
+              bg = el.dataset.bg;
+            if (el.dataset.accent) {
+              fg =
+                getComputedStyle(document.documentElement)
+                  .getPropertyValue('--adeyy')
+                  .trim() || fg;
+            }
+            el.innerHTML = AdeyyQR.svgString(el.dataset.text, {
+              fg: fg || '#0E0E0C',
+              bg: bg || '#FBFAF4',
+              modules: qrStyle.modules,
+              eyes: qrStyle.eyes,
+              quiet: 3,
+            });
+            var svg = el.querySelector('svg');
+            if (svg) {
+              svg.style.width = '100%';
+              svg.style.height = '100%';
+              svg.style.display = 'block';
+            }
+          });
+        }
+
+        /* ----- hero motion graphic: scene-based explainer ----- */
+        var FILM_SHORT_URL = 'https://adeyy.com/winter?s=q';
+        var FILM_LONG = 'my-cafe.com.au/menus/winter-2026/specials';
+        var FILM_DESTS = [
+          'my-cafe.com.au/winter-menu',
+          'my-cafe.com.au/book-a-table',
+          'instagram.com/mycafe.au',
+        ];
+        var FILM_CHIPS = [
+          'Your menu',
+          'Bookings',
+          'Instagram',
+          'Reviews',
+          'Wi-Fi',
+          'Tap to pay',
+          'Playlist',
+        ];
+        var FILM_PALS = [
+          { fg: '#0E0E0C', bg: '#FBFAF4', sw: 0 },
+          { fg: '#007d66', bg: '#FBFAF4', sw: 1 },
+          { fg: '#0E0E0C', bg: '#D9F542', sw: 2 },
+        ];
+        var qrColors = {
+          s2qr: { fg: '#0E0E0C', bg: '#FBFAF4' },
+          s3qr: { fg: '#0E0E0C', bg: '#FBFAF4' },
+          s4qr: { fg: '#0E0E0C', bg: '#FBFAF4' },
+          s6qr: { fg: '#0E0E0C', bg: '#FBFAF4' },
+        };
+
+        function paintQR(holderId, cfg) {
+          var slot = document.querySelector('#' + holderId + ' .qrslot');
+          if (!slot) return;
+          slot.innerHTML = AdeyyQR.svgString(FILM_SHORT_URL, {
+            fg: (cfg && cfg.fg) || '#0E0E0C',
+            bg: (cfg && cfg.bg) || '#FBFAF4',
+            modules: qrStyle.modules,
+            eyes: qrStyle.eyes,
+            quiet: 3,
+          });
+          var svg = slot.querySelector('svg');
+          if (svg) {
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.display = 'block';
+          }
+        }
+        function repaintAllQR() {
+          Object.keys(qrColors).forEach(function (id) {
+            if (document.getElementById(id)) paintQR(id, qrColors[id]);
+          });
+        }
+        function scanFx(id) {
+          var qr = document.getElementById(id);
+          if (!qr) return;
+          qr.classList.remove('scan');
+          void qr.offsetWidth;
+          qr.classList.add('scan');
+        }
+
+        /* sub-timers cleared on every scene change */
+        var filmSub = [];
+        function clearSub() {
+          filmSub.forEach(function (t) {
+            clearTimeout(t);
+            clearInterval(t);
+          });
+          filmSub = [];
+        }
+        function later(fn, ms) {
+          var t = setTimeout(fn, ms);
+          filmSub.push(t);
+          return t;
+        }
+        function every(fn, ms) {
+          var t = setInterval(fn, ms);
+          filmSub.push(t);
+          return t;
+        }
+
+        function typeInto(el, text, speed) {
+          el.textContent = '';
+          var i = 0;
+          every(function () {
+            el.textContent = text.slice(0, ++i);
+            if (i >= text.length) clearSub_one();
+          }, speed);
+          function clearSub_one() {
+            /* interval keeps ticking harmlessly until scene change clears it */
+          }
+        }
+
+        function sceneEnter(n) {
+          if (n === 0) {
+            typeInto(document.getElementById('filmUrl'), FILM_LONG, 42);
+          } else if (n === 1) {
+            var sh = document.getElementById('filmShort1');
+            sh.classList.remove('draw');
+            void sh.offsetWidth;
+            sh.classList.add('draw');
+          } else if (n === 2) {
+            qrColors.s2qr = { fg: '#0E0E0C', bg: '#FBFAF4' };
+            paintQR('s2qr', qrColors.s2qr);
+            scanFx('s2qr');
+          } else if (n === 3) {
+            var idx = 0;
+            var apply = function () {
+              var p = FILM_PALS[idx % FILM_PALS.length];
+              qrColors.s3qr = { fg: p.fg, bg: p.bg };
+              paintQR('s3qr', qrColors.s3qr);
+              document.querySelectorAll('#s3sw .sw').forEach(function (s, i) {
+                s.classList.toggle('on', i === p.sw);
+              });
+              idx++;
+            };
+            apply();
+            every(apply, 950);
+            var exps = document.querySelectorAll('#s3exports .film-exp');
+            var e = 0;
+            var pulse = function () {
+              exps.forEach(function (x) {
+                x.classList.remove('hot');
+              });
+              if (exps[e % exps.length])
+                exps[e % exps.length].classList.add('hot');
+              e++;
+            };
+            pulse();
+            every(pulse, 760);
+          } else if (n === 4) {
+            qrColors.s4qr = { fg: '#0E0E0C', bg: '#FBFAF4' };
+            paintQR('s4qr', qrColors.s4qr);
+            var di = 0;
+            var swap = function () {
+              var d = FILM_DESTS[di % FILM_DESTS.length];
+              var t = document.getElementById('filmDestText');
+              t.textContent = d;
+              t.classList.remove('enter');
+              void t.offsetWidth;
+              t.classList.add('enter');
+              var bar = document.getElementById('filmDest');
+              bar.classList.remove('flash');
+              void bar.offsetWidth;
+              bar.classList.add('flash');
+              later(function () {
+                bar.classList.remove('flash');
+              }, 800);
+              di++;
+            };
+            swap();
+            every(swap, 1150);
+          } else if (n === 5) {
+            var wrap = document.getElementById('filmChips');
+            wrap.innerHTML = '';
+            FILM_CHIPS.forEach(function (c, i) {
+              var el = document.createElement('span');
+              el.className = 'film-chip';
+              el.textContent = c;
+              wrap.appendChild(el);
+              later(function () {
+                el.classList.add('in');
+              }, 95 * i);
+            });
+          } else if (n === 6) {
+            qrColors.s6qr = { fg: '#0E0E0C', bg: '#FBFAF4' };
+            paintQR('s6qr', qrColors.s6qr);
+            scanFx('s6qr');
+          }
+        }
+
+        var FILM_DUR = [2600, 2400, 2500, 3600, 3700, 2700, 3000];
+        var filmTimer = null,
+          filmCur = 0;
+
+        function paintSegs(n) {
+          var segs = document.querySelectorAll('#filmSegs .fseg');
+          segs.forEach(function (s, i) {
+            s.classList.remove('done');
+            var fill = s.querySelector('i');
+            fill.style.transition = 'none';
+            fill.style.width = i < n ? '100%' : '0%';
+            if (i < n) s.classList.add('done');
+          });
+          var active = segs[n];
+          if (active) {
+            var fill = active.querySelector('i');
+            fill.style.transition = 'none';
+            fill.style.width = '0%';
+            void fill.offsetWidth;
+            fill.style.transition = 'width ' + FILM_DUR[n] + 'ms linear';
+            fill.style.width = '100%';
+          }
+        }
+
+        function setScene(n) {
+          clearSub();
+          filmCur = n;
+          document.querySelectorAll('.film-scene').forEach(function (s) {
+            s.classList.remove('on');
+          });
+          var el = document.querySelector(
+            '.film-scene[data-scene="' + n + '"]',
+          );
+          if (el) {
+            el.classList.add('on');
+          }
+          document.getElementById('filmStep').textContent =
+            '0' + (n + 1) + ' / 0' + FILM_DUR.length;
+          paintSegs(n);
+          try {
+            sceneEnter(n);
+          } catch (e) {}
+          filmTimer = setTimeout(function () {
+            setScene((n + 1) % FILM_DUR.length);
+          }, FILM_DUR[n]);
+        }
+
+        function initFilm() {
+          var segs = document.getElementById('filmSegs');
+          if (segs && !segs.children.length) {
+            for (var i = 0; i < FILM_DUR.length; i++) {
+              var s = document.createElement('span');
+              s.className = 'fseg';
+              s.innerHTML = '<i></i>';
+              segs.appendChild(s);
+            }
+          }
+          renderDeco();
+          if (
+            window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ) {
+            /* static still: show the QR-code scene */
+            document.querySelectorAll('.film-scene').forEach(function (s) {
+              s.classList.remove('on');
+            });
+            var el = document.querySelector('.film-scene[data-scene="2"]');
+            if (el) el.classList.add('on');
+            paintQR('s2qr', qrColors.s2qr);
+            document.getElementById('filmStep').textContent = 'How it works';
+            var fs = document.querySelectorAll('#filmSegs .fseg');
+            fs.forEach(function (x) {
+              x.classList.add('done');
+              x.querySelector('i').style.width = '100%';
+            });
+          } else {
+            setScene(0);
+          }
+        }
+
+        /* ----- analytics strip bars ----- */
+        (function () {
+          var bars = document.getElementById('anaBars');
+          var data = [62, 48, 71, 55, 90, 84, 40, 66, 78, 95, 72, 58, 88, 100];
+          data.forEach(function (v, i) {
+            var day = document.createElement('div');
+            day.className = 'day';
+            var c = Math.round(v * (0.25 + 0.18 * Math.sin(i * 1.7)));
+            day.innerHTML =
+              '<i class="s" style="height:' +
+              v +
+              '%"></i><i class="c" style="height:' +
+              Math.max(c, 6) +
+              '%"></i>';
+            bars.appendChild(day);
+          });
+        })();
+
+        /* ----- tweak hooks ----- */
+        window.__adeyyApplyTweaks = function (t) {
+          document.documentElement.dataset.adeyyHue =
+            t.hue === 'links' ? '' : t.hue;
+          if (t.hue === 'links')
+            delete document.documentElement.dataset.adeyyHue;
+          document.documentElement.dataset.hero = t.heroSurface;
+          qrStyle.modules = t.qrStyle === 'dots' ? 'dots' : t.qrStyle;
+          qrStyle.eyes = t.qrStyle === 'square' ? 'square' : 'rounded';
+          var heads = {
+            anywhere: [
+              'Link <em>anywhere</em>.',
+              'One short link. One QR code. Change where they point at any time, even after you print.',
+            ],
+            print: [
+              'The QR code you can change after you <em>print</em>.',
+              'Every Adeyy code is a short link you control. Edit the destination once, it changes everywhere the code lives.',
+            ],
+            once: [
+              'Edit once. Change <em>everywhere</em>.',
+              'A flyer, a sticker, a sign. One edit in the dashboard and every printed code points somewhere new.',
+            ],
+          };
+          var h = heads[t.headline] || heads.anywhere;
+          document.getElementById('heroHeadline').innerHTML = h[0];
+          document.getElementById('heroSub').textContent = h[1];
+          renderDeco();
+          repaintAllQR();
+        };
+
+        initFilm();
+      })();
+    </script>
+
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/babel" src="/adeyy/assets/tweaks-panel.jsx"></script>
+    <script type="text/babel">
+      const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
+        hue: 'fractional',
+        headline: 'anywhere',
+        heroSurface: 'paper',
+        qrStyle: 'square',
+      }; /*EDITMODE-END*/
+
+      function AdeyyTweaks() {
+        const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+        React.useEffect(() => {
+          window.__adeyyApplyTweaks && window.__adeyyApplyTweaks(t);
+        }, [t]);
+        return (
+          <TweaksPanel>
+            <TweakSection label="Brand" />
+            <TweakColor
+              label="Teal stop"
+              value={
+                { links: '#04d5b0', fractional: '#13d1cd', crm: '#12c5fe' }[
+                  t.hue
+                ]
+              }
+              options={['#04d5b0', '#13d1cd', '#12c5fe']}
+              onChange={(v) =>
+                setTweak(
+                  'hue',
+                  {
+                    '#04d5b0': 'links',
+                    '#13d1cd': 'fractional',
+                    '#12c5fe': 'crm',
+                  }[v],
+                )
+              }
+            />
+            <TweakSection label="Hero" />
+            <TweakSelect
+              label="Headline"
+              value={t.headline}
+              options={[
+                { value: 'anywhere', label: 'Link anywhere.' },
+                { value: 'print', label: 'Change after you print' },
+                { value: 'once', label: 'Edit once, change everywhere' },
+              ]}
+              onChange={(v) => setTweak('headline', v)}
+            />
+            <TweakRadio
+              label="Surface"
+              value={t.heroSurface}
+              options={['paper', 'ink']}
+              onChange={(v) => setTweak('heroSurface', v)}
+            />
+            <TweakSection label="QR codes" />
+            <TweakRadio
+              label="Modules"
+              value={t.qrStyle}
+              options={['square', 'rounded', 'dots']}
+              onChange={(v) => setTweak('qrStyle', v)}
+            />
+          </TweaksPanel>
+        );
+      }
+
+      const tweaksRoot = document.createElement('div');
+      document.body.appendChild(tweaksRoot);
+      ReactDOM.createRoot(tweaksRoot).render(<AdeyyTweaks />);
+    </script>
+  </body>
+</html>

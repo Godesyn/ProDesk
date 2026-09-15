@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "is_beta_user" boolean DEFAULT false NOT NULL;

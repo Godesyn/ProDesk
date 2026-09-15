@@ -1,0 +1,765 @@
+/**
+ * Prodesk app side panel — ONE layout for every satellite frontend.
+ * Pairs with packages/shared/src/components/layout/app-side-panel.tsx.
+ *
+ * WHY PLAIN CSS AND NOT TAILWIND UTILITIES: the satellites don't share a styling
+ * system. Verdiict and Adeyy are hand-written CSS (--v-*, --adeyy-*), Logo Studio
+ * is token-driven (--rail-*), SIGKITT rides shadcn's sidebar tokens, EziQuotes is
+ * a Manus port. A utility-class panel would have to pick one of those palettes and
+ * impose it everywhere. Variables invert that: the LAYOUT is fixed here, and each
+ * frontend supplies only its own colours by overriding --psp-* on a theme class.
+ *
+ * So: never put a colour literal in a call site — add a `.psp-theme-<app>` block
+ * in that frontend's stylesheet and pass it as `panelClassName`.
+ *
+ * The contract every frontend gets, in order down the panel:
+ *   header (app logo + BY PRODESK tag)
+ *   suite bar      — Prodesk Suite → the dashboard, with the other apps' marks
+ *   context slot   — brand dropdown (brand-level) / ContextSelector (jobs) / none
+ *   nav            — grouped by category, scrolls
+ *   tail           — Support, Billing
+ *   identity       — plain Profile row (user-level apps only)
+ *   exit row       — Sign out
+ *
+ * DARK RAILS: add `psp-ink` alongside your theme class (see the :where(.psp-ink)
+ * block below) and you only have to supply --psp-bg plus your accent. Every wash,
+ * hairline and the floating menu surface are already right for a black panel.
+ */
+
+/* ============================== shell ============================== */
+
+.psp-shell {
+  display: grid;
+  /* minmax(0, 1fr): a bare 1fr track won't shrink below its content's min-width,
+     so one wide table would give the whole app horizontal scroll. */
+  grid-template-columns: var(--psp-w) minmax(0, 1fr);
+  min-height: 100vh;
+  /* Single source of truth for panel width across every frontend. */
+  --psp-w: 260px;
+  --psp-w-collapsed: 72px;
+}
+.psp-shell[data-collapsed='true'] {
+  grid-template-columns: var(--psp-w-collapsed) minmax(0, 1fr);
+}
+.psp-main {
+  min-width: 0;
+}
+
+/* Shared-token variant for the frontends that ride the base Tailwind theme
+   (jobs, design, websites, _template): same layout, accent-tinted active row —
+   which is what those panels used before the shared component landed. */
+.psp-theme-accent {
+  --psp-active: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --psp-active-fg: var(--color-accent);
+}
+
+/* ============================== panel ============================== */
+
+/* Defaults are the shared light theme (jobs / design / websites use them as-is);
+   every other frontend overrides them on its own .psp-theme-* class.
+ *
+ * :where() IS LOAD-BEARING — it makes this block specificity ZERO. A plain
+ * `.psp-side { --psp-bg: … }` ties with `.psp-theme-verdiict { --psp-bg: … }`
+ * (both one class), so the winner would be decided by stylesheet order — and the
+ * kits (verdiict.css, adeyy.css) are imported BEFORE this file, which meant these
+ * light defaults silently beat every dark theme and painted Verdiict's ink rail
+ * near-white. Zero specificity means any theme class wins regardless of order.
+ * Do not "simplify" this back to a bare class selector. */
+:where(.psp-side) {
+  --psp-bg: var(--color-card, #ffffff);
+  --psp-fg: var(--color-ink-100, #0e0e0c);
+  --psp-fg-2: var(--color-ink-60, #5a5a52);
+  --psp-fg-3: var(--color-ink-40, #8e8e84);
+  --psp-line: var(--color-border-hairline, rgba(14, 14, 12, 0.08));
+  --psp-hover: rgba(14, 14, 12, 0.05);
+  --psp-hover-fg: var(--psp-fg);
+  --psp-active: rgba(14, 14, 12, 0.09);
+  --psp-active-fg: var(--psp-fg);
+  --psp-slot-bg: rgba(14, 14, 12, 0.035);
+  --psp-menu-bg: #ffffff;
+  --psp-menu-fg: var(--psp-fg);
+  /* Hover is derived from the MENU's own foreground, not the panel's — the menu
+     surface is often a different lightness from the rail behind it (SIGKITT's
+     rail and menu are both near-black; Verdiict's menu is paper on an ink rail).
+     A foreground-relative wash therefore works on light AND dark menus with one
+     rule, where a hardcoded rgba only ever suited one of them. Every frontend
+     used to hand-roll this token; it should now be inherited, not restated.
+
+     A light wash on a dark menu reads weaker than a dark wash on a light one at
+     the same alpha, so the strength is the one knob a dark theme overrides —
+     rather than restating the whole color-mix and losing the shared rule. */
+  --psp-menu-hover-strength: 6%;
+  --psp-menu-hover: color-mix(
+    in oklch,
+    var(--psp-menu-fg) var(--psp-menu-hover-strength),
+    transparent
+  );
+  /* The SELECTED brand carries the app's accent, so it reads as chosen rather
+     than merely hovered. Tracks the panel's active treatment, which every theme
+     already tunes (.psp-theme-accent points it at --color-accent; SIGKITT points
+     it at its signature grey), so the menu inherits each app's accent identity
+     instead of restating it. Order in this block is irrelevant: custom properties
+     resolve lazily at USE time, and the theme class sits on the same element as
+     .psp-side, so a theme's --psp-active override is what these pick up. */
+  --psp-menu-active: var(--psp-active);
+  --psp-menu-active-fg: var(--psp-active-fg);
+  /* Muted text INSIDE a menu (the heading, an app's tagline) is derived from the
+     menu's own foreground for the same reason the hover is — --psp-fg-3 is mixed
+     for the rail, and on any theme whose menu surface differs in lightness from the
+     rail it lands either invisible or shouting. */
+  --psp-menu-fg-3: color-mix(in oklch, var(--psp-menu-fg) 55%, transparent);
+  /* Same reason again, for the initials chip on a logo-less brand: the panel's
+     --psp-hover is mixed against the RAIL, and on a dark theme whose menu surface
+     is close to that wash (SIGKITT's is nearly identical) the chip disappeared into
+     the menu. Deriving it from the menu's own foreground keeps it a chip on every
+     surface, and it is stronger than the row hover so a hovered row can't swallow
+     it either. */
+  --psp-menu-avatar: color-mix(in oklch, var(--psp-menu-fg) 14%, transparent);
+  /* A menu shadow tuned for a light surface is invisible against a black rail, so
+     the lift is a token the ink block re-tunes rather than a literal. */
+  --psp-menu-shadow: 0 12px 28px rgba(14, 14, 12, 0.18);
+  --psp-radius: 8px;
+  --psp-by-font: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  /* A theme can drop the divider (Verdiict's ink rail meets the paper stage with
+     no seam). A variable rather than a `.psp-side.psp-theme-x { border: 0 }`
+     override, because the CSS minifier rewrites that compound selector down to
+     one class, putting it back in a specificity tie with .psp-side. */
+  --psp-border-right: 1px solid var(--psp-line);
+}
+
+/* ---------------------- dark rails: `psp-ink` ----------------------
+   THE contract for a black panel. Verdiict, SIGKITT and Logo Studio each derived
+   their own dark values, and they diverged: the same brand dropdown was near-black
+   in SIGKITT and Logo Studio but inverted to paper-white in Verdiict — one dark
+   rail with a light popover, which read as a foreign component dropped into the
+   app. Menus on an ink rail LIFT off it (one step lighter than --psp-bg) instead of
+   flipping to paper; that is the rule every future dark panel inherits by adding
+   `psp-ink` to its panelClassName.
+
+   A theme only has to supply --psp-bg and its accent (--psp-active/-fg). Overriding
+   anything here still works: the theme class carries specificity 1 against the 0 of
+   :where(). Ordered AFTER the light defaults so it wins the zero-specificity tie.
+
+   .psp-mobilebar is listed too — it wears the same theme class but is a separate
+   element, so a dark panel's mobile bar needs the same hairline and bar colours. */
+:where(.psp-side.psp-ink, .psp-mobilebar.psp-ink) {
+  --psp-fg: #f6f4ec;
+  --psp-fg-2: rgba(246, 244, 236, 0.78);
+  --psp-fg-3: rgba(246, 244, 236, 0.45);
+  --psp-line: rgba(246, 244, 236, 0.12);
+  --psp-hover: rgba(246, 244, 236, 0.08);
+  --psp-hover-fg: #ffffff;
+  --psp-active: rgba(246, 244, 236, 0.14);
+  --psp-active-fg: #ffffff;
+  --psp-slot-bg: rgba(246, 244, 236, 0.06);
+  /* Elevation, not inversion — derived from whatever ink the theme set, so each
+     dark app keeps its own hue (Verdiict's warm ink, SIGKITT's neutral black) while
+     the TREATMENT is identical. */
+  --psp-menu-bg: color-mix(in oklch, var(--psp-bg, #0e0e0c) 92%, #ffffff);
+  --psp-menu-fg: var(--psp-fg);
+  /* A light wash on a dark menu reads weaker than the inverse at equal alpha. */
+  --psp-menu-hover-strength: 12%;
+  --psp-menu-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  --psp-bar-bg: var(--psp-bg, #0e0e0c);
+  --psp-bar-fg: var(--psp-fg);
+}
+
+.psp-side {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 12px;
+  background: var(--psp-bg);
+  color: var(--psp-fg);
+  border-right: var(--psp-border-right);
+  overflow: hidden; /* .psp-nav is the only scroller */
+}
+.psp-side[data-collapsed='true'] {
+  padding: 16px 10px;
+  align-items: stretch;
+}
+
+/* ------------------------------ header ------------------------------ */
+
+.psp-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 14px;
+  min-width: 0;
+}
+.psp-side[data-collapsed='true'] .psp-head {
+  padding: 4px 0 14px;
+  justify-content: center;
+}
+.psp-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  line-height: 1.1;
+}
+.psp-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+.psp-by {
+  font-family: var(--psp-by-font);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--psp-fg-3);
+  white-space: nowrap;
+}
+.psp-toggle,
+.psp-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--psp-radius);
+  background: transparent;
+  color: var(--psp-fg-3);
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.psp-toggle:hover,
+.psp-close:hover {
+  background: var(--psp-hover);
+  color: var(--psp-fg);
+}
+.psp-side[data-collapsed='true'] .psp-toggle {
+  margin-left: 0;
+}
+/* The collapsed rail hides the wordmark and keeps only the toggle. */
+.psp-side[data-collapsed='true'] .psp-brand {
+  display: none;
+}
+.psp-close {
+  display: none; /* mobile drawer only */
+}
+
+/* --------------------------- suite bar ---------------------------
+   The Prodesk Suite row — one link, to the dashboard. Deliberately NOT another
+   bordered box: the brand dropdown right below it already is one, and two stacked
+   outlined controls made the top of the panel read as a form. This is a flat strip
+   closed off by a hairline so everything below it is clearly "this app". */
+
+.psp-suitebar {
+  padding: 0 2px 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--psp-line);
+}
+.psp-side[data-collapsed='true'] .psp-suitebar {
+  padding: 0 0 10px;
+}
+
+.psp-suite {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--psp-radius);
+  background: transparent;
+  color: var(--psp-fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.psp-suite:hover {
+  background: var(--psp-hover);
+}
+.psp-suite-ico {
+  flex-shrink: 0;
+  color: var(--psp-fg-3);
+}
+.psp-suite:hover .psp-suite-ico {
+  color: var(--psp-fg);
+}
+.psp-suite-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.psp-suite-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.psp-suite-label {
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.psp-suite-arrow {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--psp-fg-3);
+}
+.psp-suite:hover .psp-suite-arrow {
+  color: var(--psp-fg);
+}
+/* Collapsed rail: the waffle glyph alone, label hidden. */
+.psp-side[data-collapsed='true'] .psp-suite {
+  justify-content: center;
+  padding: 9px 0;
+}
+.psp-side[data-collapsed='true'] .psp-suite-text {
+  display: none;
+}
+
+/* ------------------------- context slot ------------------------- */
+
+.psp-slot {
+  position: relative;
+  padding: 0 2px 12px;
+}
+.psp-side[data-collapsed='true'] .psp-slot {
+  padding: 0 0 12px;
+}
+
+.psp-switch {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--psp-radius);
+  background: var(--psp-slot-bg);
+  border: 1px solid var(--psp-line);
+  color: var(--psp-fg);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    border-color 0.14s;
+}
+.psp-switch:hover:not(:disabled),
+.psp-switch[aria-expanded='true'] {
+  background: var(--psp-hover);
+}
+.psp-switch:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+/* Collapsed: the trigger is the avatar and nothing else. Keeping the name, the
+   role chip or the chevron here squeezed three ellipsised things into 52px and
+   read as broken. Clicking it expands the rail first (see the component), so
+   nothing is unreachable. */
+.psp-side[data-collapsed='true'] .psp-switch {
+  justify-content: center;
+  padding: 8px 0;
+}
+.psp-side[data-collapsed='true'] .psp-switch-name,
+.psp-side[data-collapsed='true'] .psp-switch-role,
+.psp-side[data-collapsed='true'] .psp-switch-chev {
+  display: none;
+}
+.psp-switch-name {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.psp-switch-role {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  color: var(--psp-fg-3);
+}
+.psp-switch-chev {
+  flex-shrink: 0;
+  color: var(--psp-fg-3);
+}
+.psp-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--psp-hover);
+  color: var(--psp-fg-2);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+/* On the menu surface, not the rail — see --psp-menu-avatar. */
+.psp-menu .psp-avatar {
+  background: var(--psp-menu-avatar);
+  color: var(--psp-menu-fg);
+}
+/* The selected row can be a FILL rather than a wash (SIGKITT's grey), which flips
+   the local foreground — the chip has to flip with it or it inverts on that one row. */
+.psp-menu-item.active .psp-avatar {
+  background: color-mix(in oklch, var(--psp-menu-active-fg) 16%, transparent);
+  color: var(--psp-menu-active-fg);
+}
+.psp-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Brand menu. Anchored under the trigger — the switcher sits at the TOP of the
+   panel now, so a menu opening upward (Verdiict's old footer placement) would
+   run off the top of the viewport. */
+.psp-menu {
+  position: absolute;
+  top: calc(100% - 6px);
+  left: 2px;
+  right: 2px;
+  z-index: 70;
+  padding: 6px;
+  border-radius: var(--psp-radius);
+  background: var(--psp-menu-bg);
+  color: var(--psp-menu-fg);
+  border: 1px solid var(--psp-line);
+  box-shadow: var(--psp-menu-shadow);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.psp-menu-head {
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--psp-menu-fg-3);
+}
+.psp-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.psp-menu-item:hover {
+  background: var(--psp-menu-hover);
+}
+/* The selected brand takes the accent, not another coat of the hover wash — it
+   used to reuse --psp-menu-hover, so the active row was indistinguishable from a
+   hovered one apart from its weight. */
+.psp-menu-item.active {
+  background: var(--psp-menu-active);
+  color: var(--psp-menu-active-fg);
+  font-weight: 600;
+}
+/* Hovering the already-selected row keeps the accent. `.active` above already
+   wins on source order (it ties :hover on specificity and comes later), so this
+   only pins that down explicitly — the minifier has previously rewritten compound
+   selectors in this file (see the :where note above), and a reorder would
+   otherwise silently hand a hovered selected row back to the hover wash. */
+.psp-menu-item.active:hover {
+  background: var(--psp-menu-active);
+}
+.psp-menu-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.psp-menu-sep {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--psp-line);
+}
+.psp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+/* ------------------------------ nav ------------------------------ */
+
+.psp-nav {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Let rows bleed to the panel's padding edge without clipping focus rings. */
+  margin: 0 -2px;
+  padding: 0 2px;
+  scrollbar-width: thin;
+}
+.psp-grp {
+  padding: 14px 10px 6px;
+  font-family: var(--psp-by-font);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--psp-fg-3);
+}
+/* Collapsed: a category label can't be read at 72px, so it degrades to a rule. */
+.psp-side[data-collapsed='true'] .psp-grp {
+  height: 1px;
+  margin: 8px 8px;
+  padding: 0;
+  overflow: hidden;
+  text-indent: -999px;
+  background: var(--psp-line);
+}
+
+.psp-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--psp-radius);
+  background: transparent;
+  color: var(--psp-fg-2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.psp-item:hover {
+  background: var(--psp-hover);
+  color: var(--psp-hover-fg);
+}
+.psp-item.active {
+  background: var(--psp-active);
+  color: var(--psp-active-fg);
+}
+.psp-item-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+.psp-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.psp-item-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--psp-fg-3);
+}
+.psp-side[data-collapsed='true'] .psp-item {
+  justify-content: center;
+  padding: 9px 0;
+}
+.psp-side[data-collapsed='true'] .psp-item-label,
+.psp-side[data-collapsed='true'] .psp-item-badge {
+  display: none;
+}
+
+/* ------------------------------ foot ------------------------------ */
+
+.psp-foot {
+  /* Pins Support/Billing + identity + the exit row to the bottom, whatever the
+     nav's height. */
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--psp-line);
+}
+/* Sign out only — the suite switcher lives at the top of the panel now. */
+.psp-exit {
+  display: flex;
+  align-items: stretch;
+  margin-top: 4px;
+}
+.psp-signout {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--psp-radius);
+  background: transparent;
+  color: var(--psp-fg-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.psp-signout:hover {
+  background: var(--psp-hover);
+  color: var(--psp-fg);
+}
+/* It now reads as a row like the ones above it, so the glyph stays put at both
+   widths — collapsing only drops the label. */
+.psp-signout-ico {
+  flex-shrink: 0;
+}
+.psp-side[data-collapsed='true'] .psp-signout {
+  justify-content: center;
+  padding: 9px 0;
+}
+.psp-side[data-collapsed='true'] .psp-signout-label {
+  display: none;
+}
+
+/* ========================= mobile drawer ========================= */
+
+.psp-mobilebar {
+  display: none;
+}
+.psp-scrim {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .psp-shell,
+  .psp-shell[data-collapsed='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .psp-mobilebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--psp-bar-bg, var(--color-card, #fff));
+    border-bottom: 1px solid var(--psp-line, rgba(14, 14, 12, 0.08));
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  .psp-mobilebar .psp-brand {
+    color: var(--psp-bar-fg, inherit);
+  }
+  .psp-burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--psp-radius, 8px);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  .psp-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgba(14, 14, 12, 0.45);
+    backdrop-filter: blur(2px);
+  }
+  /* The drawer is always full-width-ish and never collapsed: an icon rail makes
+     no sense as a slide-over, so [data-collapsed] is ignored below this width. */
+  .psp-side,
+  .psp-side[data-collapsed='true'] {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 90;
+    width: min(272px, 85vw);
+    height: 100dvh;
+    padding: 16px 12px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+  .psp-side.psp-open {
+    transform: translateX(0);
+  }
+  .psp-side[data-collapsed='true'] .psp-brand,
+  .psp-side[data-collapsed='true'] .psp-item-label,
+  .psp-side[data-collapsed='true'] .psp-item-badge,
+  .psp-side[data-collapsed='true'] .psp-signout-label,
+  .psp-side[data-collapsed='true'] .psp-switch-name,
+  .psp-side[data-collapsed='true'] .psp-switch-role,
+  .psp-side[data-collapsed='true'] .psp-switch-chev {
+    display: revert;
+  }
+  /* Restored explicitly, not by `revert`: it's a flex column, and the UA default
+     for a span is inline — which would collapse the label/marks stack. */
+  .psp-side[data-collapsed='true'] .psp-suite-text {
+    display: flex;
+  }
+  .psp-side[data-collapsed='true'] .psp-item,
+  .psp-side[data-collapsed='true'] .psp-switch,
+  .psp-side[data-collapsed='true'] .psp-signout {
+    justify-content: flex-start;
+    padding: 9px 10px;
+  }
+  .psp-side[data-collapsed='true'] .psp-suite {
+    justify-content: flex-start;
+    padding: 7px 8px;
+  }
+  .psp-side[data-collapsed='true'] .psp-suitebar {
+    padding: 0 2px 10px;
+  }
+  .psp-side[data-collapsed='true'] .psp-grp {
+    height: auto;
+    margin: 0;
+    padding: 14px 10px 6px;
+    text-indent: 0;
+    background: transparent;
+  }
+  .psp-toggle {
+    display: none; /* collapse is a desktop affordance */
+  }
+  .psp-close {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .psp-side {
+    transition: none;
+  }
+}

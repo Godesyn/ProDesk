@@ -1,0 +1,58 @@
+{
+  "name": "prodesk-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prodesk — React + tRPC + Drizzle + Supabase rebuild of the Flutter app",
+  "workspaces": [
+    "servers/*",
+    "packages/*",
+    "clients/*"
+  ],
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "clean-ports": "node scripts/cleanup-ports.mjs",
+    "dev": "bun run clean-ports && node scripts/dev.mjs",
+    "dev:prodesk": "bun run clean-ports && node scripts/dev.mjs prodesk",
+    "dev:dashboard": "bun run clean-ports && node scripts/dev.mjs dashboard",
+    "dev:links": "bun run clean-ports && node scripts/dev.mjs links",
+    "dev:reviews": "bun run clean-ports && node scripts/dev.mjs reviews",
+    "dev:payments": "bun run clean-ports && node scripts/dev.mjs payments",
+    "dev:signatures": "bun run clean-ports && node scripts/dev.mjs signatures",
+    "dev:jobs": "bun run clean-ports && node scripts/dev.mjs jobs",
+    "dev:websites": "bun run clean-ports && node scripts/dev.mjs websites",
+    "dev:design": "bun run clean-ports && node scripts/dev.mjs design",
+    "dev:logo": "bun run clean-ports && node scripts/dev.mjs logo",
+    "dev:passwords": "bun run clean-ports && node scripts/dev.mjs passwords",
+    "dev:chat": "bun run clean-ports && node scripts/dev.mjs chat",
+    "build": "node scripts/run-all.mjs build",
+    "start": "bun run --filter backend start",
+    "start:worker": "bun run --filter backend start:worker",
+    "typecheck": "node scripts/check-frontend-wiring.mjs && node scripts/check-radix-nested-overlays.mjs && node scripts/run-all.mjs typecheck",
+    "test": "NODE_ENV=development bun run --filter backend test",
+    "test:hooks": "node scripts/test-git-hooks.mjs",
+    "check:wiring": "node scripts/check-frontend-wiring.mjs",
+    "check:overlays": "node scripts/check-radix-nested-overlays.mjs",
+    "db:generate": "bun run --filter backend db:generate",
+    "db:migrate": "bun run --filter backend db:migrate",
+    "db:push": "bun run --filter backend db:push",
+    "db:studio": "bun run --filter backend db:studio"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.3",
+    "backend": "workspace:*",
+    "concurrently": "^9.1.0",
+    "ioredis": "^5.4.1",
+    "supabase": "^2.109.1"
+  },
+  "overrides": {
+    "ioredis": "^5.4.1",
+    "drizzle-orm": "^0.45.2"
+  },
+  "dependencies": {
+    "bullmq": "^5.79.1"
+  }
+}

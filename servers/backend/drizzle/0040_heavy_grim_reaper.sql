@@ -1,0 +1,1 @@
+DROP TABLE "payment_proposals" CASCADE;

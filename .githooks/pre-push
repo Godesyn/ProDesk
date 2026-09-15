@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# Pre-push hook: block pushes that don't build.
+# Runs the full monorepo build (server + all frontends) once before a push, so
+# a broken build never reaches a shared branch. Per-commit checks are kept fast
+# in .githooks/pre-commit (scoped type-check); this is the full guarantee.
+#
+# To bypass in an emergency: git push --no-verify  (use sparingly)
+#
+# The build must run against the COMMITTED state being pushed, so uncommitted
+# work is stashed and restored. See the long note in .githooks/pre-commit: the
+# restore is written defensively because an unchecked `git stash pop` after a
+# `git reset --hard` silently strands the user's work (and, in pre-commit's
+# case, produced empty commits). A push creates no commit, so the worst case
+# here is stranded work — but it is still reported loudly rather than silently.
+
+set -u
+
+echo "› pre-push: building server + frontends…"
+
+# 0. Snapshot the index so it can be restored exactly, whatever the stash does.
+if ! INDEX_TREE=$(git write-tree); then
+  echo "✗ pre-push: could not snapshot the index (git write-tree failed)."
+  exit 1
+fi
+
+# 1. Stash staged + unstaged + untracked changes, leaving the tree clean at HEAD.
+STASH_NAME="pre-push-stash-$$-$(date +%s)"
+git stash push -q --include-untracked -m "$STASH_NAME"
+STASH_CREATED=0
+# Resolve OUR entry rather than assuming it stays on top — a concurrent stash
+# during the (slow) full build would otherwise be popped over a hard reset.
+STASH_REF=$(git stash list | grep -F "$STASH_NAME" | head -n 1 | cut -d: -f1)
+if [ -n "$STASH_REF" ]; then
+  STASH_CREATED=1
+fi
+
+RESTORE_FAILED=0
+CLEANED=0
+
+# 2. Restore everything on exit — idempotent, so the EXIT trap and the explicit
+#    call on the normal path cannot double-apply it.
+cleanup() {
+  [ "$CLEANED" -eq 0 ] || return 0
+  CLEANED=1
+  [ "$STASH_CREATED" -eq 1 ] || return 0
+
+  # The build writes into the working tree (dist/), so clear it before applying.
+  git reset --hard HEAD -q
+  if ! git stash pop -q --index "$STASH_REF" 2>/dev/null; then
+    if ! git stash pop -q "$STASH_REF" 2>/dev/null; then
+      RESTORE_FAILED=1
+    fi
+  fi
+  git read-tree "$INDEX_TREE" 2>/dev/null || RESTORE_FAILED=1
+}
+trap cleanup EXIT
+
+# 3. Run the full build
+node scripts/run-all.mjs build
+status=$?
+
+# 4. Restore before reporting, so the tree is intact either way.
+cleanup
+
+if [ "$RESTORE_FAILED" -ne 0 ]; then
+  echo ""
+  echo "✗ pre-push: could not restore your working tree — push aborted."
+  echo "  Your changes are SAFE, in the stash. Recover with:"
+  echo "      git stash list                 # look for $STASH_NAME"
+  echo "      git stash pop                  # restore the working tree"
+  echo "  (Close anything holding the files open — a running dev server or"
+  echo "  watcher is the usual cause on Windows.)"
+  exit 1
+fi
+
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "✗ Build failed – push aborted. Fix the errors above and try again."
+  echo "  (To bypass intentionally: git push --no-verify)"
+  exit 1
+fi
+
+echo "✓ Build passed."
+exit 0

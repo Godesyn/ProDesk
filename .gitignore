@@ -1,0 +1,37 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.prod
+.env.stage
+.env.dev
+.env.stripe.local
+.env.cloud.bak
+.env.*.bak
+.railway/envs/**/*.env
+*.log
+.DS_Store
+server/drizzle/meta/_journal.json.bak
+.turbo/
+coverage/
+
+# secrets & migration artifacts — never commit
+functions-secrets.json
+.env.functions
+servers/backend/migration-state/
+*-service-account*.json
+firebase-service-account.json
+.todo
+*.tsbuildinfo
+**/*.tsbuildinfo
+# Manus export dirs at the repo ROOT only (unanchored patterns also match
+# e.g. clients/links/public/adeyy/, silently un-tracking shipped assets)
+/sources/
+/adeyy/
+/review-request-tool/
+/prodesk-payments/
+/email-signature-builder/
+/db-export/
+vite.config.ts.timestamp-*
+*.pdf

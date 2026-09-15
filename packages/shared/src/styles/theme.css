@@ -1,0 +1,329 @@
+/*
+ * Prodesk design tokens — ported from lib/src/core/theme/app_colors.dart
+ * (Brand Book v1.0). Monochrome ink scale + one Forest-green accent.
+ * 60% Paper · 30% Ink · 10% Accent.
+ *
+ * Shared across all frontends (prodesk, dashboard). Per-client overrides go
+ * in each client's index.css in a trailing `@theme { … }` block — Tailwind v4
+ * merges `@theme` blocks and the LAST declaration of a token wins.
+ *
+ * DO NOT hardcode --color-accent or the --accent-h/s/l channels per client:
+ * they are rewritten on :root at runtime by theme-accent.ts / applyStoredAccent()
+ * to drive agency white-labeling. Static tokens (radii, fonts, shadows, ink
+ * scale, surface tints) are safe to override per client.
+ */
+
+/* The token firewall for the portalled beta / feedback overlays. Imported here
+ * rather than per client so every frontend — including ones added later — gets it
+ * automatically; see beta-scope.css for why those overlays need one. */
+@import './beta-scope.css';
+
+@theme {
+  /* Ink scale (text) */
+  --color-ink: #0e0e0c;
+  --color-ink-100: #0e0e0c;
+  --color-ink-80: #2c2c28;
+  --color-ink-60: #5a5a52;
+  --color-ink-40: #8e8e84;
+  --color-ink-20: #c9c7bd;
+  --color-ink-10: #e4e2d8;
+
+  /* Accent HSL channels — the single source of truth for the brand accent.
+   * Forest green #2E9E58 ≈ hsl(142.5, 55%, 40%). The theme-accent service can
+   * override --accent-h/s/l on :root at runtime to re-theme the ENTIRE app,
+   * including the surface tints below (mirrors Flutter _tintedSurface). */
+  --accent-h: 142.5;
+  --accent-s: 55%;
+  --accent-l: 40%;
+
+  /* Surfaces — accent-hue-tinted near-whites (Flutter AppColors._tintedSurface). */
+  --color-paper: hsl(var(--accent-h) 22% 94%);
+  --color-card: hsl(var(--accent-h) 14% 97.5%);
+  --color-inset: hsl(var(--accent-h) 26% 90%);
+
+  /* Accent (Forest) + states */
+  --color-accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --color-accent-hover: hsl(
+    var(--accent-h) var(--accent-s) calc(var(--accent-l) - 6%)
+  );
+  --color-accent-ring: hsl(
+    var(--accent-h) var(--accent-s) var(--accent-l) / 0.55
+  );
+
+  /* Status */
+  --color-success: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --color-danger: #d24a2a;
+  --color-warn: #c98a2b;
+
+  /* Active / selected surfaces — Ink fill for strong selection; activeMuted for
+   * sidebar tiles & list rows (Flutter AppColors.active / activeMuted). */
+  --color-active-muted: #e7e2d2;
+
+  /* Borders */
+  --color-border-hairline: rgba(14, 14, 12, 0.08);
+  --color-border-default: rgba(14, 14, 12, 0.16);
+
+  /* Fonts (load via index.html or fontsource; fallbacks for now).
+   * Stacks ported from Claude Design "Prodesk Master App" tokens.css. */
+  --font-sans:
+    'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Type scale + weights (ported from Claude Design tokens.css). */
+  --t-12: 12px;
+  --t-14: 14px;
+  --t-16: 16px;
+  --t-20: 20px;
+  --t-28: 28px;
+  --t-40: 40px;
+  --t-64: 64px;
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+  --w-heavy: 800;
+
+  /* Radii (sm/md/lg from app_radii.dart) */
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* Elevation — tight, low-spread, double-layer (app_shadows.dart). Never blurry haloes. */
+  --shadow-1: 0 1px 0 rgba(14, 14, 12, 0.06), 0 1px 2px rgba(14, 14, 12, 0.04);
+  --shadow-2:
+    0 1px 0 rgba(14, 14, 12, 0.06), 0 6px 18px -8px rgba(14, 14, 12, 0.16);
+  --shadow-3:
+    0 1px 0 rgba(14, 14, 12, 0.06), 0 24px 48px -16px rgba(14, 14, 12, 0.22);
+  /* Accent focus ring (3px spread), matches live Forest ring. */
+  --shadow-focus: 0 0 0 3px
+    hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.55);
+
+  /* Motion (app_motion.dart). Brand "click" curve = fast-out, slow-in. */
+  --ease-click: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-quick: 120ms;
+  --duration-standard: 240ms;
+  --duration-statement: 480ms;
+
+  /* Reveal: text/surface rises 8px and fades in. */
+  --animate-reveal: reveal var(--duration-statement) var(--ease-click);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Item-card placeholder shimmer (ports AppItemCardShimmerLoader — a sliding
+ * gradient sweep, 1.4s, brand click curve). */
+@keyframes pd-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Indeterminate top progress bar (a sliding accent sweep). */
+@keyframes pd-indeterminate {
+  0% {
+    left: -40%;
+    width: 40%;
+  }
+  50% {
+    left: 25%;
+    width: 55%;
+  }
+  100% {
+    left: 100%;
+    width: 40%;
+  }
+}
+
+@layer utilities {
+  .pd-progress-bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: var(--radius-pill);
+    animation: pd-indeterminate 1.1s var(--ease-click) infinite;
+  }
+  /* Sliding shimmer fill for media placeholders (AppItemCardShimmerLoader). */
+  .pd-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-ink-10) 0%,
+      var(--color-inset) 30%,
+      var(--color-card) 50%,
+      var(--color-inset) 70%,
+      var(--color-ink-10) 100%
+    );
+    background-size: 200% 100%;
+    animation: pd-shimmer 1.4s var(--ease-click) infinite;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink-100 font-sans antialiased;
+  }
+  * {
+    border-color: var(--color-border-default);
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-family: var(--font-sans);
+    font-size: 7.5rem; /* 120px */
+    font-weight: 800;
+    line-height: 0.833;
+    letter-spacing: -0.05em;
+  }
+  .text-h1 {
+    font-family: var(--font-sans);
+    font-size: clamp(
+      2.5rem,
+      8vw,
+      5.25rem
+    ); /* Responsive scale from 40px to 84px */
+    font-weight: 800;
+    line-height: 1.047;
+    letter-spacing: -0.04em;
+  }
+  .text-h2 {
+    font-family: var(--font-sans);
+    font-size: clamp(
+      2rem,
+      5vw,
+      3.5rem
+    ); /* Responsive scale from 32px to 56px */
+    font-weight: 700;
+    line-height: 1.143;
+    letter-spacing: -0.03em;
+  }
+  .text-h3 {
+    font-family: var(--font-sans);
+    font-size: clamp(
+      1.5rem,
+      3.5vw,
+      2.25rem
+    ); /* Responsive scale from 24px to 36px */
+    font-weight: 600;
+    line-height: 1.222;
+    letter-spacing: -0.01em;
+  }
+  .text-body-large {
+    font-family: var(--font-sans);
+    font-size: 1.125rem; /* 18px */
+    font-weight: 400;
+    line-height: 1.444;
+  }
+  .text-body {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem; /* 12px */
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .text-ui-xs {
+    font-family: var(--font-sans);
+    font-size: 0.75rem; /* 12px */
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .text-ui-sm {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .text-ui-md {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .text-ui-lg {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem; /* 17px */
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .text-panel-title {
+    font-family: var(--font-sans);
+    font-size: 1.125rem; /* 18px */
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .text-kpi {
+    font-family: var(--font-sans);
+    font-size: 2rem; /* 32px */
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .text-serif-italic {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  /* Section header title — 28px, between h3 and h2 (Flutter PdSectionHeader). */
+  .text-section-title {
+    font-family: var(--font-sans);
+    font-size: 1.75rem; /* 28px */
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+  /* Type helpers ported from Claude Design tokens.css. Color refs adapted to
+   * the repo's ink scale (design --ink-2/--ink-3 == --color-ink-60/-40). */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--t-12);
+    font-weight: var(--w-medium);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-60);
+  }
+  .serif {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Brand press-scale on interactive elements (app_motion clickCurve). */
+  .press {
+    transition: transform var(--duration-quick) var(--ease-click);
+  }
+  .press:active {
+    transform: scale(0.985);
+  }
+}

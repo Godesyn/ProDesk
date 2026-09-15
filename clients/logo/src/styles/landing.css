@@ -1,0 +1,214 @@
+/*
+ * Logo Studio marketing landing — scoped stylesheet for app/LandingPage.tsx.
+ *
+ * The landing is mounted INSIDE `.logo-ui`, so it inherits the studio's Atelier
+ * tokens (--ink / --stage / --card / --pigment, the .spec + .quill type motifs,
+ * and the [data-draw] self-drawing mark animation) straight from src/index.css.
+ * Everything added here is landing-only and scoped under `.llanding`.
+ *
+ * The one new material is the STUDIO TABLE — a near-black surface the paper
+ * sheets sit on. The app frames paper in a dark rail; the landing lays paper on
+ * a dark table. Same world, different furniture.
+ */
+
+.llanding {
+  --table: #0a0a09;
+  --table-2: #141412;
+  --table-line: rgba(244, 241, 234, 0.1);
+  --table-ink: #f4f1ea;
+  --table-ink-2: rgba(244, 241, 234, 0.64);
+  --table-ink-3: rgba(244, 241, 234, 0.38);
+
+  background: var(--stage);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.llanding ::selection {
+  background: var(--ink);
+  color: var(--stage);
+}
+
+/* Smooth in-page anchor scrolling while the landing is mounted, with room for
+   the sticky nav. */
+html:has(.llanding) {
+  scroll-behavior: smooth;
+}
+.llanding [id] {
+  scroll-margin-top: 88px;
+}
+
+/* ── Type ramp ───────────────────────────────────────────────────────────── */
+.llanding .ld-display {
+  font-size: clamp(3.25rem, 9.5vw, 8.5rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.86;
+  text-wrap: balance;
+}
+.llanding .ld-h2 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+.llanding .ld-h3 {
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.llanding .ld-lead {
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Mono spec label on the dark table (the studio `.spec`, re-inked). */
+.llanding .spec-dark {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--table-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── The studio table ────────────────────────────────────────────────────── */
+.llanding .table-surface {
+  background-color: var(--table);
+  color: var(--table-ink);
+}
+/* Blueprint dot grid, echoing .stage-grid but inked for the dark table. */
+.llanding .table-grid {
+  background-image: radial-gradient(rgba(244, 241, 234, 0.07) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: -1px -1px;
+}
+
+/* ── Deliverables ticker ─────────────────────────────────────────────────── */
+.llanding .ld-ticker {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.llanding .ld-ticker-track {
+  display: flex;
+  width: max-content;
+  gap: 56px;
+  animation: ld-ticker 44s linear infinite;
+}
+@keyframes ld-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Scroll reveal (one orchestrated device, used sparingly) ─────────────── */
+.llanding .ld-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 620ms var(--ease-click),
+    transform 620ms var(--ease-click);
+}
+.llanding .ld-reveal[data-shown='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Sheet: a paper card lifted off the table ────────────────────────────── */
+.llanding .ld-sheet {
+  background: var(--card);
+  border: 1px solid rgba(14, 14, 12, 0.1);
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.55),
+    0 2px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Contact-sheet cell — hairline ruled, hover lifts like a real proof */
+.llanding .ld-cell {
+  border: 1px solid var(--hair-2);
+  background: var(--stage);
+  transition:
+    transform var(--duration-standard) var(--ease-click),
+    border-color var(--duration-standard) var(--ease-click),
+    box-shadow var(--duration-standard) var(--ease-click);
+}
+.llanding .ld-cell:hover {
+  transform: translateY(-2px);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-2);
+}
+.llanding .ld-cell:focus-visible {
+  outline: 2px solid var(--pigment);
+  outline-offset: 2px;
+}
+
+/* Accessible focus everywhere on the landing (the page is heavily custom). */
+.llanding a:focus-visible,
+.llanding button:focus-visible,
+.llanding input:focus-visible {
+  outline: 2px solid var(--pigment);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Nav underline that draws in — the page's one hover flourish. */
+.llanding .ld-nav-link {
+  position: relative;
+  color: var(--table-ink-2);
+  transition: color var(--duration-quick) var(--ease-click);
+}
+.llanding .ld-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-standard) var(--ease-click);
+}
+.llanding .ld-nav-link:hover {
+  color: var(--table-ink);
+}
+.llanding .ld-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Swatch popping in at the moment colour is committed. */
+.llanding .ld-swatch {
+  animation: ld-swatch 420ms var(--ease-click) both;
+}
+@keyframes ld-swatch {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .llanding .ld-ticker-track {
+    animation: none;
+  }
+  .llanding .ld-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

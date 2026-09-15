@@ -1,0 +1,57 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/_core/index.ts",
+  "exports": {
+    "./router": "../../packages/server-shared/src/trpc/router.ts"
+  },
+  "scripts": {
+    "dev": "tsx watch --conditions development src/_core/index.ts",
+    "build": "bun run --filter '@prodesk/server-shared' build && tsc && node -e \"require('fs').cpSync('src/scripts/initialize_data','dist/scripts/initialize_data',{recursive:true})\"",
+    "start": "node dist/_core/index.js",
+    "start:worker": "node dist/jobs/worker.js",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/scripts/migrate.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:initialize": "tsx src/scripts/initialize.ts",
+    "db:delete-purchases": "tsx --env-file=../../.env src/scripts/delete-purchases.ts",
+    "db:delete-user": "tsx src/scripts/delete-user.ts",
+    "db:check-collisions": "tsx src/scripts/check-business-name-collisions.ts",
+    "db:backfill-locker-app-uploads": "tsx --conditions development src/scripts/backfill-locker-app-uploads.ts",
+    "db:backfill-notes-threads": "tsx --conditions development src/scripts/backfill-notes-threads.ts",
+    "worker": "tsx watch --conditions development src/jobs/worker.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@prodesk/server-shared": "workspace:*",
+    "@sentry/node": "^8.30.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "@trpc/server": "^11.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.45.2",
+    "express": "^4.21.0",
+    "fractional-indexing": "^4.0.0",
+    "postgres": "^3.4.4",
+    "superjson": "^2.2.1",
+    "uuid": "^11.0.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.2.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.0",
+    "@types/uuid": "^10.0.0",
+    "drizzle-kit": "^0.31.10",
+    "firebase-admin": "^13.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

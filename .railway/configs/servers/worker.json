@@ -1,0 +1,19 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "bun run --filter backend build",
+    "watchPatterns": [
+      "servers/backend/**",
+      "packages/server-shared/**",
+      "package.json",
+      "bun.lock"
+    ]
+  },
+  "deploy": {
+    "startCommand": "bun run start:worker",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "region": "asia-southeast1-eqsg3"
+  }
+}

@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@source "../../../packages/shared/src";
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/* Adeyy product chrome — ported from the Manus export (adeyy/), self-contained
+ * so it never fights the shared Tailwind token system. The shared base above
+ * styles the @shared auth/context screens; the rules below (CSS custom props +
+ * `a*`/`.appshell` component classes scoped under `.adeyy-app`) style the
+ * authenticated link-shortener app. See ./styles/adeyy.css. */
+@import './styles/adeyy.css';
+
+/* Shared side-panel layout (packages/shared AppShell). Adeyy's white rail palette
+   is applied via .psp-theme-adeyy at the end of styles/adeyy.css. */
+@import '../../../packages/shared/src/styles/side-panel.css';
+
+@theme {
+  /* Links tool owns the teal stop on the Prodesk wheel (--tool-links). */
+}

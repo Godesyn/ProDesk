@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Instrument+Serif:ital@1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&family=Work+Sans:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@source "../../../packages/shared/src";
+
+/* Shared side-panel layout (packages/shared AppShell) — one panel layout,
+   width and collapse behaviour across every frontend. */
+@import '../../../packages/shared/src/styles/side-panel.css';
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/*
+ * SIGKITT — Design System (migrated from the Manus email-signature-builder).
+ * Palette: Parchment (#F4F1E8) bg · Near-black (#0E0E0C) sidebar/text · Gray
+ * (#B6B6B6) accent. Typography: Inter Tight (headings) + Inter (body/UI).
+ *
+ * Integration note: the shared Prodesk theme (imported above) owns the ink /
+ * paper / accent tokens and the runtime accent used by the shared auth/profile/
+ * support pages (agency white-labeling via theme-accent.ts). To keep those pages
+ * intact, the SIGKITT shadcn tokens are registered here in two tiers:
+ *   1. Tokens the shared theme does NOT use — registered globally (inert on
+ *      shared pages, which never reference these utility names).
+ *   2. Tokens the shared theme OWNS or USES (`accent`, `card`) and the radius
+ *      scale — overridden only inside the `.sigkitt` workspace wrapper, so the
+ *      cascade gives SIGKITT its look without touching the shared pages.
+ * The ported shadcn `ui/` components render inside `.sigkitt` (see App shell).
+ */
+@theme {
+  --color-background: oklch(0.962 0.012 88); /* #F4F1E8 parchment */
+  --color-foreground: oklch(0.09 0.01 50); /* #0E0E0C near-black */
+  --color-card-foreground: oklch(0.09 0.01 50);
+  --color-popover: oklch(0.978 0.008 85);
+  --color-popover-foreground: oklch(0.09 0.01 50);
+  --color-primary: oklch(0.77 0 0); /* #B6B6B6 gray */
+  --color-primary-foreground: oklch(0.09 0.01 50);
+  --color-secondary: oklch(0.93 0.01 88);
+  --color-secondary-foreground: oklch(0.25 0.015 50);
+  --color-muted: oklch(0.91 0.01 88);
+  --color-muted-foreground: oklch(0.48 0.02 60);
+  --color-accent-foreground: oklch(0.09 0.01 50);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.985 0 0);
+  --color-border: oklch(0.86 0.015 85);
+  --color-input: oklch(0.86 0.015 85);
+  --color-ring: oklch(0.77 0 0);
+
+  --color-chart-1: oklch(0.77 0 0);
+  --color-chart-2: oklch(0.65 0 0);
+  --color-chart-3: oklch(0.53 0 0);
+  --color-chart-4: oklch(0.41 0 0);
+  --color-chart-5: oklch(0.29 0 0);
+
+  /* Sidebar (near-black #0E0E0C) */
+  --color-sidebar: oklch(0.09 0.01 50);
+  --color-sidebar-foreground: oklch(0.88 0.01 85);
+  --color-sidebar-primary: oklch(0.77 0 0);
+  --color-sidebar-primary-foreground: oklch(0.09 0.01 50);
+  --color-sidebar-accent: oklch(0.16 0 0);
+  --color-sidebar-accent-foreground: oklch(0.88 0.01 85);
+  --color-sidebar-border: oklch(0.18 0.01 50);
+  --color-sidebar-ring: oklch(0.77 0 0);
+}
+
+/* ===== Shared side panel — SIGKITT palette =======================
+   Layout/width/collapse live in packages/shared/src/styles/side-panel.css; this
+   block only re-points the --psp-* colour contract at SIGKITT's near-black rail
+   and grey active state, so the panel keeps its look while matching every other
+   frontend.
+
+   Paired with `psp-ink` (see DashboardLayout), the shared dark-rail contract: the
+   washes, the hairline and the dropdown surface all come from there now — this used
+   to restate them, and the values it derived were the ones the other dark panels
+   drifted away from. What's left is what makes the rail SIGKITT's. */
+.psp-theme-sigkitt {
+  --psp-bg: var(--color-sidebar);
+  --psp-fg: var(--color-sidebar-foreground);
+  --psp-hover: var(--color-sidebar-accent);
+  --psp-line: var(--color-sidebar-border);
+  /* The grey active row is SIGKITT's signature — keep it, on near-black text. It
+     carries the selected row in the dropdowns too (--psp-menu-active tracks it), so
+     "chosen" never reads as merely hovered. */
+  --psp-active: var(--color-sidebar-primary);
+  --psp-active-fg: var(--color-sidebar-primary-foreground);
+  --psp-radius: 8px;
+}
+
+/*
+ * Workspace scope. Overrides the shared-owned `accent`/`card` values and the
+ * radius scale (the shared scale is far rounder) via the cascade, and sets the
+ * SIGKITT canvas + fonts. Everything the migrated app renders lives under this.
+ */
+.sigkitt {
+  --color-accent: oklch(0.77 0 0); /* gray, for hover states */
+  --color-accent-foreground: oklch(0.09 0.01 50);
+  --color-card: oklch(0.978 0.008 85); /* #FBFAF4 */
+
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.sigkitt * {
+  border-color: var(--color-border);
+}
+
+.sigkitt h1,
+.sigkitt h2,
+.sigkitt h3,
+.sigkitt h4,
+.sigkitt h5,
+.sigkitt h6 {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+@layer components {
+  /* Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: oklch(0.91 0.01 88);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: oklch(0.78 0.02 80);
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.65 0.03 75);
+  }
+
+  /* Signature preview */
+  .signature-preview-frame {
+    background: white;
+    border: none;
+  }
+
+  /* Gray CTA button override — ensure dark text always readable */
+  .btn-lime {
+    background-color: #b6b6b6;
+    color: #0e0e0c;
+    border: 2px solid #0e0e0c;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .btn-lime:hover {
+    background-color: #a0a0a0;
+  }
+}

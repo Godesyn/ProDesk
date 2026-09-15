@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@source "../../../packages/shared/src";
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/* Verdiict review-tool scoped design system (class-based, prefixed `v`). */
+@import './styles/verdiict.css';
+
+/* Shared side-panel layout (packages/shared AppShell). Verdiict's palette is
+   applied via .psp-theme-verdiict at the end of verdiict.css. */
+@import '../../../packages/shared/src/styles/side-panel.css';
+
+/*
+ * Frontend-specific design overrides.
+ * Tailwind v4 merges `@theme` blocks and the LAST declaration of a token wins,
+ * so anything below overrides the shared base in packages/shared/src/styles/theme.css.
+ * Safe to override: radii, fonts, shadows, ink scale, surface tints, motion.
+ * Do NOT redefine --color-accent or --accent-h/s/l — those are driven at runtime
+ * by theme-accent.ts for agency white-labeling.
+ */
+@theme {
+  /* (no overrides yet — add your frontend's design tokens here) */
+}

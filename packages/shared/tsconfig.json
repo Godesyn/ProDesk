@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    // Vite's client types augment `ImportMeta` with `.env` and declare asset
+    // import suffixes (e.g. `?worker`). The consuming apps set this in their own
+    // tsconfig, so shared compiles cleanly through them — but standalone (which
+    // is how the editor checks this package) it needs the reference itself.
+    "types": ["vite/client"],
+    "noEmit": true,
+    "paths": {
+      "@server/*": ["../server-shared/src/*"]
+    }
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,21 @@
+-- The wait before a follow-up belongs with the rest of the authored step.
+--
+-- WHY
+-- The delay was the one part of a sequence step that only ever lived in
+-- Smartlead. We write it as `seq_delay_details: { delay_in_days }` and it saves
+-- correctly, but the campaign read parses the same key back out of Smartlead's
+-- response — and Smartlead does not answer under the name it accepts. The key
+-- came back missing, the editor fell through to its default, and every refresh
+-- reset a saved follow-up to 5 days while the campaign was in fact waiting the
+-- number the operator chose. A silent disagreement between what the screen said
+-- and what was being sent.
+--
+-- The subject and body already avoid this by being ours (0106). The delay joins
+-- them: it is authored in the same editor, saved in the same action, and read
+-- back from the same row. Smartlead stays the executor, not the record.
+--
+-- Nullable on purpose. NULL means "no row of ours said" — a step saved before
+-- this migration — and those still fall back to whatever Smartlead reports.
+-- A 0 is a real answer: the first touch goes out immediately.
+ALTER TABLE "outreach_sequence_source"
+  ADD COLUMN IF NOT EXISTS "delay_in_days" integer;

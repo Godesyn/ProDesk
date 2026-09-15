@@ -1,0 +1,138 @@
+/*
+ * `.pd-beta-scope` — the token firewall for the shared beta / feedback overlays.
+ *
+ * WHY THIS EXISTS
+ * The beta programme is ONE component (`@shared/beta/beta-program`) mounted on
+ * every frontend, and it must look the same on all of them. It didn't, because
+ * every overlay it renders is portalled to `document.body` — deliberately, so a
+ * frontend's transformed/overflow-hidden shell can't clip it — and therefore
+ * inherits whatever that frontend has done to the shared design tokens:
+ *
+ *  • payments/`eziquotes.css` registers a global `@theme inline` block that
+ *    re-points `--color-accent` at the shadcn `--accent` (a light grey) and
+ *    `--radius-sm|md|lg` at the shadcn scale — so `--radius-md` resolved to
+ *    `calc(var(--radius) - 2px)` = 12px instead of the shared 14px, `--radius-sm`
+ *    to 6px→2px, and every accent surface in the panel came out grey. `inline`
+ *    also means utilities compile to `var(--accent)` rather than
+ *    `var(--color-accent)`, which is why the aliases are reset below too.
+ *  • links/`adeyy.css` and payments/`marketing.css` redeclare `--shadow-2/-3`
+ *    on `:root` with their own elevation.
+ *  • signatures/`.sigkitt` and links/`.adeyy-app` scope their accent, card and
+ *    radius overrides to a workspace wrapper — which the portal sits outside,
+ *    so the panel and the app around it disagreed in the other direction.
+ *
+ * Re-declaring the tokens on the overlay's own root fixes all of it at once and
+ * keeps working for frontends that don't exist yet: a custom property set on a
+ * nearer ancestor wins for its descendants no matter what a client declares on
+ * `:root` afterwards. The shadcn alias names (`--accent`, `--card`, `--radius`)
+ * are reset alongside the `--color-*` tokens because `@theme inline` compiles
+ * utilities to reference the alias directly rather than the theme token.
+ *
+ * WHITE-LABELING IS PRESERVED. The accent is re-derived from the runtime
+ * `--accent-h/s/l` channels that theme-accent.ts rewrites on `:root`, exactly as
+ * theme.css does — it is NOT pinned to a literal colour. Inheriting the channels
+ * and rebuilding the colour from them is what lets an agency's accent still reach
+ * the panel while a client's static remap of `--color-accent` does not.
+ *
+ * Imported by theme.css, which every client's index.css already imports, so no
+ * frontend has to wire this up and none can forget to.
+ *
+ * Values below are the shared base from theme.css. Keep them in sync with it.
+ *
+ * WHY `@layer base`: this rule also sets non-inherited-token properties (`color`,
+ * `font-family`, `line-height`). Unlayered CSS beats anything in Tailwind's
+ * `utilities` layer no matter the source order, so as plain CSS this block's
+ * `color: var(--color-ink-100)` overrode `text-white` / `text-paper` on the
+ * overlay roots themselves — the dark feedback tab rendered near-black label and
+ * icon on near-black. In `base` the utilities win again, while the custom
+ * properties still firewall exactly as before: for inherited values, the nearest
+ * declaring ancestor wins regardless of layer or specificity.
+ */
+@layer base {
+  .pd-beta-scope {
+    /* Ink scale */
+    --color-ink: #0e0e0c;
+    --color-ink-100: #0e0e0c;
+    --color-ink-80: #2c2c28;
+    --color-ink-60: #5a5a52;
+    --color-ink-40: #8e8e84;
+    --color-ink-20: #c9c7bd;
+    --color-ink-10: #e4e2d8;
+
+    /* Surfaces — accent-hue-tinted, so they follow a white-labelled accent. */
+    --color-paper: hsl(var(--accent-h) 22% 94%);
+    --color-card: hsl(var(--accent-h) 14% 97.5%);
+    --color-inset: hsl(var(--accent-h) 26% 90%);
+
+    /* Accent + states, rebuilt from the runtime channels (see header). */
+    --color-accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+    --color-accent-hover: hsl(
+      var(--accent-h) var(--accent-s) calc(var(--accent-l) - 6%)
+    );
+    --color-accent-ring: hsl(
+      var(--accent-h) var(--accent-s) var(--accent-l) / 0.55
+    );
+
+    /* Status */
+    --color-success: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+    --color-danger: #d24a2a;
+    --color-warn: #c98a2b;
+
+    /* Borders */
+    --color-border-hairline: rgba(14, 14, 12, 0.08);
+    --color-border-default: rgba(14, 14, 12, 0.16);
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 14px;
+    --radius-lg: 28px;
+    --radius-pill: 999px;
+
+    /* Elevation */
+    --shadow-1: 0 1px 0 rgba(14, 14, 12, 0.06), 0 1px 2px rgba(14, 14, 12, 0.04);
+    --shadow-2:
+      0 1px 0 rgba(14, 14, 12, 0.06), 0 6px 18px -8px rgba(14, 14, 12, 0.16);
+    --shadow-3:
+      0 1px 0 rgba(14, 14, 12, 0.06), 0 24px 48px -16px rgba(14, 14, 12, 0.22);
+
+    /* Motion */
+    --ease-click: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --duration-quick: 120ms;
+    --duration-standard: 240ms;
+    --duration-statement: 480ms;
+
+    /*
+     * shadcn aliases. payments/signatures map the Tailwind theme onto these with
+     * `@theme inline`, which makes `bg-accent` compile to `var(--accent)` and
+     * `rounded-md` to `calc(var(--radius) - 2px)` — bypassing the `--color-*`
+     * tokens above entirely. Resetting them here is what makes the panel identical
+     * in those two frontends.
+     */
+    --accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+    --accent-foreground: #ffffff;
+    --card: hsl(var(--accent-h) 14% 97.5%);
+    --card-foreground: #0e0e0c;
+    --border: rgba(14, 14, 12, 0.16);
+    --input: rgba(14, 14, 12, 0.16);
+    --ring: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.55);
+    --radius: 14px;
+
+    /*
+     * Typography baseline. The overlays inherit from <body>, which each frontend
+     * styles for its own workspace (SIGKITT sets Inter, Adeyy a 14px app scale), so
+     * the panel picked up a different face per app. Pinning the shared sans and a
+     * neutral line-height/colour makes the text render the same everywhere.
+     */
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    color: var(--color-ink-100);
+
+    /*
+     * Top offset of the floating feedback tab. It hangs below the tallest app bar
+     * across the frontends (~64px) plus clearance, so it never covers the header —
+     * and it is a token so a frontend with taller chrome can push it down from its
+     * own index.css instead of forking the component.
+     */
+    --pd-beta-tab-top: 96px;
+  }
+}

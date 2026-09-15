@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>prodesk</title>
+
+    <!-- Preload fonts to prevent flashing of unstyled text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Apply the cached tenant accent BEFORE the loader screen below paints.
+      Without this, the static loader shows its hardcoded Forest green until
+      React mounts and resolves the real theme. This runs synchronously in
+      <head>, mirroring src/lib/subdomain.ts (key) + src/lib/theme-accent.ts.
+    -->
+    <script>
+      (function () {
+        try {
+          function subdomain() {
+            var h = location.hostname.toLowerCase();
+            if (h === 'localhost' || h === '127.0.0.1') {
+              var d = new URLSearchParams(location.search).get('subdomain');
+              return d && d.trim() ? d.trim().toLowerCase() : null;
+            }
+            var p = h.split('.');
+            if (p.length <= 3 || p.length > 5) return null;
+            if (p.length > 4 && p[1] !== 'dev') return null;
+            var c = p[0];
+            if (c === 'dev' || c === 'app' || c === 'deleted' || c === 'www') return null;
+            if (!/^[a-z0-9-]+$/.test(c)) return null;
+            return c;
+          }
+          var hex = localStorage.getItem('pd:accent:' + (subdomain() || '__app__'));
+          if (!hex) return;
+          var c = hex.replace('#', '');
+          if (c.length < 6) return;
+          var r = parseInt(c.slice(0, 2), 16);
+          var g = parseInt(c.slice(2, 4), 16);
+          var b = parseInt(c.slice(4, 6), 16);
+          if (isNaN(r) || isNaN(g) || isNaN(b)) return;
+          // Accent hue → the loader's background + muted text are tinted with it
+          // (at fixed saturation/lightness), so the whole splash follows the
+          // theme — not just the accent dots. Mirrors index.css hue-tinting.
+          var rr = r / 255, gg = g / 255, bb = b / 255;
+          var mx = Math.max(rr, gg, bb), mn = Math.min(rr, gg, bb), d = mx - mn, h = 0;
+          if (d !== 0) {
+            if (mx === rr) h = ((gg - bb) / d) % 6;
+            else if (mx === gg) h = (bb - rr) / d + 2;
+            else h = (rr - gg) / d + 4;
+            h = h * 60;
+            if (h < 0) h += 360;
+          }
+          var s = document.documentElement.style;
+          s.setProperty('--ld-accent', hex);
+          s.setProperty('--ld-accent-rgb', r + ',' + g + ',' + b);
+          s.setProperty('--ld-h', String(Math.round(h * 10) / 10));
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body style="margin: 0; background-color: hsl(var(--ld-h, 142.5) 50% 5%)">
+    <div id="root">
+      <!-- Static loader styled inline to display instantly -->
+      <style>
+        .loader-container {
+          position: fixed;
+          inset: 0;
+          background-color: hsl(var(--ld-h, 142.5) 50% 5%);
+          color: #ffffff;
+          font-family:
+            'Inter Tight',
+            -apple-system,
+            BlinkMacSystemFont,
+            'Segoe UI',
+            Roboto,
+            sans-serif;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 40px;
+          box-sizing: border-box;
+          z-index: 99999;
+          overflow: hidden;
+          user-select: none;
+        }
+
+        @media (max-width: 640px) {
+          .loader-container {
+            padding: 24px;
+          }
+        }
+
+        /* Background grid lines */
+        .bg-grid {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .bg-grid-col {
+          border-right: 1px solid rgba(var(--ld-accent-rgb, 46, 158, 88), 0.08);
+          height: 100%;
+        }
+
+        .bg-grid-col:last-child {
+          border-right: none;
+        }
+
+        /* Top header section */
+        .loader-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          z-index: 2;
+          width: 100%;
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .indicator-square {
+          width: 8px;
+          height: 8px;
+          background-color: var(--ld-accent, #2e9e58);
+          display: inline-block;
+          border-radius: 1px;
+        }
+
+        .brand-name {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 700;
+          color: hsl(var(--ld-h, 142.5) 15% 74%);
+          letter-spacing: 0.15em;
+        }
+
+        .version-info {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 500;
+          color: hsl(var(--ld-h, 142.5) 16% 36%);
+          letter-spacing: 0.1em;
+        }
+
+        /* Middle content section */
+        .loader-main {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          flex: 1;
+          z-index: 2;
+          margin-top: -40px; /* Slight optical lift */
+        }
+
+        .workspace-label {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 500;
+          color: hsl(var(--ld-h, 142.5) 16% 36%);
+          letter-spacing: 0.12em;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 24px;
+        }
+
+        .workspace-label .line {
+          color: hsl(var(--ld-h, 142.5) 16% 36%);
+          opacity: 0.6;
+        }
+
+        .main-title {
+          font-size: clamp(3.5rem, 9vw, 8rem);
+          font-weight: 800;
+          line-height: 0.95;
+          margin: 0 0 16px 0;
+          color: #ffffff;
+          letter-spacing: -0.04em;
+        }
+
+        .tagline {
+          margin: 0;
+          font-size: clamp(1.8rem, 4vw, 3rem);
+          line-height: 1.1;
+          color: hsl(var(--ld-h, 142.5) 15% 74%);
+          font-weight: 500;
+          letter-spacing: -0.02em;
+        }
+
+        .tagline-serif {
+          font-family: 'Instrument Serif', Georgia, serif;
+          font-style: italic;
+          color: #ffffff;
+          font-weight: 400;
+        }
+
+        /* Bottom footer section */
+        .loader-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          z-index: 2;
+          width: 100%;
+        }
+
+        .footer-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .pulse-dot {
+          width: 6px;
+          height: 6px;
+          background-color: var(--ld-accent, #2e9e58);
+          border-radius: 50%;
+          display: inline-block;
+          animation: pulse 1.6s infinite ease-in-out;
+        }
+
+        .status-text {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 700;
+          color: hsl(var(--ld-h, 142.5) 15% 74%);
+          letter-spacing: 0.15em;
+        }
+
+        .footer-right {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 500;
+          color: hsl(var(--ld-h, 142.5) 16% 36%);
+          letter-spacing: 0.12em;
+        }
+
+        /* Decorative loader bar at bottom of the first grid column */
+        .bottom-progress-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 20%;
+          height: 2px;
+          background-color: var(--ld-accent, #2e9e58);
+          animation: load-pulse 2s infinite ease-in-out;
+          z-index: 3;
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 0.3;
+            transform: scale(0.85);
+            box-shadow: 0 0 0 0 rgba(var(--ld-accent-rgb, 46, 158, 88), 0);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.15);
+            box-shadow: 0 0 8px 1px rgba(var(--ld-accent-rgb, 46, 158, 88), 0.4);
+          }
+        }
+
+        @keyframes load-pulse {
+          0%,
+          100% {
+            opacity: 0.6;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+      </style>
+
+      <div class="loader-container">
+        <!-- Background Grid -->
+        <div class="bg-grid">
+          <div class="bg-grid-col"></div>
+          <div class="bg-grid-col"></div>
+          <div class="bg-grid-col"></div>
+          <div class="bg-grid-col"></div>
+          <div class="bg-grid-col"></div>
+        </div>
+
+        <!-- Top Header -->
+        <header class="loader-header">
+          <div class="header-left">
+            <span class="indicator-square"></span>
+            <span class="brand-name">PRODESK</span>
+          </div>
+          <div class="header-right">
+            <span class="version-info">V1.0 • 2026</span>
+          </div>
+        </header>
+
+        <!-- Main Title & Tagline -->
+        <main class="loader-main">
+          <div class="workspace-label">
+            <span class="line">—</span> WORKSPACE
+          </div>
+          <h1 class="main-title">Prodesk</h1>
+          <p class="tagline">
+            <span class="tagline-serif">Everything</span> Clicks.
+          </p>
+        </main>
+
+        <!-- Bottom Footer -->
+        <footer class="loader-footer">
+          <div class="footer-left">
+            <span class="pulse-dot"></span>
+            <span class="status-text">INITIALISING</span>
+          </div>
+          <div class="footer-right">
+            <span class="footer-platform">PRODESK / WEB</span>
+          </div>
+        </footer>
+
+        <!-- Loading Progress Bar on bottom-left column -->
+        <div class="bottom-progress-bar"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

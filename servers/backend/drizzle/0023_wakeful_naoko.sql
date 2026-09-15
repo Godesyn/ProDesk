@@ -1,0 +1,1 @@
+ALTER TYPE "public"."staff_permission" ADD VALUE 'links';

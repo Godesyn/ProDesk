@@ -1,0 +1,120 @@
+#!/bin/sh
+#
+# Pre-commit hook: fast, scoped correctness gate.
+# Runs the wiring guard, then type-checks ONLY the workspaces the staged
+# changes touch (a shared/tooling change still forces a full check). The full
+# production build runs once per push in .githooks/pre-push, so this stays
+# quick on the common single-workspace commit.
+#
+# To bypass in an emergency: git commit --no-verify  (use sparingly)
+#
+# ─── Why the stash dance, and why it is written so defensively ───────────────
+# To type-check exactly what you are COMMITTING (not whatever else happens to be
+# lying around in the working tree), the hook stashes unstaged + untracked
+# changes. That means it temporarily moves the index and working tree, so it
+# must be able to put them back perfectly.
+#
+# An earlier version ran `git reset --hard HEAD` and then an UNCHECKED
+# `git stash pop`. The reset wipes the very index git is about to commit, so a
+# pop that failed for any reason — a Windows file lock ("unable to unlink old
+# <path>: Invalid argument") is enough — left the index EMPTY and git then
+# recorded a completely empty commit carrying the full message. Observed
+# 2026-07-26.
+#
+# Two guarantees now make that impossible:
+#   1. the staged tree is persisted as a real object up front, so the index can
+#      always be rebuilt byte-for-byte (`git write-tree` / `git read-tree`);
+#   2. a failed restore ABORTS the commit and prints recovery steps, instead of
+#      letting a broken index through.
+
+set -u
+
+echo "› pre-commit: wiring guard + type-checking affected workspaces…"
+
+# 0. Snapshot the exact tree that is about to be committed. This single line is
+#    what turns the recovery below from best-effort into unconditional.
+if ! INDEX_TREE=$(git write-tree); then
+  echo "✗ pre-commit: could not snapshot the index (git write-tree failed)."
+  exit 1
+fi
+
+# 1. Stash unstaged + untracked changes, keeping the index (staged) intact.
+#    Note `--keep-index` stashes EVERY difference from HEAD (staged ones too) and
+#    then restores the index — so a staged-only commit still creates a stash.
+#    The reset+restore below is therefore the normal path, not a rare one; keep
+#    its guarantees intact rather than assuming most commits skip it. Only a
+#    commit with nothing but an already-clean tree skips the dance.
+STASH_NAME="pre-commit-stash-$$-$(date +%s)"
+git stash push -q --keep-index --include-untracked -m "$STASH_NAME"
+STASH_CREATED=0
+STASH_REF=
+# Resolve OUR entry's ref instead of trusting that it stays at the top: a
+# concurrent `git stash` (another terminal, an editor's VCS integration) during
+# a slow type-check would otherwise make the restore pop someone else's work
+# on top of a hard reset.
+STASH_REF=$(git stash list | grep -F "$STASH_NAME" | head -n 1 | cut -d: -f1)
+if [ -n "$STASH_REF" ]; then
+  STASH_CREATED=1
+fi
+
+RESTORE_FAILED=0
+CLEANED=0
+
+# 2. Restore the working tree, then force the index back to the staged snapshot.
+#    Idempotent, so the EXIT trap (Ctrl-C, unexpected failure) and the explicit
+#    call on the normal path cannot double-apply it.
+cleanup() {
+  [ "$CLEANED" -eq 0 ] || return 0
+  CLEANED=1
+  [ "$STASH_CREATED" -eq 1 ] || return 0
+
+  # `git stash pop` needs a base it can apply cleanly onto, hence the reset.
+  # That is only safe because INDEX_TREE lets us rebuild the index afterwards.
+  git reset --hard HEAD -q
+  if ! git stash pop -q --index "$STASH_REF" 2>/dev/null; then
+    # Retry without --index: it still recovers file CONTENT, and the index is
+    # rebuilt from INDEX_TREE below either way.
+    if ! git stash pop -q "$STASH_REF" 2>/dev/null; then
+      RESTORE_FAILED=1
+    fi
+  fi
+
+  # Whatever the stash did, the index ends up exactly as it was staged.
+  git read-tree "$INDEX_TREE" 2>/dev/null || RESTORE_FAILED=1
+}
+trap cleanup EXIT
+
+# 3. Run the wiring guard and type-checks.
+# The wiring guard first (dev.mjs registration, dev:<name> scripts, Railway
+# gaps, centralized env access) — filesystem-only, cheap. Then type-check the
+# workspaces the staged files affect. affected.mjs forces a full check when a
+# shared package or tooling file changed, since those are roots everything
+# imports (and type-checking shared standalone catches errors the app builds
+# mask through path aliases).
+node scripts/check-frontend-wiring.mjs \
+  && node scripts/affected-typecheck.mjs
+status=$?
+
+# 4. Restore BEFORE deciding anything, so the tree is intact either way.
+cleanup
+
+if [ "$RESTORE_FAILED" -ne 0 ]; then
+  echo ""
+  echo "✗ pre-commit: could not restore your working tree — commit aborted."
+  echo "  Your changes are SAFE, in the stash. Recover with:"
+  echo "      git stash list                 # look for $STASH_NAME"
+  echo "      git stash pop                  # restore the working tree"
+  echo "  Then re-stage and commit. (Close anything holding the files open —"
+  echo "  a running dev server or watcher is the usual cause on Windows.)"
+  exit 1
+fi
+
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "✗ Type-check failed – commit aborted. Fix the errors above and try again."
+  echo "  (To bypass intentionally: git commit --no-verify)"
+  exit 1
+fi
+
+echo "✓ Type-check passed."
+exit 0

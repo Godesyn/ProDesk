@@ -1,0 +1,1 @@
+ALTER TABLE "agencies" DROP COLUMN "is_inter_agency";

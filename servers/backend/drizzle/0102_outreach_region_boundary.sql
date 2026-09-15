@@ -1,0 +1,32 @@
+-- Scrape the region, not its name.
+--
+-- The actor was handed the region as a NAME, in its `city` field, and it
+-- resolves that through Nominatim's structured lookup — ?city=…&country=… —
+-- which only matches populated places: city, town, village. An Australian LGA
+-- is a boundary=administrative relation, so the official names our own region
+-- search returns are unreachable through it:
+--
+--   city=Inner West Council      -> 0 rows   (run dies: LOCATION NOT FOUND)
+--   city=City of Parramatta      -> 0 rows
+--   city=Willoughby City Council -> 0 rows
+--   county=Inner West Council    -> 0 rows
+--
+-- And the near miss is worse than the miss: city=Brisbane City DOES resolve,
+-- to the postcode-4000 CBD locality rather than the 1,300 km² council. That run
+-- succeeds, scrapes a few square kilometres, and reports as a covered region.
+--
+-- So the boundary itself now travels with the run, in the actor's
+-- `customGeolocation` field, and the geocoder leaves the loop.
+--
+-- Stored on the row rather than re-fetched at scrape time, which is about
+-- money and not about latency: `input_hash` is derived from the actor input and
+-- orphan adoption rebuilds it from this row to decide whether we already
+-- started a run. OSM boundaries are edited continuously, so a re-fetch could
+-- return a different polygon, hash differently, fail to match a run already
+-- paid for, and start a second one.
+--
+-- Nullable, with no backfill. Existing rows are all terminal, and the code
+-- falls back to the old name path when this is null so their hash still
+-- reproduces byte-for-byte — which is exactly the property adoption depends on.
+-- Backfilling would rewrite that hash and break it.
+ALTER TABLE "outreach_list_runs" ADD COLUMN IF NOT EXISTS "region_boundary" jsonb;

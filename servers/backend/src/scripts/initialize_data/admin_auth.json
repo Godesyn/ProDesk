@@ -1,0 +1,23 @@
+{
+  "uid": "admin",
+  "email": "admin@gmail.com",
+  "emailVerified": true,
+  "displayName": "Super Admin",
+  "disabled": false,
+  "metadata": {
+    "lastSignInTime": "Sun, 08 Mar 2026 10:10:23 GMT",
+    "creationTime": "Sat, 07 Mar 2026 20:34:14 GMT",
+    "lastRefreshTime": "Sun, 08 Mar 2026 10:10:23 GMT"
+  },
+  "passwordHash": "FBYKhlazfRyPeRFld6B63T6dYrNU3Qr-wF4PAwqVDsAAklsgowaqL0xA0JDulgwJ7Auhg8M8wLozeetXCyo5xg==",
+  "passwordSalt": "_6ENfkBSVspqhA==",
+  "tokensValidAfterTime": "Sat, 07 Mar 2026 20:34:14 GMT",
+  "providerData": [
+    {
+      "uid": "admin@gmail.com",
+      "displayName": "Super Admin",
+      "email": "admin@gmail.com",
+      "providerId": "password"
+    }
+  ]
+}

@@ -1,0 +1,1424 @@
+/* Prodesk Master App — per-tool colour wheel (ported from master-colors.css).
+   Each Power Tool owns one hue from a perceptually-even wheel; inside a tool that
+   hue becomes --accent. This is functional app iconography (like app-store icons),
+   distinct from the shared brand accent which drives the shell chrome. */
+
+:root {
+  --wheel-00: #336dfe;
+  --wheel-01: #6e5afe;
+  --wheel-02: #9938fe;
+  --wheel-03: #d200fe;
+  --wheel-04: #ff0cde;
+  --wheel-05: #ff069c;
+  --wheel-06: #ff0e62;
+  --wheel-07: #fe1701;
+  --wheel-08: #ff750b;
+  --wheel-09: #fe9b03;
+  --wheel-10: #e7ad01;
+  --wheel-11: #ccba14;
+  --wheel-12: #a9c707;
+  --wheel-13: #5bd805;
+  --wheel-14: #09d982;
+  --wheel-15: #04d5b0;
+  --wheel-16: #13d1cd;
+  --wheel-17: #18cee6;
+  --wheel-18: #12c5fe;
+  --wheel-19: #01a0ff;
+
+  --tool-passwords: #336dfe;
+  --tool-passwords-ink: #3867d7;
+  --tool-passwords-hover: #2259e9;
+  --tool-passwords-tint: #eaf0fd;
+  --tool-passwords-tint-bd: #cfdefe;
+  --tool-people: #18cee6;
+  --tool-people-ink: #0d7886;
+  --tool-people-hover: #05b9cf;
+  --tool-people-tint: #d4f8fe;
+  --tool-people-tint-bd: #a7ebf8;
+  --tool-brand: #d200fe;
+  --tool-brand-ink: #9b46b4;
+  --tool-brand-hover: #b800df;
+  --tool-brand-tint: #f9eafe;
+  --tool-brand-tint-bd: #f2d0fd;
+  --tool-files: #ccba14;
+  --tool-files-ink: #7b6f00;
+  --tool-files-hover: #b8a70f;
+  --tool-files-tint: #f6f2cc;
+  --tool-files-tint-bd: #e7e0ab;
+  --tool-crm: #12c5fe;
+  --tool-crm-ink: #00779b;
+  --tool-crm-hover: #11b1e4;
+  --tool-crm-tint: #dff4fe;
+  --tool-crm-tint-bd: #b4e7ff;
+  --tool-tasks: #5bd805;
+  --tool-tasks-ink: #337e05;
+  --tool-tasks-hover: #52c20a;
+  --tool-tasks-tint: #e0f9d8;
+  --tool-tasks-tint-bd: #c8eabd;
+  --tool-reviews: #fe9b03;
+  --tool-reviews-ink: #9e5f04;
+  --tool-reviews-hover: #e38c10;
+  --tool-reviews-tint: #ffeddc;
+  --tool-reviews-tint-bd: #ffd6ad;
+  --tool-bookings: #9938fe;
+  --tool-bookings-ink: #8451c9;
+  --tool-bookings-hover: #8718e9;
+  --tool-bookings-tint: #f2edfd;
+  --tool-bookings-tint-bd: #e3d7fd;
+  --tool-marketplace: #fe1701;
+  --tool-marketplace-ink: #c53829;
+  --tool-marketplace-hover: #de1201;
+  --tool-marketplace-tint: #ffebe7;
+  --tool-marketplace-tint-bd: #fed2cb;
+  --tool-fractional: #13d1cd;
+  --tool-fractional-ink: #0b7a77;
+  --tool-fractional-hover: #1abcb8;
+  --tool-fractional-tint: #cafcf9;
+  --tool-fractional-tint-bd: #a7edea;
+  --tool-advice: #ff0cde;
+  --tool-advice-ink: #ae3d99;
+  --tool-advice-hover: #e302c5;
+  --tool-advice-tint: #fee9f8;
+  --tool-advice-tint-bd: #fdcdf0;
+  --tool-proposals: #09d982;
+  --tool-proposals-ink: #077d49;
+  --tool-proposals-hover: #10c375;
+  --tool-proposals-tint: #d6fbe2;
+  --tool-proposals-tint-bd: #b9edcb;
+  --tool-signatures: #6e5afe;
+  --tool-signatures-ink: #655cd6;
+  --tool-signatures-hover: #5f46e9;
+  --tool-signatures-tint: #edefff;
+  --tool-signatures-tint-bd: #d8dbfd;
+  --tool-print: #ff0e62;
+  --tool-print-ink: #c33355;
+  --tool-print-hover: #e10055;
+  --tool-print-tint: #ffeaec;
+  --tool-print-tint-bd: #fdd1d5;
+  --tool-links: #04d5b0;
+  --tool-links-ink: #007d66;
+  --tool-links-hover: #08c09e;
+  --tool-links-tint: #cffcee;
+  --tool-links-tint-bd: #aeeeda;
+  --tool-promotions: #ff750b;
+  --tool-promotions-ink: #b45004;
+  --tool-promotions-hover: #e36708;
+  --tool-promotions-tint: #fdece4;
+  --tool-promotions-tint-bd: #fdd4c0;
+  --tool-ooh: #ff069c;
+  --tool-ooh-ink: #bb3679;
+  --tool-ooh-hover: #e10388;
+  --tool-ooh-tint: #fdeaf1;
+  --tool-ooh-tint-bd: #fecfe1;
+  --tool-social: #01a0ff;
+  --tool-social-ink: #0572b6;
+  --tool-social-hover: #038de1;
+  --tool-social-tint: #e5f2fe;
+  --tool-social-tint-bd: #c4e2fe;
+  --tool-email: #a9c707;
+  --tool-email-ink: #637505;
+  --tool-email-hover: #98b30f;
+  --tool-email-tint: #ebf6d1;
+  --tool-email-tint-bd: #d8e6b2;
+  --tool-resize: #e7ad01;
+  --tool-resize-ink: #8c6809;
+  --tool-resize-hover: #d09b00;
+  --tool-resize-tint: #ffeece;
+  --tool-resize-tint-bd: #f4dba9;
+}
+
+[data-tool] {
+  --accent: var(--ink);
+  --accent-ink: var(--ink);
+  --accent-hover: var(--ink-2);
+  --accent-tint: var(--paper-2);
+  --accent-tint-bd: var(--rule-2);
+}
+[data-tool='passwords'] {
+  --accent: var(--tool-passwords);
+  --accent-ink: var(--tool-passwords-ink);
+  --accent-hover: var(--tool-passwords-hover);
+  --accent-tint: var(--tool-passwords-tint);
+  --accent-tint-bd: var(--tool-passwords-tint-bd);
+}
+[data-tool='people'] {
+  --accent: var(--tool-people);
+  --accent-ink: var(--tool-people-ink);
+  --accent-hover: var(--tool-people-hover);
+  --accent-tint: var(--tool-people-tint);
+  --accent-tint-bd: var(--tool-people-tint-bd);
+}
+[data-tool='brand'] {
+  --accent: var(--tool-brand);
+  --accent-ink: var(--tool-brand-ink);
+  --accent-hover: var(--tool-brand-hover);
+  --accent-tint: var(--tool-brand-tint);
+  --accent-tint-bd: var(--tool-brand-tint-bd);
+}
+[data-tool='files'] {
+  --accent: var(--tool-files);
+  --accent-ink: var(--tool-files-ink);
+  --accent-hover: var(--tool-files-hover);
+  --accent-tint: var(--tool-files-tint);
+  --accent-tint-bd: var(--tool-files-tint-bd);
+}
+[data-tool='crm'] {
+  --accent: var(--tool-crm);
+  --accent-ink: var(--tool-crm-ink);
+  --accent-hover: var(--tool-crm-hover);
+  --accent-tint: var(--tool-crm-tint);
+  --accent-tint-bd: var(--tool-crm-tint-bd);
+}
+[data-tool='tasks'] {
+  --accent: var(--tool-tasks);
+  --accent-ink: var(--tool-tasks-ink);
+  --accent-hover: var(--tool-tasks-hover);
+  --accent-tint: var(--tool-tasks-tint);
+  --accent-tint-bd: var(--tool-tasks-tint-bd);
+}
+[data-tool='reviews'] {
+  --accent: var(--tool-reviews);
+  --accent-ink: var(--tool-reviews-ink);
+  --accent-hover: var(--tool-reviews-hover);
+  --accent-tint: var(--tool-reviews-tint);
+  --accent-tint-bd: var(--tool-reviews-tint-bd);
+}
+[data-tool='bookings'] {
+  --accent: var(--tool-bookings);
+  --accent-ink: var(--tool-bookings-ink);
+  --accent-hover: var(--tool-bookings-hover);
+  --accent-tint: var(--tool-bookings-tint);
+  --accent-tint-bd: var(--tool-bookings-tint-bd);
+}
+[data-tool='marketplace'] {
+  --accent: var(--tool-marketplace);
+  --accent-ink: var(--tool-marketplace-ink);
+  --accent-hover: var(--tool-marketplace-hover);
+  --accent-tint: var(--tool-marketplace-tint);
+  --accent-tint-bd: var(--tool-marketplace-tint-bd);
+}
+[data-tool='fractional'] {
+  --accent: var(--tool-fractional);
+  --accent-ink: var(--tool-fractional-ink);
+  --accent-hover: var(--tool-fractional-hover);
+  --accent-tint: var(--tool-fractional-tint);
+  --accent-tint-bd: var(--tool-fractional-tint-bd);
+}
+[data-tool='advice'] {
+  --accent: var(--tool-advice);
+  --accent-ink: var(--tool-advice-ink);
+  --accent-hover: var(--tool-advice-hover);
+  --accent-tint: var(--tool-advice-tint);
+  --accent-tint-bd: var(--tool-advice-tint-bd);
+}
+[data-tool='proposals'] {
+  --accent: var(--tool-proposals);
+  --accent-ink: var(--tool-proposals-ink);
+  --accent-hover: var(--tool-proposals-hover);
+  --accent-tint: var(--tool-proposals-tint);
+  --accent-tint-bd: var(--tool-proposals-tint-bd);
+}
+[data-tool='signatures'] {
+  --accent: var(--tool-signatures);
+  --accent-ink: var(--tool-signatures-ink);
+  --accent-hover: var(--tool-signatures-hover);
+  --accent-tint: var(--tool-signatures-tint);
+  --accent-tint-bd: var(--tool-signatures-tint-bd);
+}
+[data-tool='print'] {
+  --accent: var(--tool-print);
+  --accent-ink: var(--tool-print-ink);
+  --accent-hover: var(--tool-print-hover);
+  --accent-tint: var(--tool-print-tint);
+  --accent-tint-bd: var(--tool-print-tint-bd);
+}
+[data-tool='links'] {
+  --accent: var(--tool-links);
+  --accent-ink: var(--tool-links-ink);
+  --accent-hover: var(--tool-links-hover);
+  --accent-tint: var(--tool-links-tint);
+  --accent-tint-bd: var(--tool-links-tint-bd);
+}
+[data-tool='promotions'] {
+  --accent: var(--tool-promotions);
+  --accent-ink: var(--tool-promotions-ink);
+  --accent-hover: var(--tool-promotions-hover);
+  --accent-tint: var(--tool-promotions-tint);
+  --accent-tint-bd: var(--tool-promotions-tint-bd);
+}
+[data-tool='ooh'] {
+  --accent: var(--tool-ooh);
+  --accent-ink: var(--tool-ooh-ink);
+  --accent-hover: var(--tool-ooh-hover);
+  --accent-tint: var(--tool-ooh-tint);
+  --accent-tint-bd: var(--tool-ooh-tint-bd);
+}
+[data-tool='social'] {
+  --accent: var(--tool-social);
+  --accent-ink: var(--tool-social-ink);
+  --accent-hover: var(--tool-social-hover);
+  --accent-tint: var(--tool-social-tint);
+  --accent-tint-bd: var(--tool-social-tint-bd);
+}
+[data-tool='email'] {
+  --accent: var(--tool-email);
+  --accent-ink: var(--tool-email-ink);
+  --accent-hover: var(--tool-email-hover);
+  --accent-tint: var(--tool-email-tint);
+  --accent-tint-bd: var(--tool-email-tint-bd);
+}
+[data-tool='resize'] {
+  --accent: var(--tool-resize);
+  --accent-ink: var(--tool-resize-ink);
+  --accent-hover: var(--tool-resize-hover);
+  --accent-tint: var(--tool-resize-tint);
+  --accent-tint-bd: var(--tool-resize-tint-bd);
+}
+
+[data-tool='products'] {
+  --accent: #22b14c;
+  --accent-ink: #1c8e3d;
+  --accent-hover: #1d9d43;
+  --accent-tint: #e2f6e7;
+  --accent-tint-bd: #c4ead0;
+}
+[data-tool='company'] {
+  --accent: #4b67d8;
+  --accent-ink: #3f56bd;
+  --accent-hover: #3d59d0;
+  --accent-tint: #ebeefc;
+  --accent-tint-bd: #d3daf6;
+}
+[data-tool='documents'] {
+  --accent: #c98a2b;
+  --accent-ink: #9a6612;
+  --accent-hover: #b87a1f;
+  --accent-tint: #f8efdd;
+  --accent-tint-bd: #ecdcbe;
+}
+[data-tool='strategy'] {
+  --accent: var(--ink);
+  --accent-ink: var(--ink);
+  --accent-hover: var(--ink-2);
+  --accent-tint: var(--paper-2);
+  --accent-tint-bd: var(--rule-2);
+}
+[data-tool='raated'] {
+  --accent: #e8252d;
+  --accent-ink: #c01f27;
+  --accent-hover: #d11f27;
+  --accent-tint: #fdeaea;
+  --accent-tint-bd: #f6cccc;
+}
+
+/* ── Document Locker (documents tool) — Files & Assets layout ─────────────────
+   Left filter panel (Tabs + Folders) + OS-style folder/file card grid. Tinted by
+   the documents tool accent (var(--accent*), set on [data-tool='documents']). */
+.pd-doc-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .pd-doc-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pd-doc-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: sticky;
+  top: calc(var(--topbar-h) + 12px);
+}
+/* On a phone the vertical Tabs+Folders rail is the wrong shape: it pushes the
+   whole file grid below three expanded folder lists. Collapse it to a single
+   row of scope chips (Agency / Public / Private) at the top — folders are then
+   reached by tapping folder tiles in the grid, with breadcrumbs to climb back
+   up. (Drag-to-move isn't a touch gesture anyway, so nothing is lost.) */
+@media (max-width: 720px) {
+  .pd-doc-rail {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .pd-doc-scope {
+    flex: 0 0 auto;
+  }
+  /* the in-rail folder sublist is redundant with the grid's folder tiles */
+  .pd-doc-folders {
+    display: none;
+  }
+  /* scope tab → pill; the expand chevron is meaningless without the sublist */
+  .pd-doc-tab {
+    width: auto;
+    border: 1px solid var(--rule-2);
+    border-radius: var(--r-pill);
+    padding: 7px 13px;
+  }
+  .pd-doc-tab > svg:first-child {
+    display: none;
+  }
+}
+
+.pd-doc-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--r-2);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.pd-doc-tab:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.pd-doc-tab[data-on='true'] {
+  background: var(--white);
+  border-color: var(--rule-2);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.pd-doc-folders {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 6px;
+  padding-left: 12px;
+}
+.pd-doc-folder {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--r-2);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--ink-2);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.pd-doc-folder:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.pd-doc-folder[data-on='true'] {
+  background: var(--accent-tint);
+  border-color: var(--accent-tint-bd);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.pd-doc-folder[data-drop='true'] {
+  background: var(--accent-tint);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.pd-doc-folder-empty {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.pd-doc-main {
+  min-width: 0;
+}
+
+.pd-doc-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+.pd-doc-crumb {
+  padding: 3px 7px;
+  border: none;
+  border-radius: var(--r-2);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.pd-doc-crumb:hover {
+  color: var(--ink);
+}
+.pd-doc-crumb[data-on='true'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+.pd-doc-crumb[data-drop='true'] {
+  background: var(--accent-tint);
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.pd-doc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.pd-doc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--rule-2);
+  border-radius: 999px;
+  background: var(--white);
+  font-family: var(--font);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.pd-doc-chip:hover {
+  background: var(--paper-2);
+}
+.pd-doc-chip[data-on='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+.pd-doc-chip-logo {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.pd-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.pd-doc-tile {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--white);
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    opacity var(--dur);
+}
+.pd-doc-tile:hover {
+  border-color: var(--rule-2);
+  box-shadow: var(--shadow-row);
+}
+.pd-doc-tile[data-dragging='true'] {
+  opacity: 0.4;
+}
+.pd-doc-tile[data-drop='true'] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+  background: var(--accent-tint);
+}
+
+.pd-doc-tile-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 16px 12px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+}
+
+.pd-doc-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  width: 100%;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.pd-doc-cap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  font-size: 10.5px;
+  color: var(--ink-2);
+}
+.pd-doc-cap-logo {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.pd-doc-date {
+  width: 100%;
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+
+.pd-doc-rename {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  padding: 3px 6px;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+}
+.pd-doc-rename:focus {
+  border-color: var(--accent);
+}
+
+.pd-doc-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.pd-doc-tile:hover .pd-doc-actions {
+  opacity: 1;
+}
+.pd-doc-actbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--white);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.pd-doc-actbtn:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+/* cross-tab search results (files.search) */
+.pd-doc-search {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--white);
+  overflow: hidden;
+}
+.pd-doc-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  transition: background var(--dur) var(--ease);
+}
+.pd-doc-search-row:last-child {
+  border-bottom: none;
+}
+.pd-doc-search-row:hover {
+  background: var(--paper-2);
+}
+.pd-doc-search-name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pd-doc-search-note {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pd-doc-search-owner {
+  flex-shrink: 0;
+  padding: 2px 9px;
+  border: 1px solid var(--rule-2);
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+/* ── Links & QR (url-qr → tool 'crm') — bring the shared LinksPage header/subtitle
+   in line with the suite's FndHeader typography. Dashboard-only: scoped to the
+   pd-page wrapper, no edit to the shared links.tsx (Prodesk keeps its own look). */
+[data-tool='crm'] h1.text-display-sm {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+[data-tool='crm'] h1.text-display-sm + p {
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: var(--t-12);
+  font-weight: var(--w-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* ── Growth Strategy Command Center ([data-tool='strategy']) ───────────────── */
+.pd-strategy-container {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 16px;
+  height: calc(100dvh - var(--topbar-h));
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px 20px;
+  min-width: 0;
+}
+
+.pd-strategy-container.collapsed {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Left column — hero, starter bar & chat stage stacked full height */
+.pd-strategy-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pd-strategy-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-3, 12px);
+  padding: 12px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  flex-shrink: 0;
+}
+
+.pd-strategy-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.pd-strategy-hero-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--volt-glow), var(--paper-2));
+  border: 1px solid var(--rule-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--volt);
+  flex-shrink: 0;
+}
+
+.pd-strategy-hero-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pd-strategy-hero-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+}
+
+.pd-strategy-hero-sub {
+  font-size: 12px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1px;
+}
+
+.pd-strategy-badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #10b981;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.pd-strategy-starter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.pd-strategy-starter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.pd-strategy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.pd-strategy-chip:hover {
+  background: var(--paper-2);
+  border-color: var(--ink-3);
+  transform: translateY(-1px);
+  color: var(--ink);
+}
+
+.pd-strategy-main-stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--r-3, 12px);
+  overflow: hidden;
+  border: 1px solid var(--rule-2);
+  background: var(--white);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.pd-strategy-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 2px;
+}
+
+.pd-strategy-card {
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2, 10px);
+  padding: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.pd-strategy-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Brand identity card (strategist grounding) */
+.pd-strategy-brand-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-strategy-brand-id {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.pd-strategy-brand-id-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.pd-strategy-brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-strategy-brand-type {
+  font-size: 12px;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-strategy-brand-grounding {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding-top: 11px;
+  border-top: 1px solid var(--rule);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+/* Brand Notepad widget in strategy sidebar */
+.pd-strategy-notepad-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 280px;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2, 10px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.pd-strategy-notepad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+
+.pd-strategy-notepad-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-strategy-notepad-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pd-strategy-notepad-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.pd-strategy-notepad-btn:hover:not(:disabled) {
+  background: var(--white);
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+.pd-strategy-notepad-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pd-strategy-notepad-status {
+  font-size: 10.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--white);
+  border: 1px solid var(--rule);
+}
+
+.pd-strategy-notepad-editor {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.55;
+  scrollbar-width: thin;
+}
+
+.pd-strategy-notepad-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+/* Switchable sidebar panels (VS-Code-style tab strip) */
+.pd-strategy-panels {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 280px;
+}
+
+.pd-strategy-panel-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pd-strategy-panel-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.pd-strategy-panel-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-2, 10px);
+  border: 1px solid var(--rule-2);
+  background: var(--white);
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.pd-strategy-panel-tab:hover {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+
+.pd-strategy-panel-tab.active {
+  color: var(--ink);
+  background: var(--paper-2);
+  border-color: var(--accent, var(--rule-2));
+  box-shadow: inset 0 -2px 0 var(--accent, var(--ink));
+}
+
+.pd-strategy-panel-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.pd-strategy-panel-body[hidden] {
+  display: none;
+}
+
+/* To-Do panel (placeholder) */
+.pd-strategy-todo-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 280px;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2, 10px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.pd-strategy-todo-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px;
+  text-align: center;
+}
+
+.pd-strategy-todo-empty-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.pd-strategy-todo-empty-sub {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+/* Skills panel — the checklist of what the strategist may do */
+.pd-strategy-skills-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 280px;
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2, 10px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.pd-strategy-skills-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 8px;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.pd-strategy-skills-intro {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  margin-bottom: 2px;
+}
+
+/* Footnote under the toggleable skills: the always-on core skills can't be
+   switched off, so they aren't listed as rows. */
+.pd-strategy-skills-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+}
+
+.pd-strategy-model {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--rule-2);
+}
+
+.pd-strategy-model-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pd-strategy-model-opt {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2, var(--ink-3));
+  background: var(--white);
+  border: 1px solid var(--rule-2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.pd-strategy-model-opt:hover:not(:disabled) {
+  background: var(--paper-2);
+}
+
+.pd-strategy-model-opt.on {
+  color: var(--white);
+  background: var(--accent, var(--ink));
+  border-color: var(--accent, var(--ink));
+}
+
+.pd-strategy-model-opt:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.pd-strategy-skill {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid var(--rule-2);
+  border-radius: 10px;
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.pd-strategy-skill:hover {
+  background: var(--paper-2);
+}
+
+.pd-strategy-skill.on {
+  border-color: var(--accent, var(--rule-2));
+  background: color-mix(in srgb, var(--accent, var(--ink)) 5%, var(--white));
+}
+
+.pd-strategy-skill-check {
+  margin-top: 2px;
+  height: 15px;
+  width: 15px;
+  flex-shrink: 0;
+  accent-color: var(--accent, var(--ink));
+  cursor: pointer;
+}
+
+.pd-strategy-skill-check:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.pd-strategy-skill-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-strategy-skill-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.pd-strategy-skill-desc {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+/* Count badge on a panel tab (e.g. remaining To-Do items) */
+.pd-strategy-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent, var(--ink));
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* To-Do plan list (the AI-owned implementation plan) */
+.pd-strategy-todo-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 2px;
+  padding: 6px;
+  overflow-y: auto;
+}
+
+.pd-strategy-todo-item {
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.pd-strategy-todo-item:hover {
+  background: var(--paper-2);
+}
+
+.pd-strategy-todo-item.done .pd-strategy-todo-item-title {
+  text-decoration: line-through;
+  color: var(--ink-3);
+}
+
+.pd-strategy-todo-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.pd-strategy-todo-item-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* To-Do detail screen — one item's full markdown, replacing the list in-panel */
+.pd-strategy-todo-detail {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.pd-strategy-todo-detail-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--rule-2);
+}
+
+.pd-strategy-todo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px 4px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--rule-2);
+  background: var(--white);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.pd-strategy-todo-back:hover {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+
+.pd-strategy-todo-detail-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.pd-strategy-todo-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 14px 16px;
+}
+
+.pd-strategy-todo-detail-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.pd-strategy-todo-detail-title.done {
+  text-decoration: line-through;
+  color: var(--ink-3);
+}
+
+.pd-strategy-todo-detail-md {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.pd-strategy-todo-detail-empty {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .pd-strategy-container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pd-strategy-sidebar {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="7 7 86 86" fill="none" role="img" aria-label="Chat">
+  <!--
+    The tab icon has no ground of its own — it sits on whatever the browser
+    paints behind it, which is near-white in a light chrome and near-black in a
+    dark one. A single fixed colour is therefore invisible in one of the two, so
+    the mark follows the viewer's scheme. `.ink` is the one hook every shape
+    shares; nothing else in here carries colour.
+  -->
+  <style>
+    .ink { color: #0E0E0C; }
+    @media (prefers-color-scheme: dark) { .ink { color: #EDEEF0; } }
+  </style>
+  <g class="ink">
+    <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" stroke-width="6" />
+    <path d="M50 22 L60 50 L50 50 Z" fill="currentColor" />
+    <path
+      d="M50 78 L40 50 L50 50 Z"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="6"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

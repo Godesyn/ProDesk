@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@source "../../../packages/shared/src";
+
+/* Shared side-panel layout (packages/shared AppShell) — one panel layout,
+   width and collapse behaviour across every frontend. */
+@import '../../../packages/shared/src/styles/side-panel.css';
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/*
+ * Logo Studio — "The Atelier"
+ * Design thesis: great marks are born in black & white; colour is a decision.
+ * The studio chrome is achromatic ink-on-paper; the Forest pigment (the shared
+ * runtime accent) is rationed to moments of creation and commitment.
+ *
+ * We do NOT touch --color-accent / --accent-h/s/l (runtime white-labelling owns
+ * them). All bespoke styling is scoped under `.logo-ui` so the shared auth /
+ * onboarding / profile / support pages keep the stock theme untouched.
+ */
+@theme {
+  /* no global token overrides — surfaces & accent stay shared/runtime-driven */
+}
+
+/* ----------------------------------------------------------------------------
+ * Scoped studio palette + surfaces
+ * ------------------------------------------------------------------------- */
+.logo-ui {
+  --rail: #0e0e0c; /* the dark frame */
+  --rail-line: rgba(255, 255, 255, 0.08);
+  --rail-ink: #f4f1ea; /* off-white on rail */
+  --rail-ink-2: #b6b4ab;
+  --rail-ink-3: #7c7a72;
+
+  --stage: #f3f1ea; /* warm paper stage (signatures-biased) */
+  --stage-2: #eceadf;
+  --card: #fbfaf6;
+  --ink: var(--color-ink-100); /* #0e0e0c */
+  --ink-2: var(--color-ink-60);
+  --ink-3: var(--color-ink-40);
+
+  --hair: rgba(14, 14, 12, 0.08);
+  --hair-2: rgba(14, 14, 12, 0.14);
+  --pigment: var(--color-accent); /* Forest — the rationed colour */
+  --pigment-soft: color-mix(in srgb, var(--color-accent) 12%, transparent);
+
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* ===== Shared side panel — Logo Studio palette ===================
+   Layout/width/collapse live in packages/shared/src/styles/side-panel.css; this
+   block only re-points the --psp-* colour contract at the studio's dark rail, so
+   the panel keeps the ink frame while matching every other frontend.
+
+   Paired with `psp-ink` (see LogoApp), the shared dark-rail contract — including the
+   dropdown surface, which this used to pin to a literal #1a1a17. The shared value
+   derives the same lift from --psp-bg, so every black panel elevates its menus
+   identically instead of each one guessing. The studio's own --rail-* ink scale
+   stays: it's the same greys the canvas chrome uses. */
+.psp-theme-logo {
+  --psp-bg: var(--rail, #0e0e0c);
+  --psp-fg: var(--rail-ink, #f4f1ea);
+  --psp-fg-2: var(--rail-ink-2, #b6b4ab);
+  --psp-fg-3: var(--rail-ink-3, #7c7a72);
+  --psp-line: var(--rail-line, rgba(255, 255, 255, 0.08));
+  --psp-hover: rgba(255, 255, 255, 0.07);
+  --psp-hover-fg: var(--rail-ink, #f4f1ea);
+  --psp-active: rgba(255, 255, 255, 0.11);
+  --psp-active-fg: var(--rail-ink, #f4f1ea);
+  --psp-slot-bg: rgba(255, 255, 255, 0.04);
+  --psp-radius: var(--radius-md, 10px);
+}
+
+/*
+ * The shared `.text-display` token is a FIXED 7.5rem (120px). That is right for a
+ * desktop hero but swallows a phone viewport whole — the headline alone filled a
+ * 390px screen, pushing the specimen and every action below the fold. Scope a
+ * fluid ramp to the studio rather than touching the shared token, which other
+ * frontends rely on.
+ */
+.logo-ui .text-display {
+  font-size: clamp(2.75rem, 11vw, 7.5rem);
+}
+
+/* Mono spec labels — the "designer numbers" motif (hex / px / ratios) */
+.logo-ui .spec {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Editorial serif accent (Instrument Serif italic) */
+.logo-ui .quill {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ----------------------------------------------------------------------------
+ * The stage: a quiet blueprint grid where marks are born
+ * ------------------------------------------------------------------------- */
+.logo-ui .stage-grid {
+  background-color: var(--stage);
+  background-image: radial-gradient(var(--hair) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+}
+
+/* Specimen frame — thin ruled window with corner ticks, like a foundry sheet */
+.logo-ui .specimen {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--hair-2);
+}
+.logo-ui .specimen::before,
+.logo-ui .specimen::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  opacity: 0.45;
+}
+.logo-ui .specimen::before {
+  top: 8px;
+  left: 8px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.logo-ui .specimen::after {
+  bottom: 8px;
+  right: 8px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* Concept tile — lifts on hover, pigment ring when selected */
+.logo-ui .concept {
+  transition:
+    transform var(--duration-standard) var(--ease-click),
+    box-shadow var(--duration-standard) var(--ease-click),
+    border-color var(--duration-standard) var(--ease-click);
+}
+.logo-ui .concept:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-3);
+}
+.logo-ui .concept[data-selected='true'] {
+  border-color: var(--pigment);
+  box-shadow: 0 0 0 2px var(--pigment);
+}
+
+/* Rail nav item */
+.logo-ui .rail-item {
+  position: relative;
+  transition: background var(--duration-quick) var(--ease-click);
+}
+.logo-ui .rail-item[data-active='true'] {
+  background: rgba(255, 255, 255, 0.07);
+}
+.logo-ui .rail-item[data-active='true']::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--pigment);
+}
+
+/* Swatch chip */
+.logo-ui .swatch {
+  border: 1px solid var(--hair-2);
+  box-shadow: inset 0 0 0 3px var(--card);
+}
+
+/* Inline generated/edited SVG marks — the span sets the `color` that the mark's
+ * `currentColor` ink inherits (mono ↔ committed colour is one property). */
+.logo-ui .svg-mark {
+  display: inline-block;
+  line-height: 0;
+}
+.logo-ui .svg-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ----------------------------------------------------------------------------
+ * The birth of the mark — self-drawing SVG + staged reveals
+ * ------------------------------------------------------------------------- */
+.logo-ui [data-draw] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: logo-draw 1.15s var(--ease-click) forwards;
+}
+@keyframes logo-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.logo-ui .rise {
+  animation: logo-rise var(--duration-statement) var(--ease-click) both;
+}
+@keyframes logo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.logo-ui .pop {
+  animation: logo-pop var(--duration-standard) var(--ease-click) both;
+}
+@keyframes logo-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-ui *,
+  .logo-ui *::before,
+  .logo-ui *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .logo-ui [data-draw] {
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* Range sliders in the inspector */
+.logo-ui .logo-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--hair-2);
+  outline: none;
+}
+.logo-ui .logo-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--pigment);
+  border: 3px solid var(--card);
+  box-shadow: 0 1px 3px rgba(14, 14, 12, 0.25);
+  cursor: pointer;
+}
+.logo-ui .logo-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--pigment);
+  border: 3px solid var(--card);
+  cursor: pointer;
+}
+
+/* Thin custom scrollbars inside the studio */
+.logo-ui *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.logo-ui *::-webkit-scrollbar-thumb {
+  background: var(--hair-2);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+.logo-ui *::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-3);
+  background-clip: content-box;
+}

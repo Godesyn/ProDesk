@@ -1,0 +1,291 @@
+/* Verdiict marketing landing — scoped stylesheet for app/LandingPage.tsx.
+ * Ported from the Manus review-request-tool export (client/src/index.css pm-*
+ * utilities + tokens). Everything is scoped under `.vlanding` so nothing leaks
+ * into the authenticated app (which uses styles/verdiict.css). Fonts: the
+ * export loaded Geist/JetBrains Mono from a CDN; here we reuse the families the
+ * client already ships (Inter Tight + JetBrains Mono via src/index.css) with
+ * system fallbacks. Note: despite the token name, --pm-lime is the Verdiict
+ * blue accent — kept verbatim from the export. */
+
+.vlanding {
+  --pm-ink: #0b0f0a;
+  --pm-ink-2: #1a1f18;
+  --pm-paper: #f4f1ea;
+  --pm-paper-2: #e8e3d6;
+  --pm-paper-3: #fbfaf4;
+  --pm-lime: #6fa8ff;
+  --pm-lime-deep: #4a8aee;
+  --pm-muted: #6b6f66;
+  --pm-line: rgba(11, 15, 10, 0.12);
+  --pm-line-soft: rgba(11, 15, 10, 0.08);
+  --pm-font-sans: 'Inter Tight', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --pm-font-mono: 'JetBrains Mono', ui-monospace, 'Fira Code', monospace;
+
+  font-family: var(--pm-font-sans);
+  background: var(--pm-paper);
+  color: var(--pm-ink);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.vlanding *,
+.vlanding *::before,
+.vlanding *::after {
+  box-sizing: border-box;
+}
+
+.vlanding h1,
+.vlanding h2,
+.vlanding p {
+  margin: 0;
+}
+
+.vlanding button,
+.vlanding input,
+.vlanding textarea {
+  font: inherit;
+}
+
+.vlanding ::selection {
+  background: var(--pm-lime);
+  color: var(--pm-ink);
+}
+
+/* Smooth in-page anchor scrolling (#how / #pricing) while the landing is mounted. */
+html:has(.vlanding) {
+  scroll-behavior: smooth;
+}
+
+/* ── Typography helpers ─────────────────────────────────────────────────── */
+.vlanding .pm-eyebrow {
+  font-family: var(--pm-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pm-muted);
+  font-weight: 500;
+}
+
+.vlanding .pm-h-display {
+  font-size: clamp(56px, 9vw, 144px);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.vlanding .pm-h-1 {
+  font-size: clamp(40px, 6vw, 84px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.vlanding .pm-h-3 {
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.vlanding .pm-lead {
+  font-size: clamp(16px, 1.5vw, 20px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* ── Branded chip (industry win tags) ───────────────────────────────────── */
+.vlanding .pm-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1.5px solid rgba(11, 15, 10, 0.18);
+  background: transparent;
+  color: var(--pm-ink);
+  white-space: nowrap;
+  transition: all 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-family: inherit;
+}
+.vlanding .pm-chip:hover {
+  background: rgba(11, 15, 10, 0.04);
+}
+
+/* ── Animations ─────────────────────────────────────────────────────────── */
+@keyframes vl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.vlanding .pm-rise-in {
+  animation: vl-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes vl-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes vl-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.vlanding .pm-marquee {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+.vlanding .pm-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: vl-marquee 40s linear infinite;
+  gap: 64px;
+}
+
+/* ── Responsive overrides (ported from the export's per-section <style> tags;
+      !important is required to beat the inline styles they override) ─────── */
+@media (max-width: 720px) {
+  .vlanding .pm-nav-link {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .vlanding .pm-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 48px !important;
+  }
+  .vlanding .pm-hero-phone-wrap {
+    order: 2;
+  }
+}
+@media (max-width: 380px) {
+  .vlanding .pm-hero-phone-wrap > div {
+    transform: scale(0.85);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 800px) {
+  .vlanding .pm-problem-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .vlanding .pm-hiw-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .vlanding .pm-paths-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .vlanding .pm-dash-side {
+    display: none !important;
+  }
+  .vlanding .pm-dash-frame {
+    min-height: 0 !important;
+  }
+  .vlanding .pm-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .vlanding .pm-rev-row {
+    grid-template-columns: 90px 60px 1fr 60px !important;
+  }
+  .vlanding .pm-rev-row > :nth-child(5) {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .vlanding .pm-rev-row {
+    grid-template-columns: 80px 56px 1fr !important;
+  }
+  .vlanding .pm-rev-row > :nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .vlanding .pm-ind-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    margin-top: 0 !important;
+  }
+  .vlanding .pm-ind-list {
+    display: none !important;
+  }
+  .vlanding .pm-ind-pills {
+    display: flex !important;
+  }
+  .vlanding .pm-price-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .vlanding .pm-features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .vlanding .pm-dir-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+.vlanding .pm-dir-tile {
+  transition: box-shadow 0.15s;
+}
+.vlanding .pm-dir-tile:hover {
+  box-shadow: 0 4px 20px rgba(11, 15, 10, 0.08);
+}
+
+.vlanding .pm-ind-pills::-webkit-scrollbar {
+  display: none;
+}
+.vlanding .pm-ind-pills {
+  scrollbar-width: none;
+}
+
+@media (max-width: 760px) {
+  .vlanding .pm-setup-row {
+    grid-template-columns: 64px 1fr !important;
+    gap: 12px !important;
+    padding: 18px 0 !important;
+  }
+  .vlanding .pm-setup-time {
+    font-size: 14px !important;
+    align-self: start;
+    padding-top: 4px;
+  }
+  .vlanding .pm-setup-title {
+    font-size: 18px !important;
+  }
+  .vlanding .pm-setup-title .pm-h-3 {
+    font-size: 18px !important;
+  }
+  .vlanding .pm-setup-desc {
+    grid-column: 2 / -1 !important;
+    font-size: 14px !important;
+    margin-top: 2px;
+  }
+  .vlanding .pm-setup-check-desktop {
+    display: none !important;
+  }
+  .vlanding .pm-setup-check-mobile {
+    display: inline-flex !important;
+  }
+}

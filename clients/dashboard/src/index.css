@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Inter:wght@400;500;600;700&family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&family=Work+Sans:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@import './suite/suite.css';
+@import './suite/suite-tools.css';
+@import './suite/suite-foundations.css';
+@source "../../../packages/shared/src";
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/*
+ * Dashboard-specific design overrides.
+ * Tailwind v4 merges `@theme` blocks and the LAST declaration of a token wins,
+ * so anything below overrides the shared base in packages/shared/src/styles/theme.css.
+ * Safe to override: radii, fonts, shadows, ink scale, surface tints, motion.
+ * Do NOT redefine --color-accent or --accent-h/s/l — those are driven at runtime
+ * by theme-accent.ts for agency white-labeling.
+ */
+@theme {
+  /* ---- Type theme, switched to the "Prodesk Master App" design-system values
+   *      (claude.ai/design · colors_and_type.css → Type scale / UI scale).
+   *      Fonts and the ink scale already matched the DS verbatim; these tokens
+   *      make the DS the explicit source for the dashboard's text scale. ---- */
+  --font-sans:
+    'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Type scale — the design system's compact app scale (app/tokens.css:
+   *   --t-12 / 14 / 16 / 20 / 28 / 40 / 64). The dashboard is product chrome, not
+   *   an editorial canvas, so headings use this small scale — NOT the oversized
+   *   editorial display scale (120/84/56…) the shared base ships for marketing
+   *   surfaces. Line-heights/tracking tighten as size grows, per the DS. */
+  --ds-display-size: 4rem; /* 64px (--t-64) */
+  --ds-display-lh: 1;
+  --ds-display-tracking: -0.04em;
+  --ds-h1-size: 2.5rem; /* 40px (--t-40) */
+  --ds-h1-lh: 1.1;
+  --ds-h1-tracking: -0.03em;
+  --ds-h2-size: 1.75rem; /* 28px (--t-28) */
+  --ds-h2-lh: 1.2;
+  --ds-h2-tracking: -0.02em;
+  --ds-h3-size: 1.25rem; /* 20px (--t-20) */
+  --ds-h3-lh: 1.3;
+  --ds-h3-tracking: -0.01em;
+  --ds-body-size: 1rem; /* 16px (--t-16) */
+  --ds-body-lh: 1.45;
+  --ds-body-tracking: 0;
+  --ds-eyebrow-size: 0.75rem; /* 12px (--t-12) */
+  --ds-eyebrow-lh: 1.4;
+  --ds-eyebrow-tracking: 0.1em;
+
+  /* UI scale — for dense product chrome (DS: 12 / 14 / 16). */
+  --ds-ui-xs: 0.75rem; /* 12px */
+  --ds-ui-sm: 0.875rem; /* 14px */
+  --ds-ui-md: 1rem; /* 16px */
+}
+
+/*
+ * Type utility overrides — same selectors as the shared base, redeclared here
+ * to the design-system's fixed editorial sizes (the shared base uses smaller,
+ * responsive clamp() values). Because this file imports the shared theme first,
+ * these later same-layer rules win by source order. Switches the actual scale
+ * values to the DS without touching the shared cross-client theme.
+ */
+@layer utilities {
+  .text-display {
+    font-size: var(--ds-display-size);
+    line-height: var(--ds-display-lh);
+    letter-spacing: var(--ds-display-tracking);
+    font-weight: 800;
+  }
+  .text-h1 {
+    font-size: var(--ds-h1-size);
+    line-height: var(--ds-h1-lh);
+    letter-spacing: var(--ds-h1-tracking);
+    font-weight: 800;
+  }
+  .text-h2 {
+    font-size: var(--ds-h2-size);
+    line-height: var(--ds-h2-lh);
+    letter-spacing: var(--ds-h2-tracking);
+    font-weight: 700;
+  }
+  .text-h3 {
+    font-size: var(--ds-h3-size);
+    line-height: var(--ds-h3-lh);
+    letter-spacing: var(--ds-h3-tracking);
+    font-weight: 600;
+  }
+  .text-body {
+    font-size: var(--ds-body-size);
+    line-height: var(--ds-body-lh);
+    letter-spacing: var(--ds-body-tracking);
+    font-weight: 400;
+  }
+  .text-eyebrow {
+    font-size: var(--ds-eyebrow-size);
+    line-height: var(--ds-eyebrow-lh);
+    letter-spacing: var(--ds-eyebrow-tracking);
+  }
+}

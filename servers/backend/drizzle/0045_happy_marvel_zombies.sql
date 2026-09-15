@@ -1,0 +1,1 @@
+ALTER TABLE "global_settings" ADD COLUMN "admin_forwarding_emails" text[];

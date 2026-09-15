@@ -1,0 +1,15 @@
+-- Per-feature AI model selection.
+--
+-- `disabled_ai_providers` already lets the super-admin turn provider FAMILIES on
+-- and off — that stays, and it is what the Strategy assistant runs on, because a
+-- brand picks its own family there.
+--
+-- Everywhere else the model is a platform decision, not a tenant one: nobody
+-- using the logo studio or the reply queue should have to think about which
+-- model writes their draft. This column maps an AI feature (the `ai_usage.source`
+-- value) to a concrete model id, so a super-admin can put high-volume,
+-- low-difficulty work on a cheap model and leave the hard work on a flagship.
+--
+-- Shape: { "<source>": "<model id>" }. An absent key means "use the default",
+-- so an empty object is the same as no configuration at all.
+ALTER TABLE "global_settings" ADD COLUMN IF NOT EXISTS "ai_feature_models" jsonb DEFAULT '{}'::jsonb;

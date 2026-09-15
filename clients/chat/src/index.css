@@ -1,0 +1,477 @@
+@import 'tailwindcss';
+@import '../../../packages/shared/src/styles/theme.css';
+@source "../../../packages/shared/src";
+
+/* Shared side-panel layout (packages/shared AppShell) — one panel layout,
+   width and collapse behaviour across every frontend. */
+@import '../../../packages/shared/src/styles/side-panel.css';
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-animate';
+
+/*
+ * CHAT — the Prodesk messenger (clients/chat, port 5184, chat.prodesk.com).
+ *
+ * Design thesis: CHAT IS NOT A DOCUMENT, IT IS A ROOM.
+ *
+ * Logo Studio and KEYMASTR are ink-on-paper — artifacts, specimen frames,
+ * blueprint grids, a warm Bone stage. A messenger is the opposite. It is air and
+ * light, it is used at night and one-handed and hundreds of times a day, and the
+ * content is not an artifact you produced, it is other people. So this is the one
+ * app in the suite that is DARK-FIRST, and it drops every paper motif. Kinship
+ * with its siblings is carried by the type system and the rationed accent, not by
+ * the ground.
+ *
+ * The pigment doctrine, third verse:
+ *
+ *   Logo Studio    pigment = COMMITMENT   (a colourway chosen, a concept picked)
+ *   KEYMASTR       pigment = EXPOSURE     (something is open RIGHT NOW)
+ *   Chat           pigment = PRESENCE     (SOMEONE IS HERE)
+ *
+ * Colour appears on an online bead, a typing pulse, the Owed marker, the send
+ * control the moment it holds something to send. It drains to ink when the moment
+ * passes. At rest the entire app is achromatic. There is no second colour — a
+ * messenger has no irreversible state worth colouring on the surface.
+ *
+ * We do NOT touch --color-accent / --accent-h/s/l (runtime white-labelling owns
+ * them). Everything bespoke is scoped under `.cx-ui`, so the shared auth /
+ * onboarding / verify-email pages keep the stock theme untouched.
+ */
+@theme {
+  /* no global token overrides — surfaces & accent stay shared/runtime-driven */
+}
+
+/* ----------------------------------------------------------------------------
+ * The two grounds
+ *
+ * NIGHT is the default and DAY is the alternate, which is the inverse of every
+ * other frontend here. That is not a preference: the defining condition of
+ * messaging is a phone in a dark room, and a product that opens white at 2am has
+ * made its most common moment its worst one.
+ *
+ * The ground is chosen by a `data-ground` attribute on <html>, set before React
+ * mounts (see lib/ground.ts + main.tsx) so there is never a flash. Night is the
+ * bare `.cx-ui` declaration so a missing attribute — storage disabled, a stale
+ * document — still lands somewhere correct.
+ * ------------------------------------------------------------------------- */
+.cx-ui {
+  /* --- Night (default) --- */
+  --room: #101317; /* the ground. Cool graphite, NOT black: pure black smears
+                      on OLED during momentum scroll, and this is the most
+                      scrolled surface in the suite. */
+  --room-2: #171b21; /* raised — composer, list, sheets, attachment cards */
+  --room-3: #1e232a; /* hover, inputs, pressed */
+  --room-scrim: rgba(8, 10, 12, 0.72);
+
+  --voice: #edeef0; /* speech. NOT pure white — glare at 2am is a real defect. */
+  --voice-2: #9aa1ab; /* metadata, previews, secondary labels */
+  --voice-3: #5f6772; /* dividers, ghosts, disabled, tombstones */
+
+  --wire: rgba(255, 255, 255, 0.08); /* hairline — and the spine */
+  --wire-2: rgba(255, 255, 255, 0.14); /* the stronger hairline */
+
+  --live: var(--color-accent); /* PRESENCE. Never overridden — white-labelled. */
+  --live-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --live-dim: color-mix(in srgb, var(--color-accent) 42%, transparent);
+
+  --danger: #d4553f; /* confirm dialogs only. Never on a resting surface. */
+
+  /* Instrument Sans is the speech face and it exists ONLY here. Declaring it as
+     a scoped custom property rather than a Tailwind @theme token keeps it out of
+     the shared font scale, where a future `font-sans` change would silently
+     restyle every message in the app. */
+  --font-speech: 'Instrument Sans', var(--font-sans);
+
+  --cx-gutter: 56px; /* the spine's x-position, and the transcript's left rail */
+
+  color: var(--voice);
+  background: var(--room);
+  font-family: var(--font-sans);
+}
+
+:root[data-ground='day'] .cx-ui {
+  /* --- Day ---
+     The ground is the SHARED paper token, not a literal, so an agency's runtime
+     accent still tints the room. Day is a real design, not a filter: the wires
+     invert, the raised surfaces go lighter than the ground rather than darker. */
+  --room: var(--color-paper);
+  --room-2: #ffffff;
+  --room-3: var(--color-inset);
+  --room-scrim: rgba(14, 14, 12, 0.5);
+
+  --voice: var(--color-ink-100);
+  --voice-2: var(--color-ink-60);
+  --voice-3: var(--color-ink-40);
+
+  --wire: rgba(14, 14, 12, 0.08);
+  --wire-2: rgba(14, 14, 12, 0.14);
+
+  --danger: var(--color-danger, #b3402c);
+}
+
+/* ===== Shared side panel — Chat palette ================================
+   Layout/width/collapse live in packages/shared/src/styles/side-panel.css; this
+   block only re-points the --psp-* colour contract. Paired with `psp-ink` (see
+   ChatApp), the shared dark-rail contract.
+
+   The rail reads --room from `.cx-ui`, so in Day the panel goes light with the
+   rest of the app — unlike Logo/KEYMASTR, whose rail is permanently dark. A
+   messenger with a black slab down the side of a light room looks like two
+   applications stapled together. */
+.psp-theme-chat {
+  --psp-bg: var(--room, #101317);
+  --psp-fg: var(--voice, #edeef0);
+  --psp-fg-2: var(--voice-2, #9aa1ab);
+  --psp-fg-3: var(--voice-3, #5f6772);
+  --psp-line: var(--wire, rgba(255, 255, 255, 0.08));
+  --psp-hover: color-mix(in srgb, var(--voice) 7%, transparent);
+  --psp-hover-fg: var(--voice, #edeef0);
+  --psp-active: color-mix(in srgb, var(--voice) 11%, transparent);
+  --psp-active-fg: var(--voice, #edeef0);
+  --psp-slot-bg: color-mix(in srgb, var(--voice) 4%, transparent);
+  --psp-radius: var(--radius-md, 10px);
+}
+
+/* ----------------------------------------------------------------------------
+ * Type — three faces doing three jobs, and never each other's
+ * ------------------------------------------------------------------------- */
+
+/* Human speech. The one thing in this app that is not UI. */
+.cx-ui .speech {
+  font-family: var(--font-speech);
+  font-size: 15.5px;
+  line-height: 1.55;
+  letter-spacing: -0.003em;
+  font-weight: 400;
+  overflow-wrap: anywhere; /* a pasted URL must never widen the transcript */
+}
+
+/* Mono spec label — every number in the app: timestamps, dates, counts, sizes. */
+.cx-ui .spec {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--voice-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Editorial serif — exactly ONE line per empty state. Nowhere else. */
+.cx-ui .quill {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--voice-2);
+}
+
+/* The shared `.text-display` token is a FIXED 7.5rem (120px), which swallows a
+   phone viewport whole. Scope a fluid ramp rather than editing the shared token
+   (the same fix Logo Studio and KEYMASTR make). */
+.cx-ui .text-display {
+  font-size: clamp(2.25rem, 8vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+/* ----------------------------------------------------------------------------
+ * THE SPINE — the signature element
+ *
+ * One hairline runs down the transcript at --cx-gutter. Every message hangs off
+ * it, and it carries four things at once: the timeline, each participant's read
+ * position (beads), presence, and typing.
+ *
+ * It is drawn as a per-row ::before segment rather than one absolutely
+ * positioned full-height line, because the transcript is virtualised — a single
+ * line would have to track the scroller's total height and would tear on every
+ * remeasure. Contiguous rows join their segments into one continuous wire.
+ * ------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------
+ * The jump highlight
+ *
+ * Following a quote drops you somewhere you were not, so the landing has to
+ * answer "which one?" without being read as an error or a selection. It holds
+ * for two full seconds at strength and then fades over one more, because a flash
+ * that is gone before the scroll finishes settling has told you nothing — and a
+ * highlight that never fades becomes a permanent mark on an ordinary message.
+ *
+ * A tint plus a ring rather than a repaint: a long message stays readable while
+ * it is lit.
+ * ------------------------------------------------------------------------- */
+.cx-flash {
+  animation: cx-flash 3000ms var(--ease-click) 1 both;
+}
+
+@keyframes cx-flash {
+  0%,
+  66% {
+    box-shadow: 0 0 0 2px var(--live);
+    background: var(--live-soft);
+  }
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+    background: transparent;
+  }
+}
+
+/* A read bead — a participant's avatar shown at the last message they have read.
+   In a group of eight there are seven, clustering where people are together and
+   strung out where they are not. Nobody else renders group read state at all.
+
+   These used to be docked ON a vertical "spine" drawn down the transcript's
+   gutter, which was the old bubble-less layout's ownership signal. The transcript
+   is bubbles now — matching the workspace MessagePanel — so the spine is gone and
+   the beads sit inline under the message they point at. */
+.cx-bead {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  background: var(--room-3);
+  box-shadow: 0 0 0 2px var(--room);
+  object-fit: cover;
+}
+
+/* Presence. Filled + a pigment ring = online; dimmed = away. */
+.cx-bead[data-online='true'] {
+  outline: 1px solid var(--live);
+  outline-offset: 1px;
+}
+.cx-bead[data-online='false'] {
+  opacity: 0.55;
+}
+
+/* Typing also renders on the PERSON, in addition to the footer indicator. */
+.cx-bead[data-typing='true'] {
+  outline: 1px solid var(--live);
+  animation: cx-breathe 1400ms ease-in-out infinite;
+}
+
+@keyframes cx-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--room), 0 0 0 3px var(--live-soft);
+  }
+  50% {
+    box-shadow: 0 0 0 2px var(--room), 0 0 0 7px transparent;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * Motion — three named motions, and nothing else
+ *
+ * `settle` a message arriving      6px rise + fade. Never a bounce, never a scale.
+ * `slide`  a read bead travelling  on .cx-bead above (a `top` transition)
+ * `breathe` the typing pulse       on .cx-bead[data-typing] above
+ * ------------------------------------------------------------------------- */
+.cx-settle {
+  animation: cx-settle var(--duration-quick, 180ms) var(--ease-click) both;
+}
+
+@keyframes cx-settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Every popover, menu and floating panel.
+ *
+ * The background is set HERE rather than left to each call site, because a
+ * floating panel that inherits even a little transparency shows the conversation
+ * sliding underneath it and becomes unreadable. `--room-2` is opaque in both
+ * grounds; the shadow is what separates it from the surface behind. */
+.cx-pop {
+  animation: cx-pop 160ms var(--ease-click) both;
+  background: var(--room-2);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes cx-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * Surfaces
+ * ------------------------------------------------------------------------- */
+
+/* Objects — images, files, link previews, quoted replies — get containers.
+   Speech does not. They are objects, not speech, and containing them is right. */
+.cx-card {
+  background: var(--room-2);
+  border: 1px solid var(--wire);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* The quoted-reply block above a message. */
+.cx-quote {
+  border-left: 2px solid var(--voice-3);
+  background: var(--room-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* A thread row in the list. */
+.cx-listrow {
+  transition:
+    background var(--duration-quick, 120ms) var(--ease-click),
+    color var(--duration-quick, 120ms) var(--ease-click);
+}
+.cx-listrow:hover {
+  background: var(--room-3);
+}
+.cx-listrow[data-active='true'] {
+  background: var(--room-3);
+}
+
+/* The composer pill. The hairline goes pigment on focus, and the send control
+   snaps from ink to pigment the moment there is something to send — the pigment
+   doctrine doing a real job rather than decorating a button. */
+.cx-composer {
+  background: var(--room-2);
+  border: 1px solid var(--wire-2);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--duration-quick, 120ms) var(--ease-click);
+}
+.cx-composer:focus-within {
+  border-color: var(--live);
+}
+
+.cx-textarea {
+  font-family: var(--font-speech);
+  font-size: 15.5px;
+  line-height: 1.5;
+  background: transparent;
+  color: var(--voice);
+  resize: none;
+  max-height: min(40vh, 220px);
+}
+.cx-textarea::placeholder {
+  color: var(--voice-3);
+}
+.cx-textarea:focus {
+  outline: none;
+}
+
+/* A reaction chip. The visual box is small; the HIT area is not — the padding
+   below carries it past 44px on touch without inflating the resting design. */
+.cx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--wire-2);
+  background: var(--room-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--voice-2);
+  transition: all var(--duration-quick, 120ms) var(--ease-click);
+}
+.cx-chip[data-mine='true'] {
+  border-color: var(--live);
+  background: var(--live-soft);
+  color: var(--voice);
+}
+.cx-chip:hover {
+  border-color: var(--voice-3);
+}
+
+/* ----------------------------------------------------------------------------
+ * Touch — the floor for the app feeling like it belongs on the phone
+ *
+ * These are four one-line fixes for four things that are individually small and
+ * collectively the whole difference between "a website on a phone" and "an app".
+ * ------------------------------------------------------------------------- */
+.cx-ui {
+  /* The grey flash Android paints over anything you touch. Every control here
+     already answers a press with the `press` scale, and the two together read
+     as a double response. */
+  -webkit-tap-highlight-color: transparent;
+  /* Kill the 300ms wait-and-see delay that predates responsive layouts. */
+  touch-action: manipulation;
+}
+
+/* Nothing in a chat window is a page you drag around, and a document-level
+   rubber band is how a two-pane layout ends up half off screen. */
+body:has(.cx-ui) {
+  overscroll-behavior: none;
+}
+
+/* ----------------------------------------------------------------------------
+ * Chrome
+ * ------------------------------------------------------------------------- */
+.cx-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--wire-2) transparent;
+  /* A scroller inside an app must not hand its overscroll to the page behind
+     it: without this, flicking past the top of the transcript pulls the whole
+     document down — and on Chrome for Android triggers pull-to-refresh, which
+     reloads the app mid-conversation. `contain` keeps the bounce inside the box
+     it belongs to, which is what a native list does. */
+  overscroll-behavior: contain;
+}
+.cx-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.cx-scroll::-webkit-scrollbar-thumb {
+  background: var(--wire-2);
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.cx-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Keyboard focus must be visible on every ground. */
+.cx-ui :focus-visible {
+  outline: 2px solid var(--live);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Screen-reader-only, for the live announcer and per-thread headings. */
+.cx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ----------------------------------------------------------------------------
+ * Reduced motion
+ *
+ * The beads still MOVE — their position is information, not decoration. What
+ * goes away is the travel, the pulse and the entrance.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .cx-ui *,
+  .cx-ui *::before,
+  .cx-ui *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
