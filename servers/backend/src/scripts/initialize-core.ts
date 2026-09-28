@@ -715,12 +715,13 @@ export async function runInitialization(): Promise<void> {
   ]);
 
   // Auth chain — the super-admin id gates the `users` + `global_settings` rows.
-  // Those two are independent of each other, so seed them together once we have it.
+  // Order matters: `global_settings.updated_by` is a FK to `users.id`, so the
+  // profile row must exist first. Running them together fails on a FRESH
+  // database (FK violation) — invisible on an already-seeded one, which is why
+  // it survived until the first from-scratch install.
   const userId = await ensureSuperAdminAuthUser(superadmin);
-  await Promise.all([
-    ensureSuperAdminProfile(userId, superadmin),
-    ensureGlobalSettings(userId, globalSettings),
-  ]);
+  await ensureSuperAdminProfile(userId, superadmin);
+  await ensureGlobalSettings(userId, globalSettings);
 
   // Surface any seed failure now that the auth chain is done.
   await seeds;
