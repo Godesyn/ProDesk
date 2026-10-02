@@ -21,7 +21,7 @@ Today each app is built and deployed separately. **That is changing** — see §
 | App | Directory | State |
 | --- | --- | --- |
 | Prodesk (main platform, admin panel) | `clients/prodesk/` | working |
-| Dashboard | `clients/dashboard/` | working; app catalogue, strategist chat and KPIs are presentational only |
+| Dashboard | `clients/dashboard/` | working; opens the other apps in an in-page modal (see §9). Strategist needs an AI key |
 | Links / ADEYY | `clients/links/` | working |
 | Reviews / Verdiict | `clients/reviews/` | working |
 | Payments / EziQuotes | `clients/payments/` | working; several features marked "coming soon" |
@@ -81,8 +81,13 @@ bun run dev:dashboard     # Dashboard app :5174
 
 `bun run dev` starts everything (all 12 apps) — heavy, rarely what you want.
 
-⚠️ Every `dev` command first kills anything listening on ports 4000–4005 and 5173–5190. Stop other
-projects on those ports first.
+⚠️ Every `bun run dev*` command first force-kills anything listening on ports 4000–4005 and
+5173–5190 (including other projects, e.g. an Electron/Vite app on 5173). To start the same stack
+without that, run `node scripts/dev.mjs` (all apps) or `node scripts/dev.mjs <app>` directly.
+
+**Redis on Windows without Memurai:** `sudo apt install redis-server` inside WSL Ubuntu works —
+WSL forwards `localhost:6379`. Keep a WSL process alive (e.g. a hidden `wsl -- sleep infinity`)
+or WSL shuts down when idle and Redis with it.
 
 **Ports:** prodesk 5173, dashboard 5174, links 5175, reviews 5176, payments 5177, signatures 5178,
 jobs 5179, websites 5180, design 5181, logo 5182, passwords 5183, chat 5184. Backend 4000,
@@ -92,6 +97,12 @@ redirector 4001.
 `DATABASE_URL`, `DIRECT_URL`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`,
 `SUPABASE_JWT_SECRET`. Everything else switches a feature on when present and disables it when
 absent. **Never commit `.env`.**
+
+- `SUPABASE_URL` / `VITE_SUPABASE_URL` must be the bare project URL (`https://<ref>.supabase.co`).
+  The Supabase dashboard also shows a REST URL ending in `/rest/v1/` — using that breaks every
+  login with "Invalid path specified in request URL".
+- Locally, set every `VITE_*_PRODESK_ORIGIN` to `localhost:<port>` (redirector `localhost:4001`),
+  or cross-app links go to whatever hosted environment they name.
 
 On first start against an empty database the backend runs all migrations, applies the security
 rules, and creates the admin account.
@@ -149,7 +160,8 @@ Full detail in `.agents/AGENTS.md`. The ones that catch people out:
 - Run `bun run typecheck` at the repo root — it checks every app, not just the one you touched.
 
 **Git:** work on `development`, promote to `staging`, then `main`. Git hooks type-check on commit
-and build on push.
+and build on push — but only once `git config core.hooksPath .githooks` is set (`bun install` runs
+it via `prepare`; a plain clone doesn't).
 
 ---
 
@@ -172,6 +184,14 @@ and build on push.
   `client/`) and lists features as unfinished that now exist (Google Calendar). Trust the code and
   `docs/agents/architecture.md`.
 - **Repo visibility:** this repo must be **private**. Check it.
+- **`backend` / `redirector` type-check fails** with "Cannot find module '@prodesk/server-shared/…'"
+  unless `packages/server-shared` has been built (their `tsc` resolves the package's `dist/`). This
+  also blocks the pre-commit hook. Fix: `bun run --filter '@prodesk/server-shared' build` once (and
+  again after changing server-shared types). Dev and `db:migrate` run from source via
+  `--conditions development`, so they don't need the build.
+- **Stripe pages can't open inside the dashboard modal.** Stripe Checkout and the OAuth "connect"
+  pages (Xero, Pipedrive, Google) refuse to load in an iframe. These are not forced (agreed —
+  the client is to be told); card-on-file subscriptions don't redirect and work in the modal.
 
 ---
 
@@ -193,13 +213,28 @@ fiddly part to be style and route collisions between apps, not the screens thems
 
 Once merged, Railway needs only: backend, worker, redirector, one website, Redis.
 
+**Step 0 — done (October 2026): apps open in a modal.** Every dashboard entry point to another app
+(tiles, sidebar, ⌘K palette, chat dock, Brand kit's "Open Signatures", deep links like
+`/app/url-qr`) now opens `AppModal` (`clients/dashboard/src/suite/overlays.tsx`): a blurred
+backdrop with the app in a card, full-screen on phones. Nothing opens a new window. The app runs in
+an iframe, signed in via the existing hand-off token (`useCrossAppOpen({ urlOnly: true })`).
+Inside an embedded app (`packages/shared/src/lib/embed.ts`): Esc, the "Prodesk Suite" link and any
+link back to the dashboard close the modal via an origin-checked `postMessage`; **sign-out inside
+an app signs out of the whole suite** (agreed). This is the user-facing behaviour the client asked
+for, but each app is still hosted separately — the merge above is what removes those services.
+Hosted apps must allow being framed by the dashboard origin.
+
+On the dashboard: Links, Reviews, Signatures, Quick quotes (Payments) and Logo Studio have tiles.
+Jobs, Websites, Design (empty shells), Passwords (mock data, no encryption — tile stays "coming
+soon"), Prodesk (super-admin) and Chat have no tile by choice.
+
 Note: features with **public pages** (review request pages and embeds, payer portals for quotes and
 invoices, shared signature pages, short links) still need public addresses. They will live under the
 single domain instead of separate sites.
 
 ---
 
-## 10. Status of the takeover (September 2026)
+## 10. Status of the takeover (updated 2 October 2026)
 
 The project was handed over by the original developer with everything running on his personal
 accounts, and with live credentials written in plain text in a handover document. It has been rebuilt
@@ -212,9 +247,16 @@ from scratch on accounts the client owns.
 - Production chat backup removed from the repo, `.gitignore` corrected
 - Local development running against the new database
 
+- 2 Oct: all 12 apps verified running locally against the new Supabase (`prodesk-dev`, the only
+  project in the client's Supabase org) with every key from the previous developer removed from the
+  local `.env`. Supabase redirect URLs cover all local ports and the Railway Prodesk URL.
+- 2 Oct: apps open in a dashboard modal (§9); Quick quotes and Logo Studio switched back on;
+  dev-script fixes (redirector + `db:migrate` need `--conditions development`; Payments no longer
+  crashes when no Stripe key is set).
+
 **Outstanding**
-- Brevo (email) and Sentry (error tracking) not yet connected
-- Stripe, Google sign-in, Google Maps, AI providers not set up
+- Email (Resend or Brevo) and Sentry (error tracking) not yet connected; Supabase custom SMTP off
+- Stripe, Google sign-in, Google Maps, AI providers not set up — waiting on the client's keys
 - Domains still with the client's own contact — nothing points at the new hosting yet
 - The old developer's Railway and Supabase accounts should be cancelled by the client
 - No automated checks before deploy
