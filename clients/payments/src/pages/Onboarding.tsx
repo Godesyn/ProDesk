@@ -456,6 +456,8 @@ export default function Onboarding() {
     // wizard deferred this so creating the brand mid-flow wouldn't remount the tree.
     await qc.invalidateQueries({ queryKey: trpc.brands.mine.queryKey() });
     await qc.invalidateQueries({ queryKey: trpc.auth.me.queryKey() });
+    // AppShell's onboarding guard reads this — stale, it bounces back to /onboarding.
+    await qc.invalidateQueries({ queryKey: trpc.payments.accounts.me.queryKey() });
     setSaving(false);
     navigate('/app');
   }, [brandId, qc, trpc]);

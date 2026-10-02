@@ -577,6 +577,10 @@ button.chip:not(.draft):not(.sent):not(.viewed):not(.engaged):not(
 .app-frame > .main-area,
 .psp-main.main-area {
   min-height: 100vh;
+  /* Paint the page ourselves — `.app-frame` used to, and without it the dark
+     splash background on <body> (index.html) shows through the content. */
+  background: var(--bg-page);
+  color: var(--fg-1);
   display: flex;
   flex-direction: column;
   overflow: hidden;

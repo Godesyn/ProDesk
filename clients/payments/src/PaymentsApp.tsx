@@ -32,6 +32,7 @@ import { AffiliateDashboard } from '@/pages/Affiliate';
 import AIInsights from '@/pages/AIInsights';
 import RevenueForecast from '@/pages/RevenueForecast';
 import Webhooks from '@/pages/Webhooks';
+import { StaffPage } from '@shared/pages/staff';
 
 function ShelledPage({ children }: { children: React.ReactNode }) {
   return <AppShell>{children}</AppShell>;
@@ -107,6 +108,13 @@ export function PaymentsApp() {
       <Route path="/brand">
         <ShelledPage>
           <BrandKit />
+        </ShelledPage>
+      </Route>
+      {/* Platform staff (replaces the export's Team tab) — in the shell so the
+          sidebar stays reachable. */}
+      <Route path="/staff">
+        <ShelledPage>
+          <StaffPage />
         </ShelledPage>
       </Route>
       <Route path="/settings/:tab">

@@ -17,7 +17,6 @@ import {
 import { AuthConfirmPage } from '@shared/pages/auth-confirm';
 import { AuthHandoffPage } from '@shared/pages/auth-handoff';
 import { ProfilePage } from '@shared/pages/profile';
-import { StaffPage } from '@shared/pages/staff';
 import { InvoicesPage } from '@shared/pages/invoices';
 import { OnboardingLayout } from '@shared/components/layout/onboarding-layout';
 import { UnknownRouteRedirect } from '@shared/components/unknown-route-redirect';
@@ -155,13 +154,6 @@ export function App() {
     return (
       <OnboardingLayout>
         <ProfilePage />
-      </OnboardingLayout>
-    );
-  }
-  if (location === '/staff') {
-    return (
-      <OnboardingLayout>
-        <StaffPage />
       </OnboardingLayout>
     );
   }
