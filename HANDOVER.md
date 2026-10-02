@@ -117,8 +117,16 @@ handover document.
 **Not in this repo, and never to be committed.** The client (ab.y@noize.com.au) owns every account;
 ask the lead developer for the credentials file.
 
-Services in use: **Supabase** (database, auth, storage), **Railway** (hosting + Redis), **Brevo**
-(email), **Sentry** (errors). Stripe, Google Cloud and the AI providers are not connected yet.
+Services in use: **Supabase** (database, auth, storage), **Railway** (hosting + Redis), **Resend**
+(email, sent over SMTP — `smtp.resend.com`, port 465, user `resend`, password = API key),
+**Sentry** (errors, not connected yet). Stripe, Google Cloud and the AI providers are not connected
+yet. (Brevo was the earlier plan; Resend is what has been set up.)
+
+**Email until a domain is verified in Resend:** mail can only be sent from `onboarding@resend.dev`
+(`EMAIL_FROM="Prodesk <onboarding@resend.dev>"`). Locally, set
+`EMAIL_DEV_REDIRECT="delivered@resend.dev"` — Resend's test address, which shows every email as
+delivered in the Resend dashboard without a person receiving it. Verifying a domain (DNS records on
+e.g. `prodesk.com`) is what lets mail go to real recipients.
 
 ---
 
@@ -160,7 +168,9 @@ Full detail in `.agents/AGENTS.md`. The ones that catch people out:
 - Run `bun run typecheck` at the repo root — it checks every app, not just the one you touched.
 
 **Git:** work on `development`, promote to `staging`, then `main`. Git hooks type-check on commit
-and build on push — but only once `git config core.hooksPath .githooks` is set (`bun install` runs
+and build on push (the push build takes several minutes — if GitHub drops the SSH connection
+meanwhile, add `-o ServerAliveInterval=30` to your ssh command) — but only once
+`git config core.hooksPath .githooks` is set (`bun install` runs
 it via `prepare`; a plain clone doesn't).
 
 ---
@@ -254,8 +264,12 @@ from scratch on accounts the client owns.
   dev-script fixes (redirector + `db:migrate` need `--conditions development`; Payments no longer
   crashes when no Stripe key is set).
 
+- 2 Oct: email connected via Resend for local development (no verified domain yet, see §5).
+  Work is on the `development` branch on GitHub.
+
 **Outstanding**
-- Email (Resend or Brevo) and Sentry (error tracking) not yet connected; Supabase custom SMTP off
+- Verify a sending domain in Resend (needs DNS access); then Supabase custom SMTP (its auth
+  emails still use Supabase's built-in, rate-limited sender). Sentry not connected
 - Stripe, Google sign-in, Google Maps, AI providers not set up — waiting on the client's keys
 - Domains still with the client's own contact — nothing points at the new hosting yet
 - The old developer's Railway and Supabase accounts should be cancelled by the client
