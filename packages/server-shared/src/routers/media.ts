@@ -1,10 +1,7 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../trpc/trpc.js';
 import { videoQueue } from '../jobs/queues.js';
-import { supabaseAdmin } from '../lib/supabase.js';
-
-/** The fixed set of storage buckets the app uses (must match the client StorageBucket enum). */
-const KNOWN_BUCKETS = ['project-files', 'brand-files', 'chat-files', 'resources', 'uploads'] as const;
+import { KNOWN_BUCKETS, ensureBucket } from '../lib/storage-buckets.js';
 
 /**
  * Media post-processing + storage provisioning. Uploads go directly from the
@@ -17,11 +14,10 @@ export const mediaRouter = router({
   ensureBucket: protectedProcedure
     .input(z.object({ bucket: z.enum(KNOWN_BUCKETS) }))
     .mutation(async ({ input }) => {
-      const { error } = await supabaseAdmin.storage.createBucket(input.bucket, { public: true });
-      // "already exists" is the success path (idempotent).
-      if (error && !/exist/i.test(error.message)) {
-        console.error('[media] ensureBucket failed', input.bucket, error.message);
-        return { ok: false as const, error: error.message };
+      const error = await ensureBucket(input.bucket);
+      if (error) {
+        console.error('[media] ensureBucket failed', input.bucket, error);
+        return { ok: false as const, error };
       }
       return { ok: true as const, error: null };
     }),

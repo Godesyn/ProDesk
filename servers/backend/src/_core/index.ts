@@ -10,6 +10,7 @@ import { env, isDev, isBackendHostedSeperately } from '@prodesk/server-shared/li
 import { runMigrations } from '@prodesk/server-shared/db/auto-migrate';
 import { applyRls } from '@prodesk/server-shared/db/apply-rls';
 import { runInitialization } from '../scripts/initialize-core.js';
+import { ensureKnownBuckets } from '@prodesk/server-shared/lib/storage-buckets';
 import { stripeWebhookHandler } from '@prodesk/server-shared/modules/stripe/webhook';
 import { mountBullBoard } from '@prodesk/server-shared/jobs/board';
 import { mountPartnerApi } from '@prodesk/server-shared/modules/partner/api';
@@ -228,6 +229,11 @@ if (env.AUTO_MIGRATE) {
     console.error(err);
   }
 }
+
+// Storage buckets must exist before any server-side upload. Idempotent and
+// independent of AUTO_MIGRATE; non-fatal (failures are logged), so it never
+// holds up the API.
+void ensureKnownBuckets().catch((err) => console.error('⚠ ensureKnownBuckets failed', err));
 
 app.listen(env.PORT, () => {
   console.log(`▸ Prodesk API on http://localhost:${env.PORT}  (tRPC: /trpc)`);
