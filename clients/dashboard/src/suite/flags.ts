@@ -19,10 +19,10 @@ export const LIVE_APPS: readonly string[] = [
   'info-hub', // Company info       → brands.update (+ policies/locations/gst)
   'product-hub', // Services → services.* (via the brand's derived agency)
   'url-qr', // Links & QR          → standalone Links/Adeyy frontend (cross-app hand-off)
-  // 'quotes', // Quick quotes     → OFF for now (was: standalone Payments/EziQuotes frontend cross-app hand-off)
+  'quotes', // Quick quotes      → standalone Payments/EziQuotes frontend (in-suite modal)
   'reviews', // Customer reviews   → standalone Reviews/Verdiict frontend (cross-app hand-off)
   'signatures', // Email signatures → standalone Signatures/SIGKITT frontend (cross-app hand-off)
-  // 'logo', // Logo Studio    → OFF for now (was: standalone Logo frontend cross-app hand-off)
+  'logo', // Logo Studio         → standalone Logo frontend (in-suite modal)
   'documents', // Docs & files     → files.* (Tabs+Folders locker screen)
 
   // ── Coming soon (visible but badge-gated via comingSoon on data.ts) ──

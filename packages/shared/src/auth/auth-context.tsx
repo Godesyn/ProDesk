@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useTRPC } from '../lib/trpc';
 import { detectReferral } from '../lib/subdomain';
 import { captureBetaCode, clearBetaCode } from '../beta/beta-code';
+import { IS_EMBEDDED, postToSuite } from '../lib/embed';
 
 interface AuthState {
   session: Session | null;
@@ -102,5 +103,9 @@ export function useCurrentUser() {
 }
 
 export async function signOut() {
+  // Inside the dashboard's app modal: hand sign-out to the dashboard, which
+  // closes the modal and signs out itself. Signing out here would revoke the
+  // user's sessions (global scope) and leave a signed-out app in the frame.
+  if (IS_EMBEDDED) return postToSuite('signout');
   await supabase.auth.signOut();
 }

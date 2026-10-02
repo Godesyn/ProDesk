@@ -227,7 +227,13 @@ export function Modal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="amodal" style={width ? { maxWidth: width } : undefined}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="amodal"
+        style={width ? { maxWidth: width } : undefined}
+      >
         <div className="row-between" style={{ marginBottom: 4 }}>
           <h3>{title}</h3>
           <button

@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useTRPC } from '../lib/trpc';
-import { originUrl } from '../lib/origins';
+import { PRODESK_ORIGINS, originUrl } from '../lib/origins';
+import { IS_EMBEDDED, postToSuite } from '../lib/embed';
 import { sameRegistrableSite } from '../lib/registrable-domain';
 
 /**
@@ -68,11 +69,21 @@ export function useCrossAppOpen() {
     async (
       host: string | undefined,
       path = '/',
-      opts?: { newWindow?: boolean },
-    ) => {
+      // `urlOnly`: resolve the (hand-off) URL without navigating — for callers
+      // that embed the target in-page, e.g. the dashboard's app modal.
+      opts?: { newWindow?: boolean; urlOnly?: boolean },
+    ): Promise<string> => {
+      // Inside the dashboard's app modal the suite is the parent page: close
+      // the modal (and route there) instead of loading the suite in the frame.
+      if (IS_EMBEDDED && host && host === PRODESK_ORIGINS.dashboard) {
+        postToSuite('close', path);
+        return '';
+      }
       // Claim the window inside the click's task, before any await — a popup
-      // opened after an async gap is blocked by popup blockers.
-      const win = opts?.newWindow ? window.open('', '_blank') : null;
+      // opened after an async gap is blocked by popup blockers. Embedded apps
+      // stay in the modal: no new windows.
+      const win =
+        opts?.newWindow && !IS_EMBEDDED ? window.open('', '_blank') : null;
       let target = originUrl(host, path);
       if (!sharesAuthWith(host)) {
         const { data } = await supabase.auth.getSession();
@@ -88,8 +99,10 @@ export function useCrossAppOpen() {
           }
         }
       }
+      if (opts?.urlOnly) return target;
       if (win) win.location.replace(target);
       else window.location.href = target;
+      return target;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [handoff.mutateAsync],

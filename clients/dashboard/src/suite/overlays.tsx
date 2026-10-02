@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@shared/lib/trpc';
-import { useCrossAppOpen } from '@shared/auth/use-cross-app';
+import { useLocation } from 'wouter';
+import { signOut } from '@shared/auth/auth-context';
+import { isProdeskOrigin, SUITE_MESSAGE, type SuiteMessage } from '@shared/lib/embed';
 import { Icon, WordmarkTile } from './icons';
 import { Button, Field, Scrim, pushToast } from './ui';
 import {
@@ -43,22 +45,170 @@ function ToolFallback() {
   );
 }
 
-/* Redirect a deep link (e.g. /app/url-qr) out to the app's standalone frontend,
-   in place — a page load can't open a popup. The session is carried across via
-   a one-time hand-off token when the frontend is hosted on another domain. */
-function CrossAppHandoff({ app }: { app: SuiteApp }) {
-  const openCrossApp = useCrossAppOpen();
+/* A deep link (e.g. /app/url-qr) to a standalone-frontend app: swap the URL for
+   the launcher and open the app in the modal, same as a click. */
+function CrossAppDeepLink({
+  app,
+  onOpenApp,
+}: {
+  app: SuiteApp;
+  onOpenApp: (a: SuiteApp) => void;
+}) {
+  const [, navigate] = useLocation();
   const fired = useRef(false);
   useEffect(() => {
     if (fired.current) return; // StrictMode re-runs effects: mint ONE token
     fired.current = true;
-    void openCrossApp(CROSS_APP_HOSTS[app.id], '/');
+    navigate('/', { replace: true });
+    onOpenApp(app);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  return null;
+}
+
+/* ============ APP MODAL ============ */
+/* A standalone-frontend app (CROSS_APP_HOSTS) shown over the dashboard in an
+   iframe — the user never leaves the page. `url` is null while the session
+   hand-off token is minted. The embedded app talks back via postMessage
+   (@shared/lib/embed): its Prodesk Suite link, Esc and Sign out close the modal.
+   ponytail: iframe of the standalone app; still needs each app hosted. Upgrade
+   path = HANDOVER §9 merge (app mounted as a lazy component). */
+export function AppModal({
+  app,
+  url,
+  fullScreen,
+  onClose,
+}: {
+  app: SuiteApp;
+  url: string | null;
+  fullScreen: boolean;
+  onClose: () => void;
+}) {
+  const [, navigate] = useLocation();
+  const [loaded, setLoaded] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Focus into the modal on open and back to the opener on close; the page
+  // behind doesn't scroll meanwhile.
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      if (opener?.isConnected) opener.focus();
+    };
+  }, []);
+
+  // Only our own frontends, and only the frame we opened, may close the modal.
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      const msg = e.data as Partial<SuiteMessage> | null;
+      if (
+        e.source !== frameRef.current?.contentWindow ||
+        !isProdeskOrigin(e.origin) ||
+        msg?.type !== SUITE_MESSAGE
+      )
+        return;
+      onClose();
+      if (msg.action === 'signout') void signOut();
+      else if (
+        typeof msg.path === 'string' &&
+        msg.path.startsWith('/') &&
+        !msg.path.startsWith('//') &&
+        msg.path !== '/'
+      )
+        navigate(msg.path);
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [onClose, navigate]);
+
   return (
-    <div style={{ display: 'grid', placeItems: 'center', minHeight: '40vh', color: 'var(--ink-3)', fontSize: 14 }}>
-      Opening {app.name}…
-    </div>
+    <Scrim blur onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={app.name}
+        aria-busy={!loaded}
+        style={{
+          width: fullScreen ? '100vw' : 'min(1200px, 94vw)',
+          height: fullScreen ? '100dvh' : '90dvh',
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--paper)',
+          borderRadius: fullScreen ? 0 : 14,
+          overflow: 'hidden',
+          boxShadow: fullScreen ? 'none' : '0 24px 80px rgba(0,0,0,0.25)',
+          animation: 'pd-fade var(--dur) var(--ease)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            padding: '10px 14px',
+            borderBottom: '1px solid var(--rule)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+            {/* Sized box: the tile's % padding resolves against its parent. */}
+            <span style={{ display: 'flex', width: 28, flexShrink: 0 }}>
+              <WordmarkTile app={app} size={28} radius={8} />
+            </span>
+            <strong style={{ fontSize: 15, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {app.name}
+            </strong>
+            {app.brand && app.brand !== app.name && (
+              <span className="pd-bychip" style={{ fontSize: 10, padding: '3px 8px' }}>
+                {app.brand} by Prodesk
+              </span>
+            )}
+          </div>
+          <button
+            ref={closeRef}
+            type="button"
+            aria-label={`Close ${app.name}`}
+            onClick={onClose}
+            style={{ background: 'none', border: 0, cursor: 'pointer', padding: 6, color: 'var(--ink-2)' }}
+          >
+            <Icon name="close" size={18} />
+          </button>
+        </div>
+        <div style={{ position: 'relative', flex: 1 }}>
+          {url && (
+            <iframe
+              ref={frameRef}
+              title={app.name}
+              src={url}
+              allow="clipboard-write"
+              onLoad={() => setLoaded(true)}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+            />
+          )}
+          {!loaded && (
+            <div
+              role="status"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'grid',
+                placeItems: 'center',
+                background: 'var(--paper)',
+                color: 'var(--ink-3)',
+                fontSize: 14,
+              }}
+            >
+              Opening {app.name}…
+            </div>
+          )}
+        </div>
+      </div>
+    </Scrim>
   );
 }
 
@@ -469,7 +619,7 @@ export function AppOpen({
     return (
       <main className="pd-page" data-tool={app.tool}>
         <Suspense fallback={<ToolFallback />}>
-          <BrandKitTool app={app} brand={brand} />
+          <BrandKitTool app={app} brand={brand} onOpenApp={onOpenApp} />
         </Suspense>
       </main>
     );
@@ -490,12 +640,11 @@ export function AppOpen({
       </Suspense>
     );
   }
-  // Standalone-frontend apps (Links/Adeyy, Payments/EziQuotes, Reviews/Verdiict)
-  // have no in-suite surface: deep links to /app/<id> hand off to the frontend's
-  // origin. (Clicks are intercepted earlier, in SuiteApp.openApp, and open a
-  // new window instead.)
+  // Standalone-frontend apps (Links/Adeyy, Reviews/Verdiict, …) have no in-suite
+  // surface: they open in the AppModal. (Clicks are intercepted earlier, in
+  // SuiteApp.openApp; this catches deep links to /app/<id>.)
   if (app.id in CROSS_APP_HOSTS) {
-    return <CrossAppHandoff app={app} />;
+    return <CrossAppDeepLink app={app} onOpenApp={onOpenApp} />;
   }
 
   return (

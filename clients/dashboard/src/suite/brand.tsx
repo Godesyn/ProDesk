@@ -10,7 +10,6 @@
 import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTRPC } from '@shared/lib/trpc';
-import { useCrossAppOpen } from '@shared/auth/use-cross-app';
 import { ColorPicker } from '@shared/components/ui/color-picker';
 import {
   DEFAULT_SIGNATURE,
@@ -27,7 +26,7 @@ import {
 import { Icon } from './icons';
 import { Button, pushToast } from './ui';
 import { FndHeader, FndModal, FndInput } from './fnd-shared';
-import { CROSS_APP_HOSTS, type Brand, type SuiteApp } from './data';
+import { APPS, type Brand, type SuiteApp } from './data';
 import { isAppLive } from './flags';
 
 /* Palette token order stored positionally in brands.colors. */
@@ -110,15 +109,12 @@ function BkChapter({
   title,
   action,
   onAction,
-  /** Renders the action as an outbound link — it leaves this app in a new tab. */
-  actionExternal = false,
   children,
 }: {
   n: string;
   title: string;
   action?: string;
   onAction?: () => void;
-  actionExternal?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -152,7 +148,6 @@ function BkChapter({
             onClick={onAction}
           >
             {action}
-            {actionExternal && <Icon name="external" size={12} />}
           </button>
         )}
       </div>
@@ -161,10 +156,17 @@ function BkChapter({
   );
 }
 
-export function BrandKitTool({ app, brand }: { app: SuiteApp; brand: Brand }) {
+export function BrandKitTool({
+  app,
+  brand,
+  onOpenApp,
+}: {
+  app: SuiteApp;
+  brand: Brand;
+  onOpenApp: (a: SuiteApp) => void;
+}) {
   const trpc = useTRPC();
   const qc = useQueryClient();
-  const openCrossApp = useCrossAppOpen();
 
   const brandQ = useQuery(trpc.brands.byId.queryOptions({ id: brand.id }));
   const kitQ = useQuery(
@@ -300,11 +302,14 @@ export function BrandKitTool({ app, brand }: { app: SuiteApp; brand: Brand }) {
     brandTagline: tagline || DEFAULT_SIGNATURE.brandTagline,
     disclaimer: kit?.disclaimer || '',
   };
-  const openSignatures = () =>
-    void openCrossApp(CROSS_APP_HOSTS.signatures, '/', { newWindow: true });
+  // Both open in the dashboard's app modal (SuiteApp.openApp).
+  const openById = (id: string) => {
+    const a = APPS.find((x) => x.id === id);
+    if (a) onOpenApp(a);
+  };
+  const openSignatures = () => openById('signatures');
   const logoStudioLive = isAppLive('logo');
-  const openLogoStudio = () =>
-    void openCrossApp(CROSS_APP_HOSTS.logo, '/', { newWindow: true });
+  const openLogoStudio = () => openById('logo');
 
   const loading = brandQ.isLoading || kitQ.isLoading;
 
@@ -477,7 +482,6 @@ export function BrandKitTool({ app, brand }: { app: SuiteApp; brand: Brand }) {
             n="01"
             title="Logos"
             action={logoStudioLive ? 'Studio' : undefined}
-            actionExternal
             onAction={logoStudioLive ? openLogoStudio : undefined}
           >
             <div className="pd-bk-logo-grid">
@@ -946,7 +950,7 @@ export function BrandKitTool({ app, brand }: { app: SuiteApp; brand: Brand }) {
                     onClick={openSignatures}
                   >
                     Open Signatures
-                    <Icon name="external" size={12} />
+                    <Icon name="arrowRight" size={12} />
                   </button>
                 </div>
               </div>

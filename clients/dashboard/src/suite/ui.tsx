@@ -407,10 +407,12 @@ export function Scrim({
   onClick,
   children,
   align = 'center',
+  blur = false,
 }: {
   onClick?: () => void;
   children: ReactNode;
   align?: 'center' | 'right' | 'left';
+  blur?: boolean;
 }) {
   useEffect(() => {
     const onEsc = (e: globalThis.KeyboardEvent) => {
@@ -429,6 +431,7 @@ export function Scrim({
         inset: 0,
         zIndex: 200,
         background: 'rgba(244,241,232,0.72)',
+        backdropFilter: blur ? 'blur(8px)' : undefined,
         display: 'flex',
         alignItems: align === 'center' ? 'center' : 'stretch',
         justifyContent:

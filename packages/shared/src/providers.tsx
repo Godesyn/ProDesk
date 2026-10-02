@@ -8,9 +8,11 @@ import { AccentThemeProvider } from './theme/accent-theme';
 import { ConfirmProvider } from './components/ui/confirm-dialog';
 import { FileViewerProvider } from './components/file-viewer/file-viewer-provider';
 import { RadixBodyLockGuard } from './components/radix-body-lock-guard';
+import { useEmbedEscape } from './lib/embed';
 
 export function Providers({ children }: { children: ReactNode }) {
   const [trpcClient] = useState(() => makeTrpcClient());
+  useEmbedEscape();
   return (
     <QueryClientProvider client={queryClient}>
       <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>

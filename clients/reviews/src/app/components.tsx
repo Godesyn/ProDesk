@@ -103,7 +103,13 @@ export function Modal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="vmodal" style={width ? { maxWidth: width } : undefined}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="vmodal"
+        style={width ? { maxWidth: width } : undefined}
+      >
         <div className="vrow-between" style={{ marginBottom: 12 }}>
           <h3>{title}</h3>
           <button className="vbtn vbtn-quiet vbtn-sm" onClick={onClose} aria-label="Close">

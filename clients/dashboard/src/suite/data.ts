@@ -6,9 +6,9 @@ import { PRODESK_ORIGINS } from '@shared/lib/origins';
 
 /**
  * Apps that live in their own standalone frontends rather than as in-suite
- * screens (hosts from @shared/lib/origins). Clicks open them in a NEW window
- * (SuiteApp.openApp); deep links to /app/<id> redirect in place (overlays
- * CrossAppHandoff). Either way, when the target frontend is hosted on a
+ * screens (hosts from @shared/lib/origins). Clicks and deep links to /app/<id>
+ * open them in the dashboard's AppModal, an iframe over the page (SuiteApp.openApp,
+ * overlays AppModal). Either way, when the target frontend is hosted on a
  * different domain the session is carried across via a one-time hand-off
  * token (see @shared/auth/use-cross-app).
  */

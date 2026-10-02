@@ -25,7 +25,7 @@ import { Sidebar } from './sidebar';
 import { ChatDock, ChatReopen } from './chat';
 import { Launcher } from './launcher';
 import { CommandPalette } from './palette';
-import { AppOpen, AddBrand, UnlockDrawer } from './overlays';
+import { AppOpen, AppModal, AddBrand, UnlockDrawer } from './overlays';
 import { useSuiteContext } from './live';
 import { useDashboardRealtime } from './realtime';
 import { isAppLive, isFeatureLive } from './flags';
@@ -317,6 +317,9 @@ export function SuiteApp() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [personalOpen, setPersonalOpen] = useState(false);
   const [unlockApp, setUnlockApp] = useState<App | null>(null);
+  // Standalone-frontend app shown in the AppModal; url is null while minting.
+  const [appModal, setAppModal] = useState<{ app: App; url: string | null } | null>(null);
+  const closeAppModal = useCallback(() => setAppModal(null), []);
   const [addBrandOpen, setAddBrandOpen] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [pinnedIds, setPinnedIds] = useState<string[]>(loadPinned);
@@ -401,10 +404,14 @@ export function SuiteApp() {
   const openApp = useCallback(
     (app: App) => {
       if (!app) return;
-      // Standalone-frontend apps (Links, Payments, Reviews) open in a new
-      // window, with the session handed off when they sit on another domain.
+      // Standalone-frontend apps (CROSS_APP_HOSTS) open in the AppModal over
+      // the dashboard — the user never leaves the page. The session is handed
+      // off when they sit on another domain.
       if (app.id in CROSS_APP_HOSTS) {
-        void openCrossApp(CROSS_APP_HOSTS[app.id], '/', { newWindow: true });
+        setAppModal({ app, url: null });
+        void openCrossApp(CROSS_APP_HOSTS[app.id], '/', { urlOnly: true }).then(
+          (url) => setAppModal((m) => (m?.app.id === app.id ? { app, url } : m)),
+        );
       } else {
         navigate('/app/' + app.id);
       }
@@ -821,6 +828,15 @@ export function SuiteApp() {
         </>
       )}
 
+      {appModal && (
+        <AppModal
+          key={appModal.app.id}
+          app={appModal.app}
+          url={appModal.url}
+          fullScreen={isMobile}
+          onClose={closeAppModal}
+        />
+      )}
       {unlockApp && (
         <UnlockDrawer app={unlockApp} onClose={() => setUnlockApp(null)} />
       )}
