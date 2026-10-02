@@ -11,6 +11,9 @@ import { useToast } from '../toast';
 import { PLATFORMS } from '../lib';
 import { LazyImage } from '@shared/components/ui/lazy-image';
 
+/** Owner-supplied links are shown to anonymous visitors — only ever follow http(s). */
+const isHttpUrl = (u?: string | null): u is string => !!u && /^https?:\/\//i.test(u);
+
 type Step = 'rating' | 'tags' | 'generating' | 'review' | 'bad-feedback' | 'thanks';
 
 export function ReviewFlowPage() {
@@ -137,7 +140,7 @@ export function ReviewFlowPage() {
     } catch {
       /* non-blocking */
     }
-    window.open(p.url, '_blank', 'noopener,noreferrer');
+    if (isHttpUrl(p.url)) window.open(p.url, '_blank', 'noopener,noreferrer');
     setStep('thanks');
     setSubmitting(false);
   }
@@ -467,7 +470,7 @@ export function ReviewFlowPage() {
                   ? 'Your review means a lot. We really appreciate you taking the time.'
                   : "Your feedback has been sent to the team. We'll use it to do better."}
               </p>
-              {location.redirectUrl && (
+              {isHttpUrl(location.redirectUrl) && (
                 <button
                   className="vbtn"
                   style={{ marginTop: 28 }}

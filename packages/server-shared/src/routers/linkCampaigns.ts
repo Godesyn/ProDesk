@@ -20,6 +20,7 @@
  * scheduled-destination default and the windows themselves.
  */
 import { z } from 'zod';
+import { httpUrl } from '../lib/http-url.js';
 import { asc, eq } from 'drizzle-orm';
 import { TRPCError } from '@trpc/server';
 import { router, protectedProcedure } from '../trpc/trpc.js';
@@ -56,7 +57,7 @@ const LINKS_READ = ['links', 'linksViewer'] as const;
  */
 const fallbackSchema = z
   .object({
-    fallbackUrl: z.string().url().nullable().optional(),
+    fallbackUrl: httpUrl().nullable().optional(),
     fallbackText: z.string().trim().min(1).max(500).nullable().optional(),
   })
   .refine(
@@ -67,7 +68,7 @@ const fallbackSchema = z
 const windowInputSchema = z
   .object({
     label: z.string().trim().max(120).nullable().optional(),
-    destinationUrl: z.string().url(),
+    destinationUrl: httpUrl(),
     startsAt: z.coerce.date(),
     endsAt: z.coerce.date(),
   })
@@ -317,7 +318,7 @@ export const linkCampaignsRouter = router({
       z.object({
         windowId: z.string().uuid(),
         label: z.string().trim().max(120).nullable().optional(),
-        destinationUrl: z.string().url().optional(),
+        destinationUrl: httpUrl().optional(),
         startsAt: z.coerce.date().optional(),
         endsAt: z.coerce.date().optional(),
       }),

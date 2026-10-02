@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { httpUrl } from '../lib/http-url.js';
 import { and, arrayContains, eq, or, desc, sql, count, countDistinct, gte, type AnyColumn, type SQL } from 'drizzle-orm';
 import { TRPCError } from '@trpc/server';
 import { router, protectedProcedure } from '../trpc/trpc.js';
@@ -281,7 +282,7 @@ export const shortLinksRouter = router({
       z.object({
         brandId: z.string().uuid(),
         slug: z.string().trim().toLowerCase(),
-        destinationUrl: z.string().url(),
+        destinationUrl: httpUrl(),
         nickname: z.string().trim().min(1),
         qrConfig: qrConfigSchema.optional(),
       })
@@ -328,7 +329,7 @@ export const shortLinksRouter = router({
       z.object({
         id: z.string().uuid(),
         slug: z.string().trim().toLowerCase().optional(),
-        destinationUrl: z.string().url().optional(),
+        destinationUrl: httpUrl().optional(),
         nickname: z.string().trim().min(1).optional(),
         qrConfig: qrConfigSchema.optional(),
       })

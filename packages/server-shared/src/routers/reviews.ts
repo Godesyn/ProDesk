@@ -48,6 +48,7 @@ import {
   hasPermission,
 } from '../trpc/permissions.js';
 import type { Context } from '../trpc/context.js';
+import { httpUrl, isHttpUrl } from '../lib/http-url.js';
 import {
   DEFAULT_EMBED_THEME,
   EMBED_THEME_UNLOCK_LOCATION_REVIEWS,
@@ -282,7 +283,7 @@ export const reviewsRouter = router({
           id: z.string().uuid(),
           name: z.string().min(1).max(255).optional(),
           badReviewEmail: z.string().email().nullable().optional(),
-          redirectUrl: z.string().url().nullable().optional(),
+          redirectUrl: httpUrl().nullable().optional(),
           logoUrl: z.string().nullable().optional(),
           slug: z.string().min(1).max(64).optional(),
         }),
@@ -367,7 +368,12 @@ export const reviewsRouter = router({
         z.object({
           locationId: z.string().uuid(),
           platform: z.enum(PLATFORMS),
-          url: z.string(),
+          // Empty clears the platform; anything else must be an http(s) link —
+          // the public review page opens it for anonymous visitors.
+          url: z
+            .string()
+            .trim()
+            .refine((u) => u === '' || isHttpUrl(u), 'Must be an http(s) link'),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -1753,7 +1759,7 @@ export const reviewsRouter = router({
           brandId: z.string().uuid(),
           locationId: z.string().uuid().optional(),
           directoryOptIn: z.boolean().optional(),
-          websiteUrl: z.string().url().max(500).nullable().optional(),
+          websiteUrl: httpUrl(500).nullable().optional(),
           description: z.string().max(1000).nullable().optional(),
           city: z.string().max(120).nullable().optional(),
         }),

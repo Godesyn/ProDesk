@@ -7,6 +7,7 @@ import {
   reviewLocations,
 } from '@prodesk/server-shared/db/schema';
 import { env } from '@prodesk/server-shared/lib/env';
+import { isHttpUrl } from '@prodesk/server-shared/lib/http-url';
 import { recordLinkEvent } from '@prodesk/server-shared/modules/short-links/events';
 import {
   nextScheduleChange,
@@ -128,7 +129,7 @@ function getNotFoundHtml(path = '/'): string {
     <body>
       <h1>Link Not Found</h1>
       <p>The link you are trying to access does not exist or has been disabled by the owner.</p>
-      <a href="${targetUrl}">Go to Adeyy</a>
+      <a href="${escapeHtml(targetUrl)}">Go to Adeyy</a>
     </body>
     </html>
 `;
@@ -546,7 +547,8 @@ app.get('/:slug', async (req, res) => {
       // Unreachable for a plain link (destination_url is NOT NULL for kind='link'
       // per short_links_destination_ck) and handled above for campaigns; this is
       // the belt-and-braces guard so a bad row 404s instead of crashing.
-      if (!target) {
+      // Only http(s) is safe to 302 to — a stored `javascript:`/`data:` URL 404s.
+      if (!target || !isHttpUrl(target)) {
         return res.status(404).send(getNotFoundHtml(req.originalUrl));
       }
       // A campaign's answer changes on a schedule, so it must never be cached by
