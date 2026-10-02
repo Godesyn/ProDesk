@@ -199,6 +199,23 @@ it via `prepare`; a plain clone doesn't).
   also blocks the pre-commit hook. Fix: `bun run --filter '@prodesk/server-shared' build` once (and
   again after changing server-shared types). Dev and `db:migrate` run from source via
   `--conditions development`, so they don't need the build.
+- **Open findings from the 2 Oct QA pass** (not yet fixed — need a decision or more work):
+  - **"Private Documents" are publicly readable.** Every storage bucket is created `public: true`
+    and uploads return public URLs, so anyone with the link can fetch a "private" file; deleting a
+    file only soft-deletes the row and leaves the object in storage. Fix = a private bucket +
+    signed URLs for the private tab, and removing the object on delete.
+  - **Payments shows fake data on empty accounts**: Activity (`DEMO_ACTIVITY` — "Sarah Chen",
+    "$2,685 payment failed"…), Chase Queue ("Recovered $2,180") and Payers ("8 active plans") are
+    hardcoded fallbacks. Should be real empty states.
+  - **Signatures are saved only in the browser** (localStorage), not on the server — lost on
+    another device or for teammates. The editor also starts from demo data ("Alex Johnson / Acme").
+  - **Redirector `/s?url=` is an unsigned open redirect** (any https URL). It exists for email
+    signature click tracking; signing the URL would close it.
+  - **Passwords: `/health` (Watchtower) collides** with the dev/preview healthcheck route.
+  - **Intermittent ~20 s `auth.me` stall** seen once with a long-lived dashboard tab — tRPC GETs
+    send no `Cache-Control`; `no-store` is worth adding.
+  - Small: Payments greeting always "Good morning"; "Year founded" accepts letters; "1 services"
+    pluralisation; Signatures button-inside-button warning (`Home.tsx` Verdiict section header).
 - **Stripe pages can't open inside the dashboard modal.** Stripe Checkout and the OAuth "connect"
   pages (Xero, Pipedrive, Google) refuse to load in an iframe. These are not forced (agreed —
   the client is to be told); card-on-file subscriptions don't redirect and work in the modal.
@@ -266,6 +283,11 @@ from scratch on accounts the client owns.
 
 - 2 Oct: email connected via Resend for local development (no verified domain yet, see §5).
   Work is on the `development` branch on GitHub.
+- 2 Oct: full QA pass across all 12 apps. Fixed: stored XSS via `javascript:` links on the public
+  review page / short links (http(s)-only validation + redirector guard), "Bucket not found" on
+  server-side uploads (buckets now created at boot), unreadable dark Payments pages, Payments
+  onboarding bounce, Payments Team page outside the app frame. Remaining findings are in §8.
+  Test data from the pass lives under the brand "Digitech QA Brand" (items prefixed "QA").
 
 **Outstanding**
 - Verify a sending domain in Resend (needs DNS access); then Supabase custom SMTP (its auth
