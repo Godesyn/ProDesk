@@ -12,7 +12,8 @@ import { STRIPE_PUBLISHABLE_KEY } from "@shared/lib/env";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 // ── Stripe loader ─────────────────────────────────────────────────────────────
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY ?? "");
+// Guarded like StripePaymentForm: loadStripe("") throws at import and takes the whole app down.
+const stripePromise = STRIPE_PUBLISHABLE_KEY ? loadStripe(STRIPE_PUBLISHABLE_KEY) : null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function fmtAUD(cents: number) {

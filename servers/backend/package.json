@@ -14,7 +14,7 @@
     "start:worker": "node dist/jobs/worker.js",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/scripts/migrate.ts",
+    "db:migrate": "tsx --conditions development src/scripts/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:initialize": "tsx src/scripts/initialize.ts",
